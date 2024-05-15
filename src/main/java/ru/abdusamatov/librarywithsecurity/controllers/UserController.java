@@ -13,5 +13,16 @@ import ru.abdusamatov.librarywithsecurity.services.UserService;
 @Controller
 @RequiredArgsConstructor
 public class UserController {
+    private final UserService userService;
 
+    @GetMapping("/registration")
+    public String registration(@ModelAttribute("user") User user){
+        return "users/registration";
+    }
+
+    @PostMapping("/registration")
+    public String createUser(@ModelAttribute ("user")  User user){
+        userService.createUser(user);
+        return "index";
+    }
 }

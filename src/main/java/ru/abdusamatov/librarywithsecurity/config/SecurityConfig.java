@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configurers.LogoutConf
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.abdusamatov.librarywithsecurity.services.CustomUserDetailsService;
 
 
 @Configuration
@@ -18,5 +19,21 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+    private final CustomUserDetailsService userDetailsService;
+    @Bean
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .authorizeHttpRequests((requests) -> requests
+//                        .requestMatchers("/", "/product/**",
+//                                "/images/**", "/registration",
+//                                "/user/**", "/static/**").permitAll()
+                        .anyRequest().permitAll()
+                )
+                .build();
+    }
 
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 }

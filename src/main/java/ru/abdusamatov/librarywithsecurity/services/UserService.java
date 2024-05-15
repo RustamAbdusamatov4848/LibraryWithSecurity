@@ -18,9 +18,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public List<User> list() {
+    public List<User> getUserList(){
         return userRepository.findAll();
     }
+
     @Transactional
     public boolean createUser(User user) {
         String userEmail = user.getEmail();
