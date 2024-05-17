@@ -30,5 +30,7 @@
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="submit" value="Sign up"/>
         </form>
+
+        <p style="color: red" th:if="${errorEmail != null}" th:text="${errorEmail}"></p>
     </body>
 </html>

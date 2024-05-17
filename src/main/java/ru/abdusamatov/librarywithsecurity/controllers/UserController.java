@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +20,10 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public String createUser(@ModelAttribute ("user")  User user){
+    public String createUser(@ModelAttribute ("user")  User user, Model model){
         if (!userService.createUser(user)){
+            model.addAttribute("errorEmail",
+                    "User with email: " + user.getEmail() + " already exists!");
             return "users/registration";
         }
         return "login";

@@ -18,9 +18,10 @@
                 <input type="password" id="password" name="password" required><br>
 
                 <input type="hidden" name="_csrf" value="${_csrf.token}">
-                <input type="submit" value="Вход">
+                <input type="submit" value="Sign in">
             </form>
             <p class="registration-link"><a href="/registration">Sign up</a></p>
+            <p th:if="${param.error}" style="color:red">Invalid username or password,please try again</p>
         </div>
     </div>
     </body>
