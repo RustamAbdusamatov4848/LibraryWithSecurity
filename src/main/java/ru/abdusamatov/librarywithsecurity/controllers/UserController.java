@@ -20,7 +20,14 @@ public class UserController {
 
     @PostMapping("/registration")
     public String createUser(@ModelAttribute ("user")  User user){
-        userService.createUser(user);
-        return "index";
+        if (!userService.createUser(user)){
+            return "users/registration";
+        }
+        return "login";
+    }
+
+    @GetMapping("/login")
+    public String login(){
+        return "login";
     }
 }
