@@ -10,6 +10,7 @@ import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,5 +42,16 @@ public class BookService {
     @Transactional
     public void createBook(Book book) {
         bookRepository.save(book);
+    }
+
+    @Transactional
+    public void editBook(Long id, Book editedBook) {
+        editedBook.setBookId(id);
+        bookRepository.save(editedBook);
+    }
+
+    @Transactional
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
     }
 }

@@ -29,7 +29,7 @@ public class BookController {
         }else {
             model.addAttribute("books",bookService.showWithPagination(page, booksPerPage, sortByYear));
         }
-        return "books/list";
+        return "books/listOfBooks";
     }
 
     @GetMapping("/{id}")
@@ -55,6 +55,27 @@ public class BookController {
             return "books/createBook";
         }
         bookService.createBook(book);
+        return "redirect:/books";
+    }
+
+    @GetMapping("/{id}/editBook")
+    public String editBook(@PathVariable("id") Long id,Model model){
+        model.addAttribute("book",bookService.showBook(id));
+        return "books/editBook";
+    }
+    @PatchMapping("/{id}")
+    public String updateBook(@PathVariable("id") Long id,
+                             @ModelAttribute("book") @Valid Book book,
+                             BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            return "books/editBook";
+        }
+        bookService.editBook(id,book);
+        return "redirect:/books";
+    }
+    @DeleteMapping("/{id}")
+    public String deleteBook(@PathVariable("id") Long id){
+        bookService.deleteBook(id);
         return "redirect:/books";
     }
 }
