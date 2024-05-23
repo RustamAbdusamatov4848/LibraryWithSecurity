@@ -9,6 +9,7 @@ import ru.abdusamatov.librarywithsecurity.models.Book;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +31,8 @@ public class BookService {
             return bookRepository.findAll(PageRequest.of(page, booksPerPage)).getContent();
     }
 
-    public Book showBook(Long id) {
-        return bookRepository.findById(id).orElse(null);
+    public Book showBook(Long bookID) {
+        return bookRepository.findById(bookID).orElse(null);
     }
 
     @Transactional
@@ -45,13 +46,31 @@ public class BookService {
     }
 
     @Transactional
-    public void editBook(Long id, Book editedBook) {
-        editedBook.setBookId(id);
+    public void editBook(Long bookID, Book editedBook) {
+        editedBook.setBookId(bookID);
         bookRepository.save(editedBook);
     }
 
     @Transactional
-    public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+    public void deleteBook(Long bookID) {
+        bookRepository.deleteById(bookID);
+    }
+    @Transactional
+    public void releaseBook(Long bookID) {
+        bookRepository.findById(bookID).ifPresent(book -> {
+            book.setOwner(null);
+            book.setTakenAt(null);
+            book.setExpired(false);
+        });
+    }
+    @Transactional
+    public void assignBook(Long bookID,User selectedUser){
+        bookRepository.findById(bookID).ifPresent(book -> {
+            book.setOwner(selectedUser);
+            book.setTakenAt(new Date());
+        });
+    }
+    public List<Book> searchByTitle(String query){
+        return bookRepository.findByTitleStartingWith(query);
     }
 }

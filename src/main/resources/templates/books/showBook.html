@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Show book</title>
-</head>
-<body>
-<p th:text="${book.getTitle()} + ', ' + ${book.getAuthorName()}+ ' ' +${book.getAuthorSurname()} + ', ' + ${book.getYear()}">VALUE</p>
 
-<div th:if="${owner}">
-    <span>The book is now: </span><span th:text="${owner.getFullName()}"></span>
-    <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getBookId()})}">
-        <input type="submit" value="Release the book"/>
-    </form>
-</div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Show book</title>
+    </head>
 
-<div th:if="${users}">
-    <span>This book is free. To whom should it be assigned?</span>
-    <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getBookId()})}">
-        <label for="user">Choose person</label>
-        <select th:object="${user}" th:field="*{id}" id="user">
-            <option th:each="user: ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">
-            </option>
-        </select>
-        <input type="submit" value="Assign the book">
-    </form>
-</div>
+    <body>
+        <p th:text="${book.getTitle()} + ', ' + ${book.getAuthorName()}+ ' ' +${book.getAuthorSurname()} + ', ' + ${book.getYear()}">VALUE</p>
 
-<hr/>
+        <div th:if="${owner}">
+            <span>The book is now: </span><span th:text="${owner.getFullName()}"></span>
+            <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getBookId()})}">
+                <input type="submit" value="Release the book"/>
+            </form>
+        </div>
 
-<form th:method="GET" th:action="@{/books/{id}/editBook(id=${book.getBookId()})}">
-    <input type="submit" value="Edit book">
-</form>
+        <div th:if="${users}">
+            <span>This book is free. To whom should it be assigned?</span>
+            <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getBookId()})}">
+                <label for="user">Choose person</label>
+                <select th:object="${user}" th:field="*{id}" id="user">
+                    <option th:each="user: ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}">
+                    </option>
+                </select>
+                <input type="submit" value="Assign the book">
+            </form>
+        </div>
 
-<form th:method="DELETE" th:action="@{/books/{id}(id=${book.getBookId()})}">
-    <input type="submit" value="Delete book"/>
-</form>
+        <hr/>
 
-<form th:method="GET" th:action="@{/books}">
-    <input type="submit" value="Go to books list"/>
-</form>
-</body>
+        <form th:method="GET" th:action="@{/books/{id}/editBook(id=${book.getBookId()})}">
+            <input type="submit" value="Edit book">
+        </form>
+
+        <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getBookId()})}">
+            <input type="submit" value="Delete book"/>
+        </form>
+
+        <form th:method="GET" th:action="@{/books}">
+            <input type="submit" value="Go to books list"/>
+        </form>
+    </body>
 </html>

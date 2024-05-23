@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit book</title>
-</head>
-<body>
-<form th:method="PATCH" th:action="@{/books/{id}(id=${book.getBookId()})}" th:object="${book}">
 
-    <label for="title">Enter book's title: </label>
-    <input type="text" th:field="*{title}" id="title"/>
-    <div style="color: red" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</div>
-    <br/>
+    <head>
+        <meta charset="UTF-8">
+        <title>Edit book</title>
+    </head>
+    <body>
+        <form th:method="PATCH" th:action="@{/books/{id}(id=${book.getBookId()})}" th:object="${book}">
 
-    <label for="authorName">Enter author's name: </label>
-    <input type="text" th:field="*{authorName}" id="authorName"/>
-    <div style="color: red" th:if="${#fields.hasErrors('authorName')}" th:errors="*{authorName}">Author's name error</div>
-    <br/>
+            <label for="title">Enter book's title: </label>
+            <input type="text" th:field="*{title}" id="title"/>
+            <div style="color: red" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</div>
+            <br/>
 
-    <label for="authorSurname">Enter author's surname: </label>
-    <input type="text" th:field="*{authorSurname}" id="authorSurname"/>
-    <div style="color: red" th:if="${#fields.hasErrors('authorSurname')}" th:errors="*{authorSurname}">Author's surname error</div>
-    <br/>
+            <label for="authorName">Enter author's name: </label>
+            <input type="text" th:field="*{authorName}" id="authorName"/>
+            <div style="color: red" th:if="${#fields.hasErrors('authorName')}" th:errors="*{authorName}">Author's name error</div>
+            <br/>
 
-    <label for="year">Enter year: </label>
-    <input type="text" th:field="*{year}" id="year"/>
-    <div style="color: red" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Year error</div>
-    <br/>
+            <label for="authorSurname">Enter author's surname: </label>
+            <input type="text" th:field="*{authorSurname}" id="authorSurname"/>
+            <div style="color: red" th:if="${#fields.hasErrors('authorSurname')}" th:errors="*{authorSurname}">Author's surname error</div>
+            <br/>
 
-    <input type="submit" value="Edit book"/>
-</form>
-</body>
+            <label for="year">Enter year: </label>
+            <input type="text" th:field="*{year}" id="year"/>
+            <div style="color: red" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Year error</div>
+            <br/>
+
+            <input type="submit" value="Edit book"/>
+        </form>
+    </body>
 </html>

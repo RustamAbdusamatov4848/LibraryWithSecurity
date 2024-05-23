@@ -22,36 +22,38 @@ public class BookController {
     public String bookList(Model model,
                            @RequestParam(value = "page", required = false) Integer page,
                            @RequestParam(value = " books_per_page", required = false) Integer booksPerPage,
-                           @RequestParam(value = "sort_by_year", required = false) boolean sortByYear){
+                           @RequestParam(value = "sort_by_year", required = false) boolean sortByYear) {
 
-        if(page==null || booksPerPage==null){
-            model.addAttribute("books",bookService.bookList(sortByYear));
-        }else {
-            model.addAttribute("books",bookService.showWithPagination(page, booksPerPage, sortByYear));
+        if (page == null || booksPerPage == null) {
+            model.addAttribute("books", bookService.bookList(sortByYear));
+        } else {
+            model.addAttribute("books", bookService.showWithPagination(page, booksPerPage, sortByYear));
         }
         return "books/listOfBooks";
     }
 
     @GetMapping("/{id}")
-    public String showBookByID(@PathVariable("id") Long id, Model model, @ModelAttribute("user") User user){
-        model.addAttribute("book",bookService.showBook(id));
+    public String showBookByID(@PathVariable("id") Long id, Model model, @ModelAttribute("user") User user) {
+        model.addAttribute("book", bookService.showBook(id));
 
         User userWithThatBookId = bookService.getBookOwner(id);
 
-        if (userWithThatBookId!=null){
-            model.addAttribute("owner",userWithThatBookId);
-        }else {
-            model.addAttribute("users",userService.getUserList());
+        if (userWithThatBookId != null) {
+            model.addAttribute("owner", userWithThatBookId);
+        } else {
+            model.addAttribute("users", userService.getUserList());
         }
         return "books/showBook";
     }
+
     @GetMapping("/createBook")
-    public String addNewBook(@ModelAttribute("book") Book book){
+    public String addNewBook(@ModelAttribute("book") Book book) {
         return "books/createBook";
     }
+
     @PostMapping()
-    public String createBook(@ModelAttribute("book") @Valid Book book, BindingResult result){
-        if (result.hasErrors()){
+    public String createBook(@ModelAttribute("book") @Valid Book book, BindingResult result) {
+        if (result.hasErrors()) {
             return "books/createBook";
         }
         bookService.createBook(book);
@@ -59,23 +61,48 @@ public class BookController {
     }
 
     @GetMapping("/{id}/editBook")
-    public String editBook(@PathVariable("id") Long id,Model model){
-        model.addAttribute("book",bookService.showBook(id));
+    public String editBook(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("book", bookService.showBook(id));
         return "books/editBook";
     }
+
     @PatchMapping("/{id}")
     public String updateBook(@PathVariable("id") Long id,
                              @ModelAttribute("book") @Valid Book book,
-                             BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+                             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return "books/editBook";
         }
-        bookService.editBook(id,book);
+        bookService.editBook(id, book);
         return "redirect:/books";
     }
+
     @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable("id") Long id){
+    public String deleteBook(@PathVariable("id") Long id) {
         bookService.deleteBook(id);
         return "redirect:/books";
+    }
+
+    @PatchMapping("{id}/release")
+    public String releaseBook(@PathVariable("id") Long id) {
+        bookService.releaseBook(id);
+        return "redirect:/books/" + id;
+    }
+
+    @PatchMapping("/{id}/assign")
+    public String assignBook(@PathVariable("id") Long id, @ModelAttribute("user") User selectedUser) {
+        bookService.assignBook(id, selectedUser);
+        return "redirect:/books";
+    }
+
+    @GetMapping("/search")
+    public String searchBook() {
+        return "books/search";
+    }
+
+    @PostMapping("/search")
+    public String makeSearch(Model model, @RequestParam("query") String query) {
+        model.addAttribute("books", bookService.searchByTitle(query));
+        return "books/search";
     }
 }
