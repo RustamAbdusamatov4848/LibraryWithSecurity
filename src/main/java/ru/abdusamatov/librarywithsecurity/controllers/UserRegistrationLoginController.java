@@ -26,7 +26,7 @@ public class UserRegistrationLoginController {
                     "User with email: " + user.getEmail() + " already exists!");
             return "users/auth/registration";
         }
-        return "users/auth/login";
+        return "redirect:/user";
     }
 
     @GetMapping("/login")
