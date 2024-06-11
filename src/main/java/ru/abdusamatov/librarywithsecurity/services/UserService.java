@@ -3,7 +3,6 @@ package ru.abdusamatov.librarywithsecurity.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.models.Book;
@@ -20,7 +19,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<User> getUserList(){
@@ -53,7 +51,6 @@ public class UserService {
     public boolean createUser(User user) {
         String userEmail = user.getEmail();
         if (userRepository.findByEmail(userEmail) != null) return false;
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         log.info("Saving new User with email: {}", userEmail);
         userRepository.save(user);
         return true;

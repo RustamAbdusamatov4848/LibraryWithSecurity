@@ -10,7 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.abdusamatov.librarywithsecurity.services.CustomUserDetailsService;
+import ru.abdusamatov.librarywithsecurity.services.CustomLibrarianDetailsService;
+
 
 
 @Configuration
@@ -18,7 +19,7 @@ import ru.abdusamatov.librarywithsecurity.services.CustomUserDetailsService;
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private final CustomUserDetailsService userDetailsService;
+    private final CustomLibrarianDetailsService librarianDetailsService;
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -34,7 +35,7 @@ public class SecurityConfig {
     }
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(librarianDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Bean

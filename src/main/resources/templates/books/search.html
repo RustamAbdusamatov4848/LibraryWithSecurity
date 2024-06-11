@@ -20,11 +20,13 @@
             </div>
 
             <div th:each="book : ${books}">
-                <p th:text="${book.getTitle()}
+                <a th:href="@{/books/{id}(id=${book.getBookId()})}">
+                    <p th:text="${book.getTitle()}
                 + ',' + ${book.getAuthorName()}
                 + ' ' + ${book.getAuthorSurname()}
                 + ', '
                 + ${book.getYear()}">book</p>
+                </a>
                 <div th:if="${book.getOwner()!=null}">
                     <span>The book is now: </span><span th:text="${book.getOwner().getFullName()}">Person name</span>
                 </div>

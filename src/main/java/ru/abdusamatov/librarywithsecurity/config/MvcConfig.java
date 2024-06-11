@@ -8,8 +8,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.abdusamatov.librarywithsecurity.models.Book;
+import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
+import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 
 import java.time.LocalDateTime;
@@ -30,16 +32,23 @@ public class MvcConfig implements WebMvcConfigurer{
 
     @Bean
     public ApplicationRunner tacoDataLoader(BookRepository bookRepository, UserRepository userRepository,
-                                            PasswordEncoder passwordEncoder){
+                                            PasswordEncoder passwordEncoder, LibrarianRepository librarianRepository){
         return args -> {
-            User user = new User();
-            user.setId(1L);
-            user.setFullName("Abdusamatov Rustam");
-            user.setEmail("rustam@yandex.ru");
-            user.setPassword(passwordEncoder.encode("1234"));
-            user.setYearOfBirth(new Date(94,1,15));
-            user.setDateOfCreated(LocalDateTime.now());
-            userRepository.save(user);
+            Librarian librarian = new Librarian();
+            librarian.setId(1L);
+            librarian.setFullName("Rustam");
+            librarian.setEmail("rustam@yandex.ru");
+            librarian.setPassword(passwordEncoder.encode("1234"));
+            librarian.setDateOfCreated(LocalDateTime.now());
+            librarianRepository.save(librarian);
+
+            User fedor = new User();
+            fedor.setId(1L);
+            fedor.setFullName("Fedor");
+            fedor.setEmail("fedor@yandex.ru");
+            fedor.setYearOfBirth(new Date(94,1,15));
+            fedor.setDateOfCreated(LocalDateTime.now());
+            userRepository.save(fedor);
 
             Book book  = new Book();
             book.setBookId(1L);
@@ -47,7 +56,7 @@ public class MvcConfig implements WebMvcConfigurer{
             book.setAuthorName("Гарриет");
             book.setAuthorSurname("Стоу");
             book.setYear(1882);
-            book.setOwner(user);
+            book.setOwner(fedor);
             book.setExpired(false);
             book.setTakenAt(new Date());
             bookRepository.save(book);

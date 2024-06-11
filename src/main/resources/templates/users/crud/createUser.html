@@ -2,11 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Create new Person</title>
+        <title>Create new User</title>
     </head>
 
     <body>
-        <form th:method="POST" th:action="@{/registration}" th:object="${user}">
+        <form th:method="POST" th:action="@{/user/registration}" th:object="${user}">
             <label for="fullName">Enter full name: </label>
             <input type="text" th:field="*{fullName}" id="fullName"/>
             <div style="color: red" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Full name error</div>
@@ -17,18 +17,13 @@
             <div style="color: red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
             <br/>
 
-            <label for="password">Enter password: </label>
-            <input type="password" th:field="*{password}" id="password"/>
-            <div style="color: red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
-            <br/>
-
             <label for="yearOfBirth">Enter year of your birth: </label>
             <input type="date" th:field="*{yearOfBirth}" id="yearOfBirth"/>
             <div style="color: red" th:if="${#fields.hasErrors('yearOfBirth')}" th:errors="*{yearOfBirth}">Year of birth error</div>
             <br/>
 
             <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <input type="submit" value="Sign up"/>
+            <input type="submit" value="Create User"/>
         </form>
 
         <p style="color: red" th:if="${errorEmail != null}" th:text="${errorEmail}"></p>

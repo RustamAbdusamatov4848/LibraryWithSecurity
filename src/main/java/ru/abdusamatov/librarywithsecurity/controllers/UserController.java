@@ -28,6 +28,19 @@ public class UserController {
         model.addAttribute("books",userService.getBooksByPersonID(ID));
         return "users/crud/showUser";
     }
+    @GetMapping("/createUser")
+    public String registration(@ModelAttribute("user") User user){
+        return "users/crud/createUser";
+    }
+    @PostMapping("/registration")
+    public String createUser(@ModelAttribute ("user")  User user, Model model){
+        if (!userService.createUser(user)){
+            model.addAttribute("errorEmail",
+                    "User with email: " + user.getEmail() + " already exists!");
+            return "users/crud/createUser";
+        }
+        return "redirect:/user";
+    }
     @GetMapping("/{id}/editUser")
     public String editUserByID(Model model, @PathVariable("id") Long ID) {
         model.addAttribute("user", userService.getUserByID(ID));
@@ -43,7 +56,7 @@ public class UserController {
         return "redirect:/user";
     }
     @DeleteMapping("/{id}/deleteUser")
-    public String edit(@PathVariable("id") Long ID) {
+    public String deleteUserByID(@PathVariable("id") Long ID) {
         userService.deleteUserByID(ID);
         return "redirect:/user";
     }
