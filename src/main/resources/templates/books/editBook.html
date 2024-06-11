@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <title>Edit book</title>
     </head>
+
     <body>
         <form th:method="PATCH" th:action="@{/books/{id}(id=${book.getBookId()})}" th:object="${book}">
 
