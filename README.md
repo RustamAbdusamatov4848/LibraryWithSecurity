@@ -73,9 +73,9 @@ The librarian has the ability to:
 2. View reader list
 3. Add/Edit and remove reader from the database;
 4. View book list;
-2. Add / Edit and delete books from the database;
-4. Give out books to a certain reader, or after the reader returned the book back to the library, mark it in the database.
-5. Search books. I plan to add a reader search function in the future.
+5. Add / Edit and delete books from the database;
+6. Give out books to a certain reader, or after the reader returned the book back to the library, mark it in the database.
+7. Search books. I plan to add a reader search function in the future.
 
 ---
 
