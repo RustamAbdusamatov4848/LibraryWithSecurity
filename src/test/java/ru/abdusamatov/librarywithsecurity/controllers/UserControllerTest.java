@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
+import ru.abdusamatov.librarywithsecurity.util.UserValidator;
 
 import java.util.Collections;
 
@@ -23,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
     @Mock
     private UserService userService;
+    @Mock
+    private UserValidator userValidator;
     @InjectMocks
     private UserController userController;
     private MockMvc mockMvc;
