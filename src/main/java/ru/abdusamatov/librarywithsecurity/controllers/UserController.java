@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
-import ru.abdusamatov.librarywithsecurity.util.UserValidator;
+import ru.abdusamatov.librarywithsecurity.util.validators.UserValidator;
 
 @Controller
 @RequiredArgsConstructor
