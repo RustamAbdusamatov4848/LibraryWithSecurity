@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.util;
+package ru.abdusamatov.librarywithsecurity.util.validators;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
