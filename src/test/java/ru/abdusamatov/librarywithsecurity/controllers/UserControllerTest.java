@@ -31,8 +31,16 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
+        initMocks();
+        initMockMvc();
+    }
+
+    private void initMocks() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    private void initMockMvc() {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
