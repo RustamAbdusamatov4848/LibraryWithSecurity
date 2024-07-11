@@ -15,6 +15,7 @@ import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 @Configuration
@@ -36,25 +37,25 @@ public class MvcConfig implements WebMvcConfigurer{
         return args -> {
             Librarian librarian = new Librarian();
             librarian.setId(1L);
-            librarian.setFullName("Rustam");
-            librarian.setEmail("rustam@yandex.ru");
+            librarian.setFullName("Librarian Name");
+            librarian.setEmail("test@librarian.ru");
             librarian.setPassword(passwordEncoder.encode("1234"));
             librarian.setDateOfCreated(LocalDateTime.now());
             librarianRepository.save(librarian);
 
             User fedor = new User();
             fedor.setId(1L);
-            fedor.setFullName("Fedor");
-            fedor.setEmail("fedor@yandex.ru");
-            fedor.setYearOfBirth(new Date(94,1,15));
+            fedor.setFullName("Test Name");
+            fedor.setEmail("test@name.ru");
+            fedor.setYearOfBirth(new Date(94, Calendar.FEBRUARY,15));
             fedor.setDateOfCreated(LocalDateTime.now());
             userRepository.save(fedor);
 
             Book book  = new Book();
             book.setBookId(1L);
-            book.setTitle("Хижина Дяди Тома");
-            book.setAuthorName("Гарриет");
-            book.setAuthorSurname("Стоу");
+            book.setTitle("Test Book");
+            book.setAuthorName("Johny");
+            book.setAuthorSurname("Good");
             book.setYear(1882);
             book.setOwner(fedor);
             book.setExpired(false);
