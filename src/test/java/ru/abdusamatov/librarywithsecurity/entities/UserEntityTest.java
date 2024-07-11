@@ -1,51 +1,44 @@
 package ru.abdusamatov.librarywithsecurity.entities;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.abdusamatov.librarywithsecurity.models.User;
 
 import java.util.Date;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserEntityTest {
-    private static Validator validator;
+public class UserEntityTest extends BaseEntityTest<User> {
 
     @BeforeEach
     public void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        super.setUp();
     }
 
     @Test
     public void testNameValidation() {
         User user = createUserWithInvalidName();
-        Set<String> messages = getValidationMethod(user);
+        Set<String> messages = getValidationMessage(user);
 
-        assertEquals(2, messages.size());
-        assertTrue(messages.contains("Name should not be empty"));
-        assertTrue(messages.contains("Name should be between 2 to 30 characters long"));
+        assertValidationMessage(messages, "Name should not be empty");
+        assertValidationMessage(messages, "Name should be between 2 to 30 characters long");
+        assertValidationSize(messages, 2);
     }
 
     @Test
     public void testEmailValidation() {
         User user = createUserWithInvalidEmail();
-        Set<String> messages = getValidationMethod(user);
+        Set<String> messages = getValidationMessage(user);
 
-        assertEquals(1, messages.size());
-        assertTrue(messages.contains("Invalid email address"));
+        assertValidationSize(messages, 1);
+        assertValidationMessage(messages, "Invalid email address");
     }
 
     @Test
     public void testValidUser() {
-        User user = createValidUser();
+        User user = createValidEntity();
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
         assertEquals(0, violations.size());
@@ -67,20 +60,13 @@ public class UserEntityTest {
         return user;
     }
 
-    private User createValidUser() {
+    @Override
+    protected User createValidEntity() {
         User user = new User();
         user.setFullName("Valid Name");
         user.setEmail("valid.email@example.com");
         user.setYearOfBirth(new Date());
         return user;
-    }
-
-    private Set<String> getValidationMethod(User user) {
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        return violations
-                .stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toSet());
     }
 }
 

@@ -1,43 +1,37 @@
 package ru.abdusamatov.librarywithsecurity.entities;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.abdusamatov.librarywithsecurity.models.Book;
 
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BookEntityTest {
-    private static Validator validator;
+public class BookEntityTest extends BaseEntityTest<Book> {
 
     @BeforeEach
     public void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        super.setUp();
     }
 
     @Test
     public void testTitleValidation() {
         Book book = createInvalidBookWithEmptyTitle();
-        Set<String> messages = getValidationMessages(book);
+        Set<String> messages = getValidationMessage(book);
 
-        assertTrue(messages.contains("The book's title should not be empty"));
-        assertTrue(messages.contains("Book title must be between 2 and 200 characters long"));
-        assertEquals(2, messages.size());
+        assertValidationMessage(messages, "The book's title should not be empty");
+        assertValidationMessage(messages, "Book title must be between 2 and 200 characters long");
+        assertValidationSize(messages, 2);
     }
 
     @Test
     public void testAuthorNameValidation() {
         Book book = createInvalidBookWithEmptyAuthorName();
-        Set<String> messages = getValidationMessages(book);
+        Set<String> messages = getValidationMessage(book);
 
         assertTrue(messages.contains("Author name should not be empty"));
         assertTrue(messages.contains("Author name must be between 2 and 30 characters long"));
@@ -47,7 +41,7 @@ public class BookEntityTest {
     @Test
     public void testAuthorSurnameValidation() {
         Book book = createInvalidBookWithEmptyAuthorSurname();
-        Set<String> messages = getValidationMessages(book);
+        Set<String> messages = getValidationMessage(book);
 
         assertTrue(messages.contains("Author surname should not be empty"));
         assertTrue(messages.contains("Author surname must be between 2 and 30 characters long"));
@@ -57,7 +51,7 @@ public class BookEntityTest {
     @Test
     public void testYearValidation() {
         Book book = createInvalidBookWithYear();
-        Set<String> messages = getValidationMessages(book);
+        Set<String> messages = getValidationMessage(book);
 
         assertTrue(messages.contains("Year must be greater than 1500"));
         assertEquals(1, messages.size());
@@ -118,10 +112,13 @@ public class BookEntityTest {
         return book;
     }
 
-    private Set<String> getValidationMessages(Book book) {
-        Set<ConstraintViolation<Book>> violations = validator.validate(book);
-        return violations.stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toSet());
+    @Override
+    protected Book createValidEntity() {
+        Book book = new Book();
+        book.setTitle("Valid Title");
+        book.setAuthorName("John");
+        book.setAuthorSurname("Doe");
+        book.setYear(2000);
+        return book;
     }
 }

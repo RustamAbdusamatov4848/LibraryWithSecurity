@@ -9,15 +9,14 @@ import org.junit.jupiter.api.Test;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LibrarianEntityTest {
-    public static Validator validator;
+public class LibrarianEntityTest extends BaseEntityTest<Librarian> {
+    private static Validator validator;
 
     @BeforeAll
-    public static void setUp() {
+    public static void setup() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -27,19 +26,20 @@ public class LibrarianEntityTest {
         Librarian librarian = createLibrarianWithInvalidFullName();
         Set<String> message = getValidationMessage(librarian);
 
-        assertEquals(2, message.size());
-        assertContains(message, "Name should not be empty");
-        assertContains(message, "Name should be between 2 to 30 characters long");
+
+        assertValidationMessage(message, "Name should not be empty");
+        assertValidationMessage(message, "Name should be between 2 to 30 characters long");
+        assertValidationSize(message, 2);
     }
 
 
     @Test
     public void testEmailValidation() {
-        Librarian librarian = createLibratianWithInvalidEmail();
+        Librarian librarian = createLibrarianWithInvalidEmail();
         Set<String> message = getValidationMessage(librarian);
 
-        assertEquals(1, message.size());
-        assertContains(message, "Invalid email address");
+        assertValidationSize(message, 1);
+        assertValidationMessage(message, "Invalid email address");
     }
 
     @Test
@@ -47,13 +47,13 @@ public class LibrarianEntityTest {
         Librarian librarian = createLibrarianWithInvalidPassword();
         Set<String> message = getValidationMessage(librarian);
 
-        assertEquals(1, message.size());
-        assertContains(message, "Password should be les then 1000 length");
+        assertValidationSize(message, 1);
+        assertValidationMessage(message, "Password should be les then 1000 length");
     }
 
     @Test
     public void testValidLibrarian() {
-        Librarian librarian = createValidLibrarian();
+        Librarian librarian = createValidEntity();
         Set<ConstraintViolation<Librarian>> violations = validator.validate(librarian);
 
         assertEquals(0, violations.size());
@@ -67,7 +67,7 @@ public class LibrarianEntityTest {
         return librarian;
     }
 
-    private Librarian createLibratianWithInvalidEmail() {
+    private Librarian createLibrarianWithInvalidEmail() {
         Librarian librarian = new Librarian();
         librarian.setFullName("Valid Name");
         librarian.setEmail("invalid-name");
@@ -83,23 +83,12 @@ public class LibrarianEntityTest {
         return librarian;
     }
 
-    private Librarian createValidLibrarian() {
+    @Override
+    protected Librarian createValidEntity() {
         Librarian librarian = new Librarian();
         librarian.setFullName("Valid Name");
         librarian.setEmail("valid.email@example.com");
         librarian.setPassword("validPassword");
         return librarian;
-    }
-
-    private Set<String> getValidationMessage(Librarian librarian) {
-        Set<ConstraintViolation<Librarian>> violations = validator.validate(librarian);
-        return violations
-                .stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toSet());
-    }
-
-    private void assertContains(Set<String> message, String expectedMessage) {
-        assertTrue(message.contains(expectedMessage));
     }
 }
