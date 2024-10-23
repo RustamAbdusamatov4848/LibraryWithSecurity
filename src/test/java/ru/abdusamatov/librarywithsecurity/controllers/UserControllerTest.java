@@ -10,14 +10,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
-import ru.abdusamatov.librarywithsecurity.util.validators.UserValidator;
 
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -25,7 +31,6 @@ public class UserControllerTest {
     @Mock
     private UserService userService;
     @Mock
-    private UserValidator userValidator;
     @InjectMocks
     private UserController userController;
     private MockMvc mockMvc;

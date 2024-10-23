@@ -21,32 +21,36 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<User> getUserList(){
+    public List<User> getUserList() {
         return userRepository.findAll();
     }
+
     public User getUserByID(Long ID) {
         return userRepository.findById(ID).orElse(null);
     }
-    public Optional<User> getUserByFullname(String fullname){
+
+    public Optional<User> getUserByFullname(String fullname) {
         return userRepository.findByFullName(fullname);
     }
+
     public List<Book> getBooksByPersonID(Long ID) {
         Optional<User> user = userRepository.findById(ID);
 
-        if(user.isPresent()){
+        if (user.isPresent()) {
             Hibernate.initialize(user.get().getBooks());
 
-            user.get().getBooks().forEach( book -> {
-                long holdingTime = Math.abs(book.getTakenAt().getTime()-new Date().getTime());
-                if (holdingTime>864000000){
+            user.get().getBooks().forEach(book -> {
+                long holdingTime = Math.abs(book.getTakenAt().getTime() - new Date().getTime());
+                if (holdingTime > 864000000) {
                     book.setExpired(true);
                 }
             });
             return user.get().getBooks();
-        }else{
+        } else {
             return Collections.emptyList();
         }
     }
+
     @Transactional
     public boolean createUser(User user) {
         String userEmail = user.getEmail();
@@ -55,11 +59,13 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
+
     @Transactional
     public void editPerson(User user, Long ID) {
         user.setId(ID);
         userRepository.save(user);
     }
+
     @Transactional
     public void deleteUserByID(Long ID) {
         userRepository.deleteById(ID);

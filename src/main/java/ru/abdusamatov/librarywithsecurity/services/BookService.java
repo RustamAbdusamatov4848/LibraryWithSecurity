@@ -11,19 +11,19 @@ import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
     public final BookRepository bookRepository;
 
-    public List<Book> bookList(boolean isSortedByYear){
-        if (isSortedByYear){
+    public List<Book> bookList(boolean isSortedByYear) {
+        if (isSortedByYear) {
             return bookRepository.findAll(Sort.by("year"));
         }
         return bookRepository.findAll();
     }
+
     public List<Book> showWithPagination(Integer page, Integer booksPerPage, boolean sortByYear) {
         if (sortByYear)
             return bookRepository.findAll(PageRequest.of(page, booksPerPage, Sort.by("year"))).getContent();
@@ -55,6 +55,7 @@ public class BookService {
     public void deleteBook(Long bookID) {
         bookRepository.deleteById(bookID);
     }
+
     @Transactional
     public void releaseBook(Long bookID) {
         bookRepository.findById(bookID).ifPresent(book -> {
@@ -63,14 +64,16 @@ public class BookService {
             book.setExpired(false);
         });
     }
+
     @Transactional
-    public void assignBook(Long bookID,User selectedUser){
+    public void assignBook(Long bookID, User selectedUser) {
         bookRepository.findById(bookID).ifPresent(book -> {
             book.setOwner(selectedUser);
             book.setTakenAt(new Date());
         });
     }
-    public List<Book> searchByTitle(String query){
+
+    public List<Book> searchByTitle(String query) {
         return bookRepository.findByTitleStartingWith(query);
     }
 }

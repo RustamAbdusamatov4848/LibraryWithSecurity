@@ -1,10 +1,19 @@
 package ru.abdusamatov.librarywithsecurity.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
 import java.util.Date;
 
 @Data
@@ -37,7 +46,7 @@ public class Book {
     private int year;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 
     @Column(name = "taken_at")

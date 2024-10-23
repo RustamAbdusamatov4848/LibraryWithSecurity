@@ -13,13 +13,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import ru.abdusamatov.librarywithsecurity.services.CustomLibrarianDetailsService;
 
 
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private final CustomLibrarianDetailsService librarianDetailsService;
+
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -28,8 +28,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin((login) -> login
-                    .loginPage("/login")
-                    .permitAll()
+                        .loginPage("/login")
+                        .permitAll()
                 )
                 .build();
     }
@@ -39,7 +39,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

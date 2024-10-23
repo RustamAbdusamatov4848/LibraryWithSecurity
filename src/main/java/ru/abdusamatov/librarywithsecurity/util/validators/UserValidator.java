@@ -11,6 +11,7 @@ import ru.abdusamatov.librarywithsecurity.services.UserService;
 @RequiredArgsConstructor
 public class UserValidator implements Validator {
     private final UserService userService;
+
     @Override
     public boolean supports(Class<?> clazz) {
         return User.class.equals(clazz);
@@ -18,10 +19,10 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        User user = (User)target;
+        User user = (User) target;
 
-        if (userService.getUserByFullname(user.getFullName()).isPresent()){
-            errors.rejectValue("fullName","","A user with that full name already exists");
+        if (userService.getUserByFullname(user.getFullName()).isPresent()) {
+            errors.rejectValue("fullName", "", "A user with that full name already exists");
         }
     }
 }

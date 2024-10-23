@@ -19,7 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Configuration
-public class MvcConfig implements WebMvcConfigurer{
+public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
@@ -33,7 +33,7 @@ public class MvcConfig implements WebMvcConfigurer{
 
     @Bean
     public ApplicationRunner tacoDataLoader(BookRepository bookRepository, UserRepository userRepository,
-                                            PasswordEncoder passwordEncoder, LibrarianRepository librarianRepository){
+                                            PasswordEncoder passwordEncoder, LibrarianRepository librarianRepository) {
         return args -> {
             Librarian librarian = new Librarian();
             librarian.setId(1L);
@@ -47,11 +47,11 @@ public class MvcConfig implements WebMvcConfigurer{
             fedor.setId(1L);
             fedor.setFullName("Test Name");
             fedor.setEmail("test@name.ru");
-            fedor.setYearOfBirth(new Date(94, Calendar.FEBRUARY,15));
+            fedor.setYearOfBirth(new Date(94, Calendar.FEBRUARY, 15));
             fedor.setDateOfCreated(LocalDateTime.now());
             userRepository.save(fedor);
 
-            Book book  = new Book();
+            Book book = new Book();
             book.setBookId(1L);
             book.setTitle("Test Book");
             book.setAuthorName("Johny");

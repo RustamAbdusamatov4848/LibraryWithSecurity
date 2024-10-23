@@ -9,9 +9,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class CustomLibrarianDetailsServiceTest {
     @Mock
@@ -20,7 +25,7 @@ public class CustomLibrarianDetailsServiceTest {
     private CustomLibrarianDetailsService customLibrarianDetailsService;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 

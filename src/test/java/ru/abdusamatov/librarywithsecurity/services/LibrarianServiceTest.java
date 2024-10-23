@@ -9,9 +9,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class LibrarianServiceTest {
 

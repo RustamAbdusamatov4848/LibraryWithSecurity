@@ -15,13 +15,13 @@ public class LibrarianRegistrationLoginController {
     private final LibrarianService librarianService;
 
     @GetMapping("/registration")
-    public String registration(@ModelAttribute("librarian") Librarian librarian){
+    public String registration(@ModelAttribute("librarian") Librarian librarian) {
         return "librarians/auth/registration";
     }
 
     @PostMapping("/registration")
-    public String createLibrarian(@ModelAttribute ("librarian")  Librarian librarian, Model model){
-        if (!librarianService.createLibrarian(librarian)){
+    public String createLibrarian(@ModelAttribute("librarian") Librarian librarian, Model model) {
+        if (!librarianService.createLibrarian(librarian)) {
             model.addAttribute("errorEmail",
                     "Librarian with email: " + librarian.getEmail() + " already exists!");
             return "librarians/auth/registration";
@@ -30,7 +30,7 @@ public class LibrarianRegistrationLoginController {
     }
 
     @GetMapping("/login")
-    public String login(){
+    public String login() {
         return "librarians/auth/login";
     }
 }
