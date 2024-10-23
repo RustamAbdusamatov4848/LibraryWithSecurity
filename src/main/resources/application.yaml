@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: LibraryWithSecurity
+
+  # Database settings
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/library
+    username: postgres
+    password: postgres
+
+  # Hibernate settings
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+    hibernate:
+      ddl-auto: validate
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
