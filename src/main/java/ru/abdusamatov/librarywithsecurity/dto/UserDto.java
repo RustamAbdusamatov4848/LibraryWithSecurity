@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.abdusamatov.librarywithsecurity.models.Book;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +36,7 @@ public class UserDto {
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-    private List<Book> books;
+    private List<BookDto> books;
 
     @Override
     public boolean equals(Object o) {
