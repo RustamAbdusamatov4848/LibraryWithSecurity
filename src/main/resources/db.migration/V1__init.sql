@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS library.librarians
     librarian_id        BIGSERIAL PRIMARY KEY,
     librarian_full_name VARCHAR(30)   NOT NULL CHECK (LENGTH(librarian_full_name) BETWEEN 2 AND 30),
     librarian_email     VARCHAR(255) UNIQUE,
-    librarian_password  VARCHAR(1000) NOT NULL
+    librarian_password  VARCHAR(100) NOT NULL
 );

@@ -6,9 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,17 +29,13 @@ public class Librarian implements UserDetails {
     @Column(name = "librarian_id")
     private Long id;
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 30, message = "Name should be between 2 to 30 characters long")
     @Column(name = "librarian_full_name")
     private String fullName;
 
     @Column(name = "librarian_email", unique = true)
-    @Email(message = "Invalid email address")
     private String email;
 
     @Column(name = "librarian_password", length = 1000)
-    @Size(max = 1000, message = "Password should be less than 1000 characters long")
     private String password;
 
     @Override
