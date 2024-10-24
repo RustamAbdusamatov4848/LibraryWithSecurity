@@ -3,10 +3,20 @@ package ru.abdusamatov.librarywithsecurity.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class BookDto {
 
     private Long id;
@@ -28,7 +38,7 @@ public class BookDto {
 
     private LocalDateTime takenAt;
 
-    private Long user_id;
+    private Long userId;
 
     private boolean expired;
 
@@ -43,19 +53,5 @@ public class BookDto {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "BookDto{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", authorSurname='" + authorSurname + '\'' +
-                ", year of publication=" + yearOfPublication +
-                ", owner ID=" + (user_id != null ? user_id : "null") +
-                ", takenAt=" + takenAt +
-                ", expired=" + expired +
-                '}';
     }
 }

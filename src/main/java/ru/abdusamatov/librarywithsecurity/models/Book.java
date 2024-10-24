@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Book {
 
     @Id
@@ -63,19 +65,5 @@ public class Book {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", authorSurname='" + authorSurname + '\'' +
-                ", year of publication=" + yearOfPublication +
-                ", owner=" + (owner != null ? owner.getId() : "null") +
-                ", takenAt=" + takenAt +
-                ", expired=" + expired +
-                '}';
     }
 }
