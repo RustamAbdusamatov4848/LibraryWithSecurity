@@ -26,21 +26,21 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "user_id")
     private Long id;
 
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 to 30 characters long")
-    @Column(name = "full_name")
+    @Column(name = "user_full_name")
     private String fullName;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "user_email", unique = true)
     @Email(message = "Invalid email address")
     private String email;
 
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "year_of_birth")
+    @Column(name = "user_date_of_birth")
     private Date yearOfBirth;
 
     private LocalDateTime dateOfCreated;

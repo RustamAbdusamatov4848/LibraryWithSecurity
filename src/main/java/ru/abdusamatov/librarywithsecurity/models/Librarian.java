@@ -20,25 +20,25 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "librarian")
+@Table(name = "librarians")
 @Data
 public class Librarian implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "librarian_id")
     private Long id;
 
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 to 30 characters long")
-    @Column(name = "full_name")
+    @Column(name = "librarian_full_name")
     private String fullName;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "librarian_email", unique = true)
     @Email(message = "Invalid email address")
     private String email;
 
-    @Column(name = "password", length = 1000)
+    @Column(name = "librarian_password", length = 1000)
     @Size(max = 1000, message = "Password should be les then 1000 length")
     private String password;
 
