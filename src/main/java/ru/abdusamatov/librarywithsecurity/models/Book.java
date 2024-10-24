@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -24,7 +24,7 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id")
-    private Long bookId;
+    private Long id;
 
     @NotEmpty(message = "The book's title should not be empty")
     @Size(min = 2, max = 200, message = "Book title must be between 2 and 200 characters long")
@@ -50,7 +50,7 @@ public class Book {
     private User owner;
 
     @Column(name = "book_taken_at")
-    private Date takenAt;
+    private LocalDateTime takenAt;
 
     @Transient
     private boolean expired;

@@ -6,18 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -38,18 +33,10 @@ public class User {
     @Email(message = "Invalid email address")
     private String email;
 
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "user_date_of_birth")
-    private Date yearOfBirth;
-
-    private LocalDateTime dateOfCreated;
+    private LocalDate yearOfBirth;
 
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
 
-    @PrePersist
-    private void init() {
-        dateOfCreated = LocalDateTime.now();
-    }
 }
