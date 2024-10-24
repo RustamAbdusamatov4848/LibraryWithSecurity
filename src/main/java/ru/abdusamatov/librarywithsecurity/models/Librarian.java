@@ -9,17 +9,22 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "librarians")
-@Data
+@NoArgsConstructor
+@Setter
+@Getter
 public class Librarian implements UserDetails {
 
     @Id
@@ -37,7 +42,7 @@ public class Librarian implements UserDetails {
     private String email;
 
     @Column(name = "librarian_password", length = 1000)
-    @Size(max = 1000, message = "Password should be les then 1000 length")
+    @Size(max = 1000, message = "Password should be less than 1000 characters long")
     private String password;
 
     @Override
@@ -69,4 +74,27 @@ public class Librarian implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Librarian librarian = (Librarian) o;
+        return id != null && id.equals(librarian.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Librarian{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }
+

@@ -12,13 +12,20 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
 @Entity
 @Table(name = "books")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Book {
 
     @Id
@@ -55,13 +62,31 @@ public class Book {
     @Transient
     private boolean expired;
 
-    public Book() {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(id, book.id);
     }
 
-    public Book(String title, String authorName, String authorSurname, int year) {
-        this.title = title;
-        this.authorName = authorName;
-        this.authorSurname = authorSurname;
-        this.year = year;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", authorName='" + authorName + '\'' +
+                ", authorSurname='" + authorSurname + '\'' +
+                ", year=" + year +
+                ", owner=" + (owner != null ? owner.getId() : "null") +
+                ", takenAt=" + takenAt +
+                ", expired=" + expired +
+                '}';
+    }
+
 }

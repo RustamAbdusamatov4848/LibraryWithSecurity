@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.abdusamatov.librarywithsecurity.models.User;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +48,7 @@ public class UserEntityTest extends BaseEntityTest<User> {
         User user = new User();
         user.setFullName("");
         user.setEmail("valid.email@example.com");
-        user.setYearOfBirth(new Date());
+        user.setYearOfBirth(LocalDate.now());
         return user;
     }
 
@@ -56,7 +56,7 @@ public class UserEntityTest extends BaseEntityTest<User> {
         User user = new User();
         user.setFullName("Valid Name");
         user.setEmail("invalid-email");
-        user.setYearOfBirth(new Date());
+        user.setYearOfBirth(LocalDate.now());
         return user;
     }
 
@@ -65,7 +65,7 @@ public class UserEntityTest extends BaseEntityTest<User> {
         User user = new User();
         user.setFullName("Valid Name");
         user.setEmail("valid.email@example.com");
-        user.setYearOfBirth(new Date());
+        user.setYearOfBirth(LocalDate.now());
         return user;
     }
 }
