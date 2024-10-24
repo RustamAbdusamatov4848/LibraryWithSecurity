@@ -49,15 +49,15 @@ public class Book {
     private String authorSurname;
 
     @Min(value = 1500, message = "Year must be greater than 1500")
-    @Column(name = "book_year")
+    @Column(name = "book_year_of_publication")
     private int year;
+
+    @Column(name = "book_taken_at")
+    private LocalDateTime takenAt;
 
     @ManyToOne
     @JoinColumn(name = "book_owner_id", referencedColumnName = "user_id")
     private User owner;
-
-    @Column(name = "book_taken_at")
-    private LocalDateTime takenAt;
 
     @Transient
     private boolean expired;
