@@ -2,114 +2,117 @@ package ru.abdusamatov.librarywithsecurity.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.abdusamatov.librarywithsecurity.models.Book;
-import ru.abdusamatov.librarywithsecurity.models.User;
+import org.springframework.web.bind.annotation.RestController;
+import ru.abdusamatov.librarywithsecurity.dto.BookDto;
+import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
-import ru.abdusamatov.librarywithsecurity.services.UserService;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/books")
 public class BookController {
     private final BookService bookService;
-    private final UserService userService;
 
-    @GetMapping()
-    public String bookList(Model model,
-                           @RequestParam(value = "page", required = false) Integer page,
-                           @RequestParam(value = " books_per_page", required = false) Integer booksPerPage,
-                           @RequestParam(value = "sort_by_year", required = false) boolean sortByYear) {
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/books",
+            produces = {"application/json"})
+    public ResponseEntity<List<BookDto>> bookList(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+            @RequestParam(value = "sort", required = false, defaultValue = "true") boolean isSorted) {
 
-        if (page == null || booksPerPage == null) {
-            model.addAttribute("books", bookService.bookList(sortByYear));
-        } else {
-            model.addAttribute("books", bookService.showWithPagination(page, booksPerPage, sortByYear));
+        Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        List<BookDto> bookDtoList = bookService.getBookList(pageable).getContent();
+        return ResponseEntity.ok(bookDtoList);
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/books/{id}",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<BookDto> showBookById(@PathVariable("id") Long id) {
+        return bookService.getBookById(id)
+                .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
+                .orElseThrow(() -> new ResourceNotFoundException("Book", id));
+    }
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/books",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
+        BookDto createdBook = bookService.createBook(bookDto);
+        return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            value = "/books",
+            consumes = {"application/json"}
+    )
+    public ResponseEntity<Void> updateBook(@Valid @RequestBody BookDto bookDto) {
+        if (!bookService.isExistUser(bookDto.getId())) {
+            throw new ResourceNotFoundException("Book", bookDto.getId());
         }
-        return "books/listOfBooks";
+        bookService.editBook(bookDto);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/{id}")
-    public String showBookByID(@PathVariable("id") Long id, Model model, @ModelAttribute("user") User user) {
-        model.addAttribute("book", bookService.showBook(id));
-
-        User userWithThatBookId = bookService.getBookOwner(id);
-
-        if (userWithThatBookId != null) {
-            model.addAttribute("owner", userWithThatBookId);
-        } else {
-            model.addAttribute("users", userService.getUserList());
+    @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = "/books/{id}"
+    )
+    public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
+        if (!bookService.isExistUser(id)) {
+            throw new ResourceNotFoundException("Book", id);
         }
-        return "books/showBook";
-    }
-
-    @GetMapping("/createBook")
-    public String addNewBook(@ModelAttribute("book") Book book) {
-        return "books/createBook";
-    }
-
-    @PostMapping()
-    public String createBook(@ModelAttribute("book") @Valid Book book, BindingResult result) {
-        if (result.hasErrors()) {
-            return "books/createBook";
-        }
-        bookService.createBook(book);
-        return "redirect:/books";
-    }
-
-    @GetMapping("/{id}/editBook")
-    public String editBook(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("book", bookService.showBook(id));
-        return "books/editBook";
-    }
-
-    @PatchMapping("/{id}")
-    public String updateBook(@PathVariable("id") Long id,
-                             @ModelAttribute("book") @Valid Book book,
-                             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "books/editBook";
-        }
-        bookService.editBook(id, book);
-        return "redirect:/books";
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable("id") Long id) {
         bookService.deleteBook(id);
-        return "redirect:/books";
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("{id}/release")
-    public String releaseBook(@PathVariable("id") Long id) {
+    @RequestMapping(
+            method = RequestMethod.PATCH,
+            value = "/books/{id}/release"
+    )
+    public ResponseEntity<Void> releaseBook(@PathVariable("id") Long id) {
         bookService.releaseBook(id);
-        return "redirect:/books/" + id;
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{id}/assign")
-    public String assignBook(@PathVariable("id") Long id, @ModelAttribute("user") User selectedUser) {
-        bookService.assignBook(id, selectedUser);
-        return "redirect:/books";
+    @RequestMapping(
+            method = RequestMethod.PATCH,
+            value = "/books/{id}/assign",
+            consumes = {"application/json"}
+    )
+    public ResponseEntity<Void> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
+        bookService.assignBook(id, newUser);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/search")
-    public String searchBook() {
-        return "books/search";
-    }
-
-    @PostMapping("/search")
-    public String makeSearch(Model model, @RequestParam("query") String query) {
-        model.addAttribute("books", bookService.searchByTitle(query));
-        return "books/search";
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/books/search",
+            produces = {"application/json"}
+    )
+    public ResponseEntity<List<BookDto>> searchBooks(@RequestParam(value = "query") String query) {
+        List<BookDto> bookDtoList = bookService.searchByTitle(query);
+        return ResponseEntity.ok(bookDtoList);
     }
 }

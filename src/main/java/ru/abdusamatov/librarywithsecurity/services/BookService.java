@@ -11,12 +11,12 @@ import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.Book;
+import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +29,8 @@ public class BookService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public Page<BookDto> getBookList(Pageable pageable, boolean sort) {
-        Page<Book> books = sort ?
-                bookRepository.findAllSorted(pageable) : bookRepository.findAll(pageable);
+    public Page<BookDto> getBookList(Pageable pageable) {
+        Page<Book> books = bookRepository.findAll(pageable);
         return books.map(bookMapper::bookToBookDto);
     }
 
@@ -83,23 +82,25 @@ public class BookService {
         Book book = bookRepository
                 .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", bookId));
 
-        book.setOwner(userMapper.dtoToUser(userDto));
+        User newOwner = userMapper.dtoToUser(userDto);
+        book.setOwner(newOwner);
         book.setTakenAt(LocalDateTime.now());
 
         bookRepository.save(book);
+        log.info("Book with id {},has new owner with id {}", book.getId(), newOwner.getId());
     }
 
     @Transactional(readOnly = true)
     public List<BookDto> searchByTitle(String query) {
-        List<Book> books = bookRepository.findByTitleStartingWith(query);
-
-        if (books.isEmpty()) {
-            log.info("No books were found");
-            return Collections.emptyList();
-        }
-        log.info("It was found {} books",books.size());
-        return books.stream()
+        return bookRepository
+                .findByTitleStartingWith(query)
+                .stream()
                 .map(bookMapper::bookToBookDto)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExistUser(Long id) {
+        return bookRepository.existsById(id);
     }
 }
