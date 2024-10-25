@@ -29,7 +29,7 @@ public class BookController {
             method = RequestMethod.GET,
             value = "/books",
             produces = {"application/json"})
-    public ResponseEntity<List<BookDto>> bookList(
+    public ResponseEntity<List<BookDto>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") boolean isSorted) {
@@ -68,7 +68,7 @@ public class BookController {
             consumes = {"application/json"}
     )
     public ResponseEntity<Void> updateBook(@Valid @RequestBody BookDto bookDto) {
-        if (!bookService.isExistUser(bookDto.getId())) {
+        if (!bookService.isExistBook(bookDto.getId())) {
             throw new ResourceNotFoundException("Book", bookDto.getId());
         }
         bookService.editBook(bookDto);
@@ -80,7 +80,7 @@ public class BookController {
             value = "/books/{id}"
     )
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
-        if (!bookService.isExistUser(id)) {
+        if (!bookService.isExistBook(id)) {
             throw new ResourceNotFoundException("Book", id);
         }
         bookService.deleteBook(id);

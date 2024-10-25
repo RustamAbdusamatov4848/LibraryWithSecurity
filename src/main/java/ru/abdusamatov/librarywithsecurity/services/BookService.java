@@ -100,7 +100,7 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public boolean isExistUser(Long id) {
+    public boolean isExistBook(Long id) {
         return bookRepository.existsById(id);
     }
 }

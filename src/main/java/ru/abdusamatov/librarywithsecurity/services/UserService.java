@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
@@ -28,7 +29,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserDto> getUserByID(Long id) {
+    public Optional<UserDto> getUserById(Long id) {
         return userRepository
                 .findById(id)
                 .map(userMapper::userToDto);
@@ -43,7 +44,11 @@ public class UserService {
     }
 
     @Transactional
-    public void editPerson(UserDto userDto) {
+    public void updateUser(UserDto userDto) {
+        Long id = userDto.getId();
+        if (!isExistUser(id)) {
+            throw new ResourceNotFoundException("User", id);
+        }
         userRepository
                 .findById(userDto.getId())
                 .map(user -> userMapper.updateUserFromDto(userDto, user))
@@ -53,7 +58,16 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserByID(Long id) {
+    public void deleteUserById(Long id) {
+        if (!isExistUser(id)) {
+            throw new ResourceNotFoundException("User", id);
+        }
+        userRepository.deleteById(id);
         log.info("Delete user with ID: {}", id);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExistUser(Long id) {
+        return userRepository.existsById(id);
     }
 }
