@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "book")
+@Table(name = "book", schema = "library")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

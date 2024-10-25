@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user", schema = "library")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
