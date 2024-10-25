@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -29,26 +29,26 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "book_title")
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "book_author_name")
+    @Column(name = "author_name")
     private String authorName;
 
-    @Column(name = "book_author_surname")
+    @Column(name = "author_surname")
     private String authorSurname;
 
-    @Column(name = "book_year_of_publication")
+    @Column(name = "year_of_publication")
     private int yearOfPublication;
 
-    @Column(name = "book_taken_at")
+    @Column(name = "taken_at")
     private LocalDateTime takenAt;
 
     @ManyToOne
-    @JoinColumn(name = "book_owner_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
     @Transient

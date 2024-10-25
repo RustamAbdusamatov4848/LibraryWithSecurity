@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -29,16 +29,16 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_full_name")
+    @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "user_email", unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "user_date_of_birth")
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @OneToMany(

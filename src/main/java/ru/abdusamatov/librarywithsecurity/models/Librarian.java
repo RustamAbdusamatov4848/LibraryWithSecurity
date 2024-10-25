@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "librarians")
+@Table(name = "librarian")
 @NoArgsConstructor
 @Setter
 @Getter
@@ -28,16 +28,16 @@ public class Librarian implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "librarian_id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "librarian_full_name")
+    @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "librarian_email", unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "librarian_password", length = 1000)
+    @Column(name = "password", length = 1000)
     private String password;
 
     @Override
