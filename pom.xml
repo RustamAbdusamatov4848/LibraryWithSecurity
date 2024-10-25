@@ -17,6 +17,10 @@
     <description>LibraryWithSecurity</description>
 
     <properties>
+        <checkstyle.dir>/checkstyle</checkstyle.dir>
+        <checkstyle.plugin.version>3.4.0</checkstyle.plugin.version>
+        <checkstyle.dependency.version>10.17.0</checkstyle.dependency.version>
+        <checkstyle.config.path>/checkstyle/config</checkstyle.config.path>
         <java.version>17</java.version>
         <flyway-version>10.20.0</flyway-version>
         <mapstruct.version>1.6.2</mapstruct.version>
@@ -138,6 +142,40 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.plugin.version}</version>
+                <configuration>
+
+                    <sourceDirectories>
+                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                        <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+                    </sourceDirectories>
+
+                    <configLocation>${checkstyle.dir}/checkstyle.xml</configLocation>
+                    <suppressionsLocation>${checkstyle.config.path}/checkstyle-suppressions.xml</suppressionsLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>true</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${checkstyle.dependency.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
