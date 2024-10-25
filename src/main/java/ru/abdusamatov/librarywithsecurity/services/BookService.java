@@ -53,7 +53,7 @@ public class BookService {
     @Transactional
     public void editBook(BookDto bookDto) {
         Long id = bookDto.getId();
-        if (!isBookExist(id)) {
+        if (isBookExist(id)) {
             throw new ResourceNotFoundException("Book", id);
         }
         bookRepository
@@ -65,7 +65,7 @@ public class BookService {
 
     @Transactional
     public void deleteBook(Long id) {
-        if (!isBookExist(id)) {
+        if (isBookExist(id)) {
             throw new ResourceNotFoundException("Book", id);
         }
         bookRepository.deleteById(id);
