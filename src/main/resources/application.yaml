@@ -20,6 +20,8 @@ spring:
 
   flyway:
     enabled: true
+    validate-on-migrate: true
+
 
   mvc:
     hiddenmethod:

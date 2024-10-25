@@ -2,7 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +21,9 @@ public class LibrarianRegistrationLoginController {
 
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/lib/registration",
-            consumes = {"application/json"}
+            value = "/lib/registration"
     )
-    public String createLibrarian(@ModelAttribute("librarian") LibrarianDto librarianDto, Model model) {
+    public String createLibrarian(@ModelAttribute("librarian") LibrarianDto librarianDto) {
         librarianService.createLibrarian(librarianDto);
         return "redirect:/users";
     }
