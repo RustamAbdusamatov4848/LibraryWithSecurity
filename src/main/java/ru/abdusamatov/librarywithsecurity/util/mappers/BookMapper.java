@@ -31,6 +31,13 @@ public interface BookMapper {
     @Mapping(source = "expired", target = "expired")
     Book bookDtoToBook(BookDto bookDto);
 
-    @Mapping(target = "id", ignore = true)
-    Book updateBookFromDto(BookDto userDto, @MappingTarget Book user);
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "authorName", target = "authorName")
+    @Mapping(source = "authorSurname", target = "authorSurname")
+    @Mapping(source = "yearOfPublication", target = "yearOfPublication")
+    @Mapping(source = "takenAt", target = "takenAt")
+    @Mapping(source = "userId", target = "owner.id")
+    @Mapping(source = "expired", target = "expired")
+    Book updateBookFromDto(BookDto bookDto, @MappingTarget Book book);
 }
