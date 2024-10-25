@@ -12,6 +12,19 @@ services:
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
 
+  flyway:
+    image: 'flyway/flyway:latest'
+    depends_on:
+      - db
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db:5432/library
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+    volumes:
+      - ./flyway/sql:/flyway/sql
+
+
   app:
     build:
       dockerfile: Dockerfile
