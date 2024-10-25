@@ -52,6 +52,10 @@ public class BookService {
 
     @Transactional
     public void editBook(BookDto bookDto) {
+        Long id = bookDto.getId();
+        if (!isBookExist(id)) {
+            throw new ResourceNotFoundException("Book", id);
+        }
         bookRepository
                 .findById(bookDto.getId())
                 .map(book -> bookMapper.updateBookFromDto(bookDto, book))
@@ -61,6 +65,9 @@ public class BookService {
 
     @Transactional
     public void deleteBook(Long id) {
+        if (!isBookExist(id)) {
+            throw new ResourceNotFoundException("Book", id);
+        }
         bookRepository.deleteById(id);
         log.info("Delete book with ID: {}", id);
     }
@@ -100,7 +107,7 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public boolean isExistBook(Long id) {
+    public boolean isBookExist(Long id) {
         return bookRepository.existsById(id);
     }
 }

@@ -68,9 +68,6 @@ public class BookController {
             consumes = {"application/json"}
     )
     public ResponseEntity<Void> updateBook(@Valid @RequestBody BookDto bookDto) {
-        if (!bookService.isExistBook(bookDto.getId())) {
-            throw new ResourceNotFoundException("Book", bookDto.getId());
-        }
         bookService.editBook(bookDto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -80,9 +77,6 @@ public class BookController {
             value = "/books/{id}"
     )
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
-        if (!bookService.isExistBook(id)) {
-            throw new ResourceNotFoundException("Book", id);
-        }
         bookService.deleteBook(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
