@@ -7,6 +7,11 @@ services:
       POSTGRES_DB: library
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} --quiet"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
     ports:
       - "5432:5432"
     volumes:
@@ -14,16 +19,18 @@ services:
 
   flyway:
     image: 'flyway/flyway:latest'
+    container_name: flyway
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      FLYWAY_URL: jdbc:postgresql://db:5432/library
+      FLYWAY_URL: ${DATASOURCE_URL}
       FLYWAY_USER: ${POSTGRES_USER}
       FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
       FLYWAY_LOCATIONS: filesystem:/flyway/sql
     volumes:
       - ./flyway/sql:/flyway/sql
-
+    command: -connectRetries=10 migrate
 
   app:
     build:
@@ -42,3 +49,6 @@ services:
     depends_on:
       - db
       - flyway
+
+volumes:
+  postgres_db_data:
