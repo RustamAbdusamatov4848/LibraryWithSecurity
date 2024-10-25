@@ -26,7 +26,8 @@ public class UserController {
     @RequestMapping(
             method = RequestMethod.GET,
             value = "/users",
-            produces = {"application/json"})
+            produces = {"application/json"}
+    )
     public ResponseEntity<List<UserDto>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size) {
