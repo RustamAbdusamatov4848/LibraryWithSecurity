@@ -2,16 +2,15 @@ package ru.abdusamatov.librarywithsecurity.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.abdusamatov.librarywithsecurity.models.Book;
+import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
+import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,55 +18,42 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public List<User> getUserList() {
-        return userRepository.findAll();
+    public Page<UserDto> getUserList(Pageable pageable) {
+        return userRepository
+                .findAll(pageable)
+                .map(userMapper::userToDto);
     }
 
-    public User getUserByID(Long ID) {
-        return userRepository.findById(ID).orElse(null);
-    }
-
-    public Optional<User> getUserByFullname(String fullname) {
-        return userRepository.findByFullName(fullname);
-    }
-
-    public List<Book> getBooksByPersonID(Long ID) {
-        Optional<User> user = userRepository.findById(ID);
-
-        if (user.isPresent()) {
-            Hibernate.initialize(user.get().getBooks());
-
-            user.get().getBooks().forEach(book -> {
-                long holdingTime = Math.abs(book.getTakenAt().getTime() - new Date().getTime());
-                if (holdingTime > 864000000) {
-                    book.setExpired(true);
-                }
-            });
-            return user.get().getBooks();
-        } else {
-            return Collections.emptyList();
-        }
+    @Transactional(readOnly = true)
+    public Optional<UserDto> getUserByID(Long id) {
+        return userRepository
+                .findById(id)
+                .map(userMapper::userToDto);
     }
 
     @Transactional
-    public boolean createUser(User user) {
-        String userEmail = user.getEmail();
-        if (userRepository.findByEmail(userEmail) != null) return false;
-        log.info("Saving new User with email: {}", userEmail);
-        userRepository.save(user);
-        return true;
+    public UserDto createUser(UserDto userDto) {
+        User createdUser = userRepository
+                .save(userMapper.dtoToUser(userDto));
+        log.info("Saving new User with ID: {}", createdUser.getId());
+        return userMapper.userToDto(createdUser);
     }
 
     @Transactional
-    public void editPerson(User user, Long ID) {
-        user.setId(ID);
-        userRepository.save(user);
+    public void editPerson(UserDto userDto) {
+        userRepository
+                .findById(userDto.getId())
+                .map(user -> userMapper.updateUserFromDto(userDto, user))
+                .map(userRepository::save);
+        log.info("Update user with ID: {}", userDto.getId());
+
     }
 
     @Transactional
-    public void deleteUserByID(Long ID) {
-        userRepository.deleteById(ID);
+    public void deleteUserByID(Long id) {
+        log.info("Delete user with ID: {}", id);
     }
 }

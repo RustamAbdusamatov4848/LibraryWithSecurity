@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS library.book
     author_name         VARCHAR(30)  NOT NULL CHECK (LENGTH(author_name) BETWEEN 2 AND 30),
     author_surname      VARCHAR(30)  NOT NULL CHECK (LENGTH(author_surname) BETWEEN 2 AND 30),
     year_of_publication INTEGER      NOT NULL CHECK (year_of_publication >= 1500),
-    taken_at            TIMESTAMP    NOT NULL,
-    owner_id            BIGINT REFERENCES library.user (id)
+    taken_at            TIMESTAMP    NOT NULL default now(),
+    owner_id            BIGINT REFERENCES library.user (id) default null
 );
 
 CREATE TABLE IF NOT EXISTS library.librarian

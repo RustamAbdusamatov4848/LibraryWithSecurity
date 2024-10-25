@@ -94,8 +94,10 @@ public class BookService {
         List<Book> books = bookRepository.findByTitleStartingWith(query);
 
         if (books.isEmpty()) {
+            log.info("No books were found");
             return Collections.emptyList();
         }
+        log.info("It was found {} books",books.size());
         return books.stream()
                 .map(bookMapper::bookToBookDto)
                 .toList();
