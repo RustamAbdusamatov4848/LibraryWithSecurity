@@ -4,10 +4,10 @@ spring:
 
   # Database settings
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/library
-    username: postgres
-    password: postgres
+    driver-class-name: ${DATASOURCE_DRIVER}
+    url: ${DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
   # Hibernate settings
   jpa:
