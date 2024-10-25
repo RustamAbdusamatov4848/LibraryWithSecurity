@@ -1,21 +1,21 @@
 package ru.abdusamatov.librarywithsecurity.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class LibrarianRegistrationLoginController {
     private final LibrarianService librarianService;
 
-    @GetMapping("lib/registration")
+    @GetMapping("/lib/registration")
     public String registration(@ModelAttribute("librarian") LibrarianDto librarianDto) {
         return "librarians/auth/registration";
     }
