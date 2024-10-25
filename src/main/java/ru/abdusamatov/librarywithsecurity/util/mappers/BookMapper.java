@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.util.mappers;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.models.Book;
 
@@ -29,4 +30,7 @@ public interface BookMapper {
     @Mapping(source = "userId", target = "owner.id")
     @Mapping(source = "expired", target = "expired")
     Book bookDtoToBook(BookDto bookDto);
+
+    @Mapping(target = "id", ignore = true)
+    Book updateBookFromDto(BookDto userDto, @MappingTarget Book user);
 }
