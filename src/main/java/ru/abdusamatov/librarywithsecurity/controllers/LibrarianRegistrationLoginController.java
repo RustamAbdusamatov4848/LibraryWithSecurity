@@ -1,32 +1,33 @@
 package ru.abdusamatov.librarywithsecurity.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import ru.abdusamatov.librarywithsecurity.models.Librarian;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class LibrarianRegistrationLoginController {
     private final LibrarianService librarianService;
 
-    @GetMapping("/registration")
-    public String registration(@ModelAttribute("librarian") Librarian librarian) {
+    @GetMapping("lib/registration")
+    public String registration(@ModelAttribute("librarian") LibrarianDto librarianDto) {
         return "librarians/auth/registration";
     }
 
-    @PostMapping("/registration")
-    public String createLibrarian(@ModelAttribute("librarian") Librarian librarian, Model model) {
-        if (!librarianService.createLibrarian(librarian)) {
-            model.addAttribute("errorEmail",
-                    "Librarian with email: " + librarian.getEmail() + " already exists!");
-            return "librarians/auth/registration";
-        }
-        return "redirect:/user";
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/lib/registration",
+            consumes = {"application/json"}
+    )
+    public String createLibrarian(@ModelAttribute("librarian") LibrarianDto librarianDto, Model model) {
+        librarianService.createLibrarian(librarianDto);
+        return "redirect:/users";
     }
 
     @GetMapping("/login")

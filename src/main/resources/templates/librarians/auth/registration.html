@@ -6,7 +6,7 @@
     </head>
 
     <body>
-        <form th:method="POST" th:action="@{/registration}" th:object="${librarian}">
+        <form th:method="POST" th:action="@{/lib/registration}" th:object="${librarian}">
             <label for="fullName">Enter full name: </label>
             <input type="text" th:field="*{fullName}" id="fullName"/>
             <div style="color: red" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Full name error</div>
