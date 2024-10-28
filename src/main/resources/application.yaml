@@ -9,6 +9,11 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
+
+  # Flyway settings
+  flyway:
+    enabled: true
+
   # Hibernate settings
   jpa:
     properties:

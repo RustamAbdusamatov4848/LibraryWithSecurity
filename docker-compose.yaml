@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} --quiet"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} --quiet" ]
       interval: 1s
       timeout: 5s
       retries: 10
@@ -17,39 +17,23 @@ services:
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
 
-  flyway:
-    image: 'flyway/flyway:latest'
-    container_name: flyway
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      FLYWAY_URL: ${DATASOURCE_URL}
-      FLYWAY_USER: ${POSTGRES_USER}
-      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
-      FLYWAY_LOCATIONS: filesystem:/flyway/sql
-    volumes:
-      - ./flyway/sql:/flyway/sql
-    command:
-      - migrate
-
   app:
     build:
       dockerfile: Dockerfile
       context: .
     restart: always
     container_name: lib-app
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       DATASOURCE_URL: ${DATASOURCE_URL}
       DATASOURCE_DRIVER: ${DATASOURCE_DRIVER}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "8080:8080"
+      - "8081:8080"
       - "8443:8443"
-    depends_on:
-      - db
-      - flyway
 
 volumes:
   postgres_db_data:
