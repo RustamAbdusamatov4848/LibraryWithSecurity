@@ -17,7 +17,7 @@ public class CustomLibrarianDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Librarian librarian = repository.findByEmail(email);
         if (librarian == null) {
-            throw new UsernameNotFoundException("Librarian not found with email: " + email);
+            throw new UsernameNotFoundException("Librarian wasn't found with email: " + email);
         }
         return librarian;
     }

@@ -15,14 +15,14 @@ CREATE TABLE IF NOT EXISTS library.book
     author_name         VARCHAR(30)  NOT NULL CHECK (LENGTH(author_name) BETWEEN 2 AND 30),
     author_surname      VARCHAR(30)  NOT NULL CHECK (LENGTH(author_surname) BETWEEN 2 AND 30),
     year_of_publication INTEGER      NOT NULL CHECK (year_of_publication >= 1500),
-    taken_at            TIMESTAMP    NOT NULL default now(),
+    taken_at            TIMESTAMP    NOT NULL               default now(),
     owner_id            BIGINT REFERENCES library.user (id) default null
 );
 
 CREATE TABLE IF NOT EXISTS library.librarian
 (
     id        BIGSERIAL PRIMARY KEY,
-    full_name VARCHAR(30)   NOT NULL CHECK (LENGTH(full_name) BETWEEN 2 AND 30),
+    full_name VARCHAR(30)  NOT NULL CHECK (LENGTH(full_name) BETWEEN 2 AND 30),
     email     VARCHAR(255) UNIQUE,
     password  VARCHAR(100) NOT NULL
 );
