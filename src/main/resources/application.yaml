@@ -18,9 +18,6 @@ spring:
     hibernate:
       ddl-auto: validate
 
-  flyway:
-    enabled: false
-
   mvc:
     hiddenmethod:
       filter:
