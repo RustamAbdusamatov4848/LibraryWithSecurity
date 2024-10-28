@@ -30,7 +30,8 @@ services:
       FLYWAY_LOCATIONS: filesystem:/flyway/sql
     volumes:
       - ./flyway/sql:/flyway/sql
-    command: -connectRetries=10 migrate
+    command:
+      - migrate
 
   app:
     build:
