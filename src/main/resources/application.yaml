@@ -23,6 +23,7 @@ spring:
     hibernate:
       ddl-auto: validate
 
+  #Mvc settings
   mvc:
     hiddenmethod:
       filter:
