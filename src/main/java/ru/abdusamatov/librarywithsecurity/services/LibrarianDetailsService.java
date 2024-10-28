@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 
 @Service
@@ -15,10 +14,8 @@ public class LibrarianDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Librarian librarian = repository.findByEmail(email);
-        if (librarian == null) {
-            throw new UsernameNotFoundException("Librarian wasn't found with email: " + email);
-        }
-        return librarian;
+        return repository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Librarian with email: " + email + "wasn't found"));
     }
 }
