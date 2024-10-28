@@ -27,7 +27,7 @@ public class LibrarianRegistrationLoginController {
     )
     public String createLibrarian(@ModelAttribute("librarian") LibrarianDto librarianDto) {
         librarianService.createLibrarian(librarianDto);
-        return "index";
+        return "redirect:/login";
     }
 
     @RequestMapping(
