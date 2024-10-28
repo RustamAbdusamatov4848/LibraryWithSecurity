@@ -54,7 +54,7 @@ public class BookService {
     public void editBook(BookDto bookDto) {
         Long id = bookDto.getId();
         if (isBookExist(id)) {
-            throw new ResourceNotFoundException("Book", id);
+            throw new ResourceNotFoundException("Book", "ID", id);
         }
         bookRepository
                 .findById(bookDto.getId())
@@ -66,7 +66,7 @@ public class BookService {
     @Transactional
     public void deleteBook(Long id) {
         if (isBookExist(id)) {
-            throw new ResourceNotFoundException("Book", id);
+            throw new ResourceNotFoundException("Book", "ID", id);
         }
         bookRepository.deleteById(id);
         log.info("Delete book with ID: {}", id);
@@ -75,7 +75,7 @@ public class BookService {
     @Transactional
     public void releaseBook(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
         book.setOwner(null);
         book.setTakenAt(null);
@@ -87,7 +87,7 @@ public class BookService {
     @Transactional
     public void assignBook(Long bookId, UserDto userDto) {
         Book book = bookRepository
-                .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", bookId));
+                .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookId));
 
         User newOwner = userMapper.dtoToUser(userDto);
         book.setOwner(newOwner);

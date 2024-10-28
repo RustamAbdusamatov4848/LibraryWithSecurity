@@ -45,7 +45,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long id) {
         return userService.getUserById(id)
                 .map(userDto -> new ResponseEntity<>(userDto, HttpStatus.OK))
-                .orElseThrow(() -> new ResourceNotFoundException("User", id));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
     }
 
 

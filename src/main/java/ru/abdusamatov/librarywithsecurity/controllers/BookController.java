@@ -48,7 +48,7 @@ public class BookController {
     public ResponseEntity<BookDto> showBookById(@PathVariable("id") Long id) {
         return bookService.getBookById(id)
                 .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
-                .orElseThrow(() -> new ResourceNotFoundException("Book", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
     }
 
     @RequestMapping(

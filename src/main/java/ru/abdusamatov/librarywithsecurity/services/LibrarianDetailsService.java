@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 
 @Service
 @RequiredArgsConstructor
-public class CustomLibrarianDetailsService implements UserDetailsService {
+public class LibrarianDetailsService implements UserDetailsService {
     private final LibrarianRepository repository;
 
     @Override

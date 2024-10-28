@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 
 @Controller
 @RequiredArgsConstructor
-public class LibrarianRegistrationLoginController {
+public class AuthController {
     private final LibrarianService librarianService;
 
     @RequestMapping(
