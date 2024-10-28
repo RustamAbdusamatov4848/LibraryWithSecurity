@@ -45,19 +45,9 @@ To start the application, use Docker Compose. This will build the necessary cont
 bash docker-compose up 
 ``` 
 
-### Migrating the Database Flyway will automatically run the migrations when the application starts. If you need to manually trigger a migration or repair the schema history, you can do so by running: 
-
-```
-bash docker-compose run --rm flyway migrate docker-compose run --rm flyway repair 
-``` 
-
 ### Accessing the Application 
 
 Once the application is up and running, you can access it at `http://localhost:8080`. You can test the API endpoints or interact with the web interface (if implemented). 
-
-### Stopping the Application 
-
-To stop the application and remove the containers, you can run: ```bash docker-compose down ``` 
 
 
 You are now ready to start using Web-Library!
@@ -89,10 +79,10 @@ The Web-Library project uses the following technologies and libraries:
 ## Usage
 The librarian has the ability to:
 
-1. Librarian authorization and registration
-2. View reader list
+1. Librarian authorization and registration;
+2. View reader list;
 3. Add/Edit and remove reader from the database;
 4. View book list;
 5. Add / Edit and delete books from the database;
-6. Give out books to a certain reader, or after the reader returned the book back to the library, mark it in the database.
-7. Search books. I plan to add a reader search function in the future.
+6. Give out books to a certain reader, or after the reader returned the book back to the library, mark it in the database;
+7. Search books;
