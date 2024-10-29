@@ -22,9 +22,3 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: validate
-
-  #Mvc settings
-  mvc:
-    hiddenmethod:
-      filter:
-        enabled: true
