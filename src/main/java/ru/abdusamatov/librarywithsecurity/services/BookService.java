@@ -4,7 +4,9 @@ package ru.abdusamatov.librarywithsecurity.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
@@ -18,7 +20,6 @@ import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,18 +30,20 @@ public class BookService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public Page<BookDto> getBookList(Pageable pageable) {
+    public List<BookDto> getBookList(Integer page, Integer size, boolean isSorted) {
+        Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Book> books = bookRepository.findAll(pageable);
-        return books.map(bookMapper::bookToBookDto);
+        return books.map(bookMapper::bookToBookDto).getContent();
     }
 
     @Transactional(readOnly = true)
-    public Optional<BookDto> getBookById(Long id) {
+    public BookDto getBookById(Long id) {
         return bookRepository
                 .findById(id)
-                .map(bookMapper::bookToBookDto);
+                .map(bookMapper::bookToBookDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
     }
-
 
     @Transactional
     public BookDto createBook(BookDto bookDto) {

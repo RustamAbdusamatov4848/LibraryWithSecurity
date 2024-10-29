@@ -2,9 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
 
 import java.util.List;
@@ -34,10 +30,7 @@ public class BookController {
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") boolean isSorted) {
 
-        Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
-        Pageable pageable = PageRequest.of(page, size, sort);
-        List<BookDto> bookDtoList = bookService.getBookList(pageable).getContent();
-        return ResponseEntity.ok(bookDtoList);
+        return ResponseEntity.ok(bookService.getBookList(page, size, isSorted));
     }
 
     @RequestMapping(
@@ -46,9 +39,7 @@ public class BookController {
             produces = {"application/json"}
     )
     public ResponseEntity<BookDto> showBookById(@PathVariable("id") Long id) {
-        return bookService.getBookById(id)
-                .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
-                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
+        return ResponseEntity.ok(bookService.getBookById(id));
     }
 
     @RequestMapping(
@@ -58,8 +49,7 @@ public class BookController {
             consumes = {"application/json"}
     )
     public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
-        BookDto createdBook = bookService.createBook(bookDto);
-        return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(bookDto), HttpStatus.CREATED);
     }
 
     @RequestMapping(
@@ -106,7 +96,6 @@ public class BookController {
             produces = {"application/json"}
     )
     public ResponseEntity<List<BookDto>> searchBooks(@RequestParam(value = "query") String query) {
-        List<BookDto> bookDtoList = bookService.searchByTitle(query);
-        return ResponseEntity.ok(bookDtoList);
+        return ResponseEntity.ok(bookService.searchByTitle(query));
     }
 }

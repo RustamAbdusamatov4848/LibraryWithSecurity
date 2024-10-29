@@ -2,8 +2,7 @@ package ru.abdusamatov.librarywithsecurity.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
@@ -12,7 +11,7 @@ import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -22,17 +21,19 @@ public class UserService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public Page<UserDto> getUserList(Pageable pageable) {
+    public List<UserDto> getUserList(Integer page, Integer size) {
         return userRepository
-                .findAll(pageable)
-                .map(userMapper::userToDto);
+                .findAll(PageRequest.of(page, size))
+                .map(userMapper::userToDto)
+                .getContent();
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserDto> getUserById(Long id) {
+    public UserDto getUserById(Long id) {
         return userRepository
                 .findById(id)
-                .map(userMapper::userToDto);
+                .map(userMapper::userToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
     }
 
     @Transactional
