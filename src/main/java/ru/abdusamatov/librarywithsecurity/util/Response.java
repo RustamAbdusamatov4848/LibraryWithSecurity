@@ -1,7 +1,7 @@
 package ru.abdusamatov.librarywithsecurity.util;
 
 public class Response<T> {
-    private ApiResponseStatus status;
+    private final ApiResponseStatus status;
     private T responseBody;
 
     public Response(ApiResponseStatus status) {
