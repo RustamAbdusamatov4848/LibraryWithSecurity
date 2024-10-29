@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.controllers.handlers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,5 +39,17 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("Failed entity search", errors);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler (AuthenticationException.class)
+    public ResponseEntity<Object> handleInvalidAuthCredentials(AuthenticationException ex) {
+        log.error("Failed authorization: {}", ex.getMessage(), ex);
+        String message = ex.getMessage();
+        Map<String, String> errors = new HashMap<>();
+        errors.put("cause", message);
+
+        ErrorResponse errorResponse = new ErrorResponse("Failed authorization", errors);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 }
