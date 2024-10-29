@@ -12,7 +12,7 @@ public interface LibrarianMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "fullName", target = "fullName")
     @Mapping(source = "email", target = "email")
-    @Mapping(source = "password", target = "password")
+    @Mapping(target = "password", ignore = true)
     LibrarianDto librarianToLibrarianDto(Librarian librarian);
 
     @BeanMapping(ignoreByDefault = true)

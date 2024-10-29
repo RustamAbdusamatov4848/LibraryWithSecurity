@@ -1,5 +1,8 @@
 package ru.abdusamatov.librarywithsecurity.util;
 
+import lombok.Data;
+
+@Data
 public class Response<T> {
     private final ApiResponseStatus status;
     private T responseBody;

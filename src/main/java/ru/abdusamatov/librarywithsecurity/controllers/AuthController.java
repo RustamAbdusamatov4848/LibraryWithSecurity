@@ -4,23 +4,25 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class AuthController {
     private final LibrarianService librarianService;
 
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/lib/registration"
+            value = "/lib/registration",
+            consumes = "application/json",
+            produces = "application/json"
     )
     public ResponseEntity<ApiResponse> createLibrarian(@Valid @RequestBody LibrarianDto librarianDto) {
         return new ResponseEntity<>(librarianService.createLibrarian(librarianDto), HttpStatus.CREATED);
@@ -28,7 +30,9 @@ public class AuthController {
 
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "lib/login"
+            value = "/lib/login",
+            consumes = "application/json",
+            produces = "application/json"
     )
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody AuthenticationDto authenticationDto) {
         return new ResponseEntity<>(librarianService.validateLibrarian(authenticationDto), HttpStatus.OK);

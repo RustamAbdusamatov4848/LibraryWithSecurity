@@ -1,5 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -18,6 +19,7 @@ import static ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "password")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LibrarianDto {
 
     private Long id;
@@ -30,7 +32,7 @@ public class LibrarianDto {
     @Email(regexp = EMAIL_REGEX, message = "Invalid email address")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password should not be empty")
     @Size(max = 100, message = "Password should be equals or less than 100 characters long")
     private String password;
 

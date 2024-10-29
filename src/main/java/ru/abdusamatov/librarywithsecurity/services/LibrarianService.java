@@ -28,7 +28,7 @@ public class LibrarianService {
     private final LibrarianRepository librarianRepository;
     private final PasswordEncoder passwordEncoder;
     private final LibrarianMapper librarianMapper;
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public ApiResponse createLibrarian(LibrarianDto librarianDto) {
