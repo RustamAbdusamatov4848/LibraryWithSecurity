@@ -47,7 +47,7 @@ public class UserService {
     @Transactional
     public void updateUser(UserDto userDto) {
         Long id = userDto.getId();
-        if (isUserExist(id)) {
+        if (!isUserExist(id)) {
             throw new ResourceNotFoundException("User", "ID", id);
         }
         userRepository
@@ -60,7 +60,7 @@ public class UserService {
 
     @Transactional
     public void deleteUserById(Long id) {
-        if (isUserExist(id)) {
+        if (!isUserExist(id)) {
             throw new ResourceNotFoundException("User", "ID", id);
         }
         userRepository.deleteById(id);
