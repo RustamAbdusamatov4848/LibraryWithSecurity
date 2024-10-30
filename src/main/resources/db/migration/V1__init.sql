@@ -1,9 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS library;
 
-CREATE SEQUENCE library.user_id_seq START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE library.book_id_seq START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE library.librarian_id_seq START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE library.user
 (
     id            BIGSERIAL PRIMARY KEY,

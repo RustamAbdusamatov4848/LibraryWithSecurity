@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,11 +24,10 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@SequenceGenerator(name = "book_seq", sequenceName = "library.book_id_seq", allocationSize = 1)
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -49,7 +47,7 @@ public class Book {
     private LocalDateTime takenAt;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = true)
     private User owner;
 
 

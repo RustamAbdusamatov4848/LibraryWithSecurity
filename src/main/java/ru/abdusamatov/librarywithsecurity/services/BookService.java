@@ -55,8 +55,11 @@ public class BookService {
 
     @Transactional
     public ApiResponse<BookDto> createBook(BookDto bookDto) {
+        Book book = bookMapper.bookDtoToBook(bookDto);
+        book.setOwner(null);
+
         Book savedBook = bookRepository
-                .save(bookMapper.bookDtoToBook(bookDto));
+                .save(book);
 
         log.info("Save book with ID: {}", savedBook.getId());
         Response<BookDto> response = new Response<>(ApiResponseStatus.SUCCESS, bookMapper.bookToBookDto(savedBook));
