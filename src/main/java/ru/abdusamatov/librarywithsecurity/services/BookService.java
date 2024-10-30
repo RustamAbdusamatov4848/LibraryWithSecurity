@@ -3,7 +3,6 @@ package ru.abdusamatov.librarywithsecurity.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,6 +14,9 @@ import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.Book;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
+import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
+import ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus;
+import ru.abdusamatov.librarywithsecurity.util.Response;
 import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
@@ -30,31 +32,39 @@ public class BookService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public List<BookDto> getBookList(Integer page, Integer size, boolean isSorted) {
+    public ApiResponse<List<BookDto>> getBookList(Integer page, Integer size, boolean isSorted) {
         Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Book> books = bookRepository.findAll(pageable);
-        return books.map(bookMapper::bookToBookDto).getContent();
+        List<BookDto> bookDtoList = bookRepository.findAll(pageable)
+                .map(bookMapper::bookToBookDto)
+                .getContent();
+        Response<List<BookDto>> response = new Response<>(ApiResponseStatus.SUCCESS, bookDtoList);
+        return new ApiResponse<>("List of books", response);
     }
 
     @Transactional(readOnly = true)
-    public BookDto getBookById(Long id) {
-        return bookRepository
+    public ApiResponse<BookDto> getBookById(Long id) {
+        BookDto foundBook = bookRepository
                 .findById(id)
                 .map(bookMapper::bookToBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
+
+        Response<BookDto> response = new Response<>(ApiResponseStatus.SUCCESS, foundBook);
+        return new ApiResponse<>("Book successfully found", response);
     }
 
     @Transactional
-    public BookDto createBook(BookDto bookDto) {
+    public ApiResponse<BookDto> createBook(BookDto bookDto) {
         Book savedBook = bookRepository
                 .save(bookMapper.bookDtoToBook(bookDto));
+
         log.info("Save book with ID: {}", savedBook.getId());
-        return bookMapper.bookToBookDto(savedBook);
+        Response<BookDto> response = new Response<>(ApiResponseStatus.SUCCESS, bookMapper.bookToBookDto(savedBook));
+        return new ApiResponse<>("Book successfully saved", response);
     }
 
     @Transactional
-    public void editBook(BookDto bookDto) {
+    public ApiResponse<String> editBook(BookDto bookDto) {
         Long id = bookDto.getId();
         if (!isBookExist(id)) {
             throw new ResourceNotFoundException("Book", "ID", id);
@@ -64,19 +74,23 @@ public class BookService {
                 .map(book -> bookMapper.updateBookFromDto(bookDto, book))
                 .map(bookRepository::save);
         log.info("Update book with ID: {}", bookDto.getId());
+        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully updated");
+        return new ApiResponse<>(" Successfully updated", response);
     }
 
     @Transactional
-    public void deleteBook(Long id) {
+    public ApiResponse<String> deleteBook(Long id) {
         if (!isBookExist(id)) {
             throw new ResourceNotFoundException("Book", "ID", id);
         }
         bookRepository.deleteById(id);
         log.info("Delete book with ID: {}", id);
+        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully deleted");
+        return new ApiResponse<>(" Successfully deleted", response);
     }
 
     @Transactional
-    public void releaseBook(Long id) {
+    public ApiResponse<String> releaseBook(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
@@ -85,28 +99,37 @@ public class BookService {
         book.setExpired(false);
 
         bookRepository.save(book);
+
+        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully released");
+        return new ApiResponse<>(" Successfully released", response);
     }
 
     @Transactional
-    public void assignBook(Long bookId, UserDto userDto) {
+    public ApiResponse<String> assignBook(Long bookId, UserDto userDto) {
         Book book = bookRepository
                 .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookId));
 
         User newOwner = userMapper.dtoToUser(userDto);
         book.setOwner(newOwner);
         book.setTakenAt(LocalDateTime.now());
-
         bookRepository.save(book);
+
         log.info("Book with id {},has new owner with id {}", book.getId(), newOwner.getId());
+
+        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully assigned");
+        return new ApiResponse<>(" Successfully assigned", response);
     }
 
     @Transactional(readOnly = true)
-    public List<BookDto> searchByTitle(String query) {
-        return bookRepository
-                .findByTitleStartingWith(query)
+    public ApiResponse<List<BookDto>> searchByTitle(String title) {
+        List<BookDto> bookDtoList = bookRepository
+                .findByTitleStartingWith(title)
                 .stream()
                 .map(bookMapper::bookToBookDto)
                 .toList();
+
+        Response<List<BookDto>> response = new Response<>(ApiResponseStatus.SUCCESS, bookDtoList);
+        return new ApiResponse<>(String.format("Found books with title %s", title), response);
     }
 
     @Transactional(readOnly = true)

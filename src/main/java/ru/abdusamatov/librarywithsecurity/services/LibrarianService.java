@@ -50,11 +50,12 @@ public class LibrarianService {
     }
 
     public ApiResponse<String> validateLibrarian(AuthenticationDto authenticationDto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationDto.getEmail(), authenticationDto.getPassword()));
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                        authenticationDto.getEmail(), authenticationDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS);
+        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Authentication successful");
 
         return new ApiResponse<>("Successful validation", response);
     }
