@@ -24,7 +24,7 @@ public class AuthController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ResponseEntity<ApiResponse> createLibrarian(@Valid @RequestBody LibrarianDto librarianDto) {
+    public ResponseEntity<ApiResponse<LibrarianDto>> createLibrarian(@Valid @RequestBody LibrarianDto librarianDto) {
         return new ResponseEntity<>(librarianService.createLibrarian(librarianDto), HttpStatus.CREATED);
     }
 
@@ -34,7 +34,7 @@ public class AuthController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ResponseEntity<ApiResponse> login(@Valid @RequestBody AuthenticationDto authenticationDto) {
+    public ResponseEntity<ApiResponse<String>> login(@Valid @RequestBody AuthenticationDto authenticationDto) {
         return new ResponseEntity<>(librarianService.validateLibrarian(authenticationDto), HttpStatus.OK);
     }
 }

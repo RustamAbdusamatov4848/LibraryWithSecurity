@@ -11,15 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
-import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
+import ru.abdusamatov.librarywithsecurity.exceptions.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
 import ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus;
 import ru.abdusamatov.librarywithsecurity.util.Response;
 import ru.abdusamatov.librarywithsecurity.util.mappers.LibrarianMapper;
-
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -31,14 +29,8 @@ public class LibrarianService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public ApiResponse createLibrarian(LibrarianDto librarianDto) {
-
-        if (librarianRepository.existsByEmail(librarianDto.getEmail())) {
-            ErrorResponse errorResponse = new ErrorResponse("Email is already taken",
-                    Map.of("cause", librarianDto.getEmail()));
-            Response<ErrorResponse> response = new Response<>(ApiResponseStatus.ERROR, errorResponse);
-            return new ApiResponse("Email error", response);
-        }
+    public ApiResponse<LibrarianDto> createLibrarian(LibrarianDto librarianDto) {
+        isEmailAlreadyExist(librarianDto);
 
         Librarian librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
         librarianFromDto.setPassword(passwordEncoder.encode(librarianDto.getPassword()));
@@ -46,16 +38,24 @@ public class LibrarianService {
         log.info("Saving new Librarian with ID: {}", savedLibrarian.getId());
         Response<LibrarianDto> response =
                 new Response<>(ApiResponseStatus.SUCCESS, librarianMapper.librarianToLibrarianDto(savedLibrarian));
-        return new ApiResponse("Librarian was created", response);
+
+        return new ApiResponse<>("Librarian was created", response);
     }
 
-    public ApiResponse validateLibrarian(AuthenticationDto authenticationDto) {
+    @Transactional(readOnly = true)
+    public void isEmailAlreadyExist(LibrarianDto librarianDto) {
+        if (librarianRepository.existsByEmail(librarianDto.getEmail())) {
+            throw new ExistEmailException("Invalid email", librarianDto.getEmail());
+        }
+    }
+
+    public ApiResponse<String> validateLibrarian(AuthenticationDto authenticationDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationDto.getEmail(), authenticationDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Response<String> response = new Response<>(ApiResponseStatus.SUCCESS);
 
-        return new ApiResponse("Successful validation", response);
+        return new ApiResponse<>("Successful validation", response);
     }
 }
