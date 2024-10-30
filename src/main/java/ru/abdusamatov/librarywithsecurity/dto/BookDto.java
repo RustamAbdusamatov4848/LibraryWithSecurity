@@ -40,8 +40,6 @@ public class BookDto {
 
     private Long userId;
 
-    private boolean expired;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

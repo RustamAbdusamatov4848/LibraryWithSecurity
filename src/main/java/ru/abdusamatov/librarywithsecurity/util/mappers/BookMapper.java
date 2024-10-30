@@ -17,7 +17,6 @@ public interface BookMapper {
     @Mapping(source = "yearOfPublication", target = "yearOfPublication")
     @Mapping(source = "takenAt", target = "takenAt")
     @Mapping(source = "owner.id", target = "userId")
-    @Mapping(source = "expired", target = "expired")
     BookDto bookToBookDto(Book book);
 
     @BeanMapping(ignoreByDefault = true)
@@ -28,7 +27,6 @@ public interface BookMapper {
     @Mapping(source = "yearOfPublication", target = "yearOfPublication")
     @Mapping(source = "takenAt", target = "takenAt")
     @Mapping(source = "userId", target = "owner.id")
-    @Mapping(source = "expired", target = "expired")
     Book bookDtoToBook(BookDto bookDto);
 
     @BeanMapping(ignoreByDefault = true)
@@ -38,6 +36,5 @@ public interface BookMapper {
     @Mapping(source = "yearOfPublication", target = "yearOfPublication")
     @Mapping(source = "takenAt", target = "takenAt")
     @Mapping(source = "userId", target = "owner.id")
-    @Mapping(source = "expired", target = "expired")
     Book updateBookFromDto(BookDto bookDto, @MappingTarget Book book);
 }

@@ -96,7 +96,6 @@ public class BookService {
 
         book.setOwner(null);
         book.setTakenAt(null);
-        book.setExpired(false);
 
         bookRepository.save(book);
 
