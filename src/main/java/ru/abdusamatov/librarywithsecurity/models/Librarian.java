@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,11 @@ import java.util.Objects;
 @Setter
 @Getter
 @ToString(exclude = "password")
+@SequenceGenerator(name = "lib_seq", sequenceName = "library.librarian_id_seq", allocationSize = 1)
 public class Librarian implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lib_seq")
     @Column(name = "id")
     private Long id;
 
