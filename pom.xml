@@ -22,6 +22,7 @@
         <checkstyle.dependency.version>10.17.0</checkstyle.dependency.version>
         <checkstyle.config.path>/checkstyle/config</checkstyle.config.path>
         <flyway-version>10.20.1</flyway-version>
+        <flyway.scope>compile</flyway.scope>
         <java.version>21</java.version>
         <mapstruct.version>1.6.2</mapstruct.version>
         <lombok.version>1.18.34</lombok.version>
