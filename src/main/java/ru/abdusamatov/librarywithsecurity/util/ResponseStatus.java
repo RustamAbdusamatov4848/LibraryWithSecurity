@@ -1,6 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.util;
 
-public enum ApiResponseStatus {
+public enum ResponseStatus {
     SUCCESS,
     ERROR,
 }
