@@ -12,7 +12,9 @@ import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.Book;
+import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
+import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
 import ru.abdusamatov.librarywithsecurity.util.Response;
 import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
@@ -27,7 +29,8 @@ import static ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus.SUCCESS;
 @RequiredArgsConstructor
 @Slf4j
 public class BookService {
-    public final BookRepository bookRepository;
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
     private final BookMapper bookMapper;
     private final UserMapper userMapper;
 
@@ -66,7 +69,17 @@ public class BookService {
     @Transactional
     public ApiResponse<BookDto> updateBook(BookDto bookDto) {
         Book updatedBook = bookRepository.findById(bookDto.getId())
-                .map(book -> bookMapper.updateBookFromDto(bookDto, book))
+                .map(book -> {
+                    bookMapper.updateBookFromDto(bookDto, book);
+                    if (bookDto.getUserId() != null) {
+                        User owner = userRepository.findById(bookDto.getUserId())
+                                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", bookDto.getUserId()));
+                        book.setOwner(owner);
+                    } else {
+                        book.setOwner(null);
+                    }
+                    return book;
+                })
                 .map(bookRepository::save)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookDto.getId()));
 
@@ -81,7 +94,7 @@ public class BookService {
 
         bookRepository.delete(book);
         log.info("Deleted book with ID: {}", id);
-        return buildApiResponse("Book successfully deleted", "Book successfully deleted");
+        return buildApiResponse("Successfully deleted", "Book successfully deleted");
     }
 
     @Transactional

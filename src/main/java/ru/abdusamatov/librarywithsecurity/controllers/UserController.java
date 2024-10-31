@@ -68,6 +68,6 @@ public class UserController {
             produces = {"application/json"}
     )
     public ResponseEntity<ApiResponse<String>> deleteUserByID(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(userService.deleteUserById(id),HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(userService.deleteUserById(id));
     }
 }

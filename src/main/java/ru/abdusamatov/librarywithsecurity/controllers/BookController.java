@@ -59,7 +59,7 @@ public class BookController {
             consumes = {"application/json"}
     )
     public ResponseEntity<ApiResponse<BookDto>> updateBook(@Valid @RequestBody BookDto bookDto) {
-        return new ResponseEntity<>(bookService.updateBook(bookDto), HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(bookService.updateBook(bookDto));
     }
 
     @RequestMapping(
@@ -67,7 +67,7 @@ public class BookController {
             value = "/books/{id}"
     )
     public ResponseEntity<ApiResponse<String>> deleteBook(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(bookService.deleteBook(id));
     }
 
     @RequestMapping(
@@ -75,7 +75,7 @@ public class BookController {
             value = "/books/{id}/release"
     )
     public ResponseEntity<ApiResponse<String>> releaseBook(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(bookService.releaseBook(id), HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(bookService.releaseBook(id));
     }
 
     @RequestMapping(
@@ -84,7 +84,7 @@ public class BookController {
             consumes = {"application/json"}
     )
     public ResponseEntity<ApiResponse<String>> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
-        return new ResponseEntity<>(bookService.assignBook(id, newUser), HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(bookService.assignBook(id, newUser));
     }
 
     @RequestMapping(
