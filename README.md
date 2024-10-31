@@ -55,7 +55,7 @@ bash docker-compose up
 
 ### Accessing the Application 
 
-Once the application is up and running, you can access it at `http://localhost:8080`, or if you use docker compose`http://localhost:8081`
+Once the application is up and running, you can access it at `http://localhost:8080`, or if you use docker compose `http://localhost:8081`
 You can test the API endpoints or interact with the web interface. 
 
 
