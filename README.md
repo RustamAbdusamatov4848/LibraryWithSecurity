@@ -64,27 +64,6 @@ You are now ready to start using Web-Library!
 ## Note
 The UI uses Englush language
 
-## Technologies and Libraries
-
-The Web-Library project uses the following technologies and libraries:
-
-- **Spring Boot**: Provides a framework for building stand-alone, production-grade Spring applications.
-  - `spring-boot-starter-data-jpa`: Starter for using Spring Data JPA with Hibernate.
-  - `spring-boot-starter-security`: Starter for using Spring Security.
-  - `spring-boot-starter-thymeleaf`: Starter for using Thymeleaf as the view layer.
-  - `spring-boot-starter-validation`: Starter for using Java Bean Validation with Hibernate Validator.
-  - `spring-boot-starter-web`: Starter for building web, including RESTful, applications using Spring MVC.
-- **Thymeleaf**: A modern server-side Java template engine for web and standalone environments.
-  - `thymeleaf-extras-springsecurity6`: Integrates Spring Security with Thymeleaf.
-- **MySQL**: A popular relational database management system.
-  - `mysql-connector-j`: JDBC driver for MySQL.
-- **Lombok**: A library that helps reduce boilerplate code in Java.
-  - `lombok`: Annotation library for generating boilerplate code.
-- **Testing Frameworks**:
-  - `spring-boot-starter-test`: Starter for testing Spring Boot applications with libraries including JUnit, Hamcrest, and Mockito.
-  - `spring-security-test`: Support for testing Spring Security applications.
-
-
 ## Usage
 The librarian has the ability to:
 
