@@ -55,7 +55,8 @@ bash docker-compose up
 
 ### Accessing the Application 
 
-Once the application is up and running, you can access it at `http://localhost:8080`. You can test the API endpoints or interact with the web interface (if implemented). 
+Once the application is up and running, you can access it at `http://localhost:8080`, or if you use docker compose`http://localhost:8081`
+You can test the API endpoints or interact with the web interface. 
 
 
 You are now ready to start using Web-Library!
