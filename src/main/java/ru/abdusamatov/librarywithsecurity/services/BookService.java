@@ -15,15 +15,19 @@ import ru.abdusamatov.librarywithsecurity.models.Book;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
-import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
 import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.util.Result;
 import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus.SUCCESS;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+import static ru.abdusamatov.librarywithsecurity.util.Response.buildResponse;
+
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +39,7 @@ public class BookService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<BookDto>> getBookList(Integer page, Integer size, boolean isSorted) {
+    public Response<List<BookDto>> getBookList(Integer page, Integer size, boolean isSorted) {
         Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -43,31 +47,31 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .getContent();
 
-        return buildApiResponse("List of books", bookDtoList);
+        return buildResponse(Result.of(OK, "List of books"), bookDtoList);
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<BookDto> getBookById(Long id) {
+    public Response<BookDto> getBookById(Long id) {
         BookDto foundBook = bookRepository.findById(id)
                 .map(bookMapper::bookToBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
-        return buildApiResponse("Book successfully found", foundBook);
+        return buildResponse(Result.of(OK, "Book successfully found"), foundBook);
     }
 
     @Transactional
-    public ApiResponse<BookDto> createBook(BookDto bookDto) {
+    public Response<BookDto> createBook(BookDto bookDto) {
         Book book = bookMapper.bookDtoToBook(bookDto);
         book.setOwner(null);
 
         Book savedBook = bookRepository.save(book);
         log.info("Save book with ID: {}", savedBook.getId());
 
-        return buildApiResponse("Book successfully saved", bookMapper.bookToBookDto(savedBook));
+        return buildResponse(Result.of(CREATED, "Book successfully created"), bookMapper.bookToBookDto(savedBook));
     }
 
     @Transactional
-    public ApiResponse<BookDto> updateBook(BookDto bookDto) {
+    public Response<BookDto> updateBook(BookDto bookDto) {
         Book updatedBook = bookRepository.findById(bookDto.getId())
                 .map(book -> {
                     bookMapper.updateBookFromDto(bookDto, book);
@@ -84,34 +88,35 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookDto.getId()));
 
         log.info("Updated book with ID: {}", updatedBook.getId());
-        return buildApiResponse("Book successfully updated", bookMapper.bookToBookDto(updatedBook));
+        return buildResponse(Result.of(OK, "Book successfully updated"), bookMapper.bookToBookDto(updatedBook));
     }
 
     @Transactional
-    public ApiResponse<String> deleteBook(Long id) {
+    public Response<Void> deleteBook(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
         bookRepository.delete(book);
+
         log.info("Deleted book with ID: {}", id);
-        return buildApiResponse("Successfully deleted", "Book successfully deleted");
+        return buildResponse(Result.of(NO_CONTENT, "Successfully deleted"), null);
     }
 
     @Transactional
-    public ApiResponse<String> releaseBook(Long id) {
+    public Response<Void> releaseBook(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
         book.setOwner(null);
         book.setTakenAt(null);
-
         bookRepository.save(book);
 
-        return buildApiResponse("Successfully released", "Book successfully released");
+        log.info("Book with id {}, has been successfully released", id);
+        return buildResponse(Result.of(NO_CONTENT, "Book successfully released"), null);
     }
 
     @Transactional
-    public ApiResponse<String> assignBook(Long bookId, UserDto userDto) {
+    public Response<Void> assignBook(Long bookId, UserDto userDto) {
         Book book = bookRepository
                 .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookId));
 
@@ -120,21 +125,17 @@ public class BookService {
         bookRepository.save(book);
 
         log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
-        return buildApiResponse("Successfully assigned", "Book successfully assigned");
+        return buildResponse(Result.of(NO_CONTENT, "Book successfully assigned"), null);
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<BookDto>> searchByTitle(String title) {
+    public Response<List<BookDto>> searchByTitle(String title) {
         List<BookDto> foundBookDtoList = bookRepository
                 .findByTitleStartingWith(title)
                 .stream()
                 .map(bookMapper::bookToBookDto)
                 .toList();
 
-        return buildApiResponse(String.format("Found books with title %s", title), foundBookDtoList);
-    }
-
-    private <T> ApiResponse<T> buildApiResponse(String message, T data) {
-        return new ApiResponse<>(message, new Response<>(SUCCESS, data));
+        return buildResponse(Result.of(OK, String.format("Found books with title %s", title)), foundBookDtoList);
     }
 }

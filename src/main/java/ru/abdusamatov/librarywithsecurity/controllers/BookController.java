@@ -2,8 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
-import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
+import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import java.util.List;
 
@@ -26,12 +24,12 @@ public class BookController {
             method = RequestMethod.GET,
             value = "/books",
             produces = {"application/json"})
-    public ResponseEntity<ApiResponse<List<BookDto>>> getBookList(
+    public Response<List<BookDto>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") boolean isSorted) {
 
-        return ResponseEntity.ok(bookService.getBookList(page, size, isSorted));
+        return bookService.getBookList(page, size, isSorted);
     }
 
     @RequestMapping(
@@ -39,8 +37,8 @@ public class BookController {
             value = "/books/{id}",
             produces = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<BookDto>> showBookById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(bookService.getBookById(id));
+    public Response<BookDto> showBookById(@PathVariable("id") Long id) {
+        return bookService.getBookById(id);
     }
 
     @RequestMapping(
@@ -49,8 +47,8 @@ public class BookController {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<BookDto>> createBook(@Valid @RequestBody BookDto bookDto) {
-        return new ResponseEntity<>(bookService.createBook(bookDto), HttpStatus.CREATED);
+    public Response<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
+        return bookService.createBook(bookDto);
     }
 
     @RequestMapping(
@@ -58,24 +56,24 @@ public class BookController {
             value = "/books",
             consumes = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<BookDto>> updateBook(@Valid @RequestBody BookDto bookDto) {
-        return ResponseEntity.ok(bookService.updateBook(bookDto));
+    public Response<BookDto> updateBook(@Valid @RequestBody BookDto bookDto) {
+        return bookService.updateBook(bookDto);
     }
 
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/books/{id}"
     )
-    public ResponseEntity<ApiResponse<String>> deleteBook(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(bookService.deleteBook(id));
+    public Response<Void> deleteBook(@PathVariable("id") Long id) {
+        return bookService.deleteBook(id);
     }
 
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/books/{id}/release"
     )
-    public ResponseEntity<ApiResponse<String>> releaseBook(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(bookService.releaseBook(id));
+    public Response<Void> releaseBook(@PathVariable("id") Long id) {
+        return bookService.releaseBook(id);
     }
 
     @RequestMapping(
@@ -83,8 +81,8 @@ public class BookController {
             value = "/books/{id}/assign",
             consumes = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<String>> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
-        return ResponseEntity.ok(bookService.assignBook(id, newUser));
+    public Response<Void> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
+        return bookService.assignBook(id, newUser);
     }
 
     @RequestMapping(
@@ -92,7 +90,7 @@ public class BookController {
             value = "/books/search",
             produces = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<List<BookDto>>> searchBooks(@RequestParam(value = "query") String query) {
-        return ResponseEntity.ok(bookService.searchByTitle(query));
+    public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") String query) {
+        return bookService.searchByTitle(query);
     }
 }
