@@ -12,16 +12,16 @@ import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.Book;
-import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
-import ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus;
 import ru.abdusamatov.librarywithsecurity.util.Response;
 import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus.SUCCESS;
 
 @Service
 @RequiredArgsConstructor
@@ -35,22 +35,21 @@ public class BookService {
     public ApiResponse<List<BookDto>> getBookList(Integer page, Integer size, boolean isSorted) {
         Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
         Pageable pageable = PageRequest.of(page, size, sort);
+
         List<BookDto> bookDtoList = bookRepository.findAll(pageable)
                 .map(bookMapper::bookToBookDto)
                 .getContent();
-        Response<List<BookDto>> response = new Response<>(ApiResponseStatus.SUCCESS, bookDtoList);
-        return new ApiResponse<>("List of books", response);
+
+        return buildApiResponse("List of books", bookDtoList);
     }
 
     @Transactional(readOnly = true)
     public ApiResponse<BookDto> getBookById(Long id) {
-        BookDto foundBook = bookRepository
-                .findById(id)
+        BookDto foundBook = bookRepository.findById(id)
                 .map(bookMapper::bookToBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
-        Response<BookDto> response = new Response<>(ApiResponseStatus.SUCCESS, foundBook);
-        return new ApiResponse<>("Book successfully found", response);
+        return buildApiResponse("Book successfully found", foundBook);
     }
 
     @Transactional
@@ -58,38 +57,31 @@ public class BookService {
         Book book = bookMapper.bookDtoToBook(bookDto);
         book.setOwner(null);
 
-        Book savedBook = bookRepository
-                .save(book);
-
+        Book savedBook = bookRepository.save(book);
         log.info("Save book with ID: {}", savedBook.getId());
-        Response<BookDto> response = new Response<>(ApiResponseStatus.SUCCESS, bookMapper.bookToBookDto(savedBook));
-        return new ApiResponse<>("Book successfully saved", response);
+
+        return buildApiResponse("Book successfully saved", bookMapper.bookToBookDto(savedBook));
     }
 
     @Transactional
-    public ApiResponse<String> editBook(BookDto bookDto) {
-        Long id = bookDto.getId();
-        if (!isBookExist(id)) {
-            throw new ResourceNotFoundException("Book", "ID", id);
-        }
-        bookRepository
-                .findById(bookDto.getId())
+    public ApiResponse<BookDto> updateBook(BookDto bookDto) {
+        Book updatedBook = bookRepository.findById(bookDto.getId())
                 .map(book -> bookMapper.updateBookFromDto(bookDto, book))
-                .map(bookRepository::save);
-        log.info("Update book with ID: {}", bookDto.getId());
-        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully updated");
-        return new ApiResponse<>(" Successfully updated", response);
+                .map(bookRepository::save)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookDto.getId()));
+
+        log.info("Updated book with ID: {}", updatedBook.getId());
+        return buildApiResponse("Book successfully updated", bookMapper.bookToBookDto(updatedBook));
     }
 
     @Transactional
     public ApiResponse<String> deleteBook(Long id) {
-        if (!isBookExist(id)) {
-            throw new ResourceNotFoundException("Book", "ID", id);
-        }
-        bookRepository.deleteById(id);
-        log.info("Delete book with ID: {}", id);
-        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully deleted");
-        return new ApiResponse<>(" Successfully deleted", response);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
+
+        bookRepository.delete(book);
+        log.info("Deleted book with ID: {}", id);
+        return buildApiResponse("Book successfully deleted", "Book successfully deleted");
     }
 
     @Transactional
@@ -102,8 +94,7 @@ public class BookService {
 
         bookRepository.save(book);
 
-        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully released");
-        return new ApiResponse<>(" Successfully released", response);
+        return buildApiResponse("Successfully released", "Book successfully released");
     }
 
     @Transactional
@@ -111,31 +102,26 @@ public class BookService {
         Book book = bookRepository
                 .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookId));
 
-        User newOwner = userMapper.dtoToUser(userDto);
-        book.setOwner(newOwner);
+        book.setOwner(userMapper.dtoToUser(userDto));
         book.setTakenAt(LocalDateTime.now());
         bookRepository.save(book);
 
-        log.info("Book with id {},has new owner with id {}", book.getId(), newOwner.getId());
-
-        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Book successfully assigned");
-        return new ApiResponse<>(" Successfully assigned", response);
+        log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
+        return buildApiResponse("Successfully assigned", "Book successfully assigned");
     }
 
     @Transactional(readOnly = true)
     public ApiResponse<List<BookDto>> searchByTitle(String title) {
-        List<BookDto> bookDtoList = bookRepository
+        List<BookDto> foundBookDtoList = bookRepository
                 .findByTitleStartingWith(title)
                 .stream()
                 .map(bookMapper::bookToBookDto)
                 .toList();
 
-        Response<List<BookDto>> response = new Response<>(ApiResponseStatus.SUCCESS, bookDtoList);
-        return new ApiResponse<>(String.format("Found books with title %s", title), response);
+        return buildApiResponse(String.format("Found books with title %s", title), foundBookDtoList);
     }
 
-    @Transactional(readOnly = true)
-    public boolean isBookExist(Long id) {
-        return bookRepository.existsById(id);
+    private <T> ApiResponse<T> buildApiResponse(String message, T data) {
+        return new ApiResponse<>(message, new Response<>(SUCCESS, data));
     }
 }

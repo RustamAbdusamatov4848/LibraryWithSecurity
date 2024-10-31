@@ -58,8 +58,8 @@ public class BookController {
             value = "/books",
             consumes = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<String>> updateBook(@Valid @RequestBody BookDto bookDto) {
-        return new ResponseEntity<>(bookService.editBook(bookDto), HttpStatus.NO_CONTENT);
+    public ResponseEntity<ApiResponse<BookDto>> updateBook(@Valid @RequestBody BookDto bookDto) {
+        return new ResponseEntity<>(bookService.updateBook(bookDto), HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(

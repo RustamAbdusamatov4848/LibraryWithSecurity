@@ -30,11 +30,12 @@ public class LibrarianService {
 
     @Transactional
     public ApiResponse<LibrarianDto> createLibrarian(LibrarianDto librarianDto) {
-        isEmailAlreadyExist(librarianDto);
+        checkIfEmailExists(librarianDto.getEmail());
 
         Librarian librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
         librarianFromDto.setPassword(passwordEncoder.encode(librarianDto.getPassword()));
         Librarian savedLibrarian = librarianRepository.save(librarianFromDto);
+
         log.info("Saving new Librarian with ID: {}", savedLibrarian.getId());
         Response<LibrarianDto> response =
                 new Response<>(ApiResponseStatus.SUCCESS, librarianMapper.librarianToLibrarianDto(savedLibrarian));
@@ -43,20 +44,25 @@ public class LibrarianService {
     }
 
     @Transactional(readOnly = true)
-    public void isEmailAlreadyExist(LibrarianDto librarianDto) {
-        if (librarianRepository.existsByEmail(librarianDto.getEmail())) {
-            throw new ExistEmailException("Invalid email", librarianDto.getEmail());
+    public void checkIfEmailExists(String librarianEmail) {
+        if (librarianRepository.existsByEmail(librarianEmail)) {
+            log.warn("Attempt to register with existing email: {}", librarianEmail);
+            throw new ExistEmailException("Email already exists", librarianEmail);
         }
     }
 
     public ApiResponse<String> validateLibrarian(AuthenticationDto authenticationDto) {
-        Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        authenticationDto.getEmail(), authenticationDto.getPassword()));
+        Authentication authentication = authenticate(authenticationDto);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Authentication successful");
 
         return new ApiResponse<>("Successful validation", response);
+    }
+
+    private Authentication authenticate(AuthenticationDto authenticationDto) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authenticationDto.getEmail(), authenticationDto.getPassword())
+        );
     }
 }
