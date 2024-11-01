@@ -8,10 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex;
 
 import java.util.Objects;
-
-import static ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex.EMAIL_REGEX;
 
 @Getter
 @Setter
@@ -27,7 +26,7 @@ public class LibrarianDto {
     private String fullName;
 
     @NotBlank(message = "Email should not be empty")
-    @Email(regexp = EMAIL_REGEX, message = "Invalid email address")
+    @Email(regexp = ValidationRegex.EMAIL_REGEX, message = "Invalid email address")
     private String email;
 
     @NotBlank(message = "Password should not be empty")

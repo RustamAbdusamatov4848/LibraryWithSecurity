@@ -10,11 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex.EMAIL_REGEX;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +29,7 @@ public class UserDto {
     private String fullName;
 
     @NotBlank(message = "Email should not be empty")
-    @Email(regexp = EMAIL_REGEX, message = "Invalid email address")
+    @Email(regexp = ValidationRegex.EMAIL_REGEX, message = "Invalid email address")
     private String email;
 
     @NotNull(message = "Date of birth should not be null")
