@@ -1,45 +1,59 @@
 package ru.abdusamatov.librarywithsecurity.models;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(name = "users")
-@Data
+@Table(name = "user", schema = "library")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString(exclude = "books")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 30, message = "Name should be between 2 to 30 characters long")
     @Column(name = "full_name")
     private String fullName;
 
     @Column(name = "email", unique = true)
-    @Email(message = "Invalid email address")
     private String email;
 
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "year_of_birth")
-    private Date yearOfBirth;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
-    private LocalDateTime dateOfCreated;
-
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Book> books;
 
-    @PrePersist
-    private void init() {
-        dateOfCreated = LocalDateTime.now();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

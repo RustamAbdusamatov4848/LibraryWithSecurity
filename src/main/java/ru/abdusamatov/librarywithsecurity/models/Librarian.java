@@ -1,21 +1,29 @@
 package ru.abdusamatov.librarywithsecurity.models;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(name = "librarian")
-@Data
+@Table(name = "librarian", schema = "library")
+@NoArgsConstructor
+@Setter
+@Getter
+@ToString(exclude = "password")
 public class Librarian implements UserDetails {
 
     @Id
@@ -23,25 +31,14 @@ public class Librarian implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 30, message = "Name should be between 2 to 30 characters long")
     @Column(name = "full_name")
     private String fullName;
 
     @Column(name = "email", unique = true)
-    @Email(message = "Invalid email address")
     private String email;
 
     @Column(name = "password", length = 1000)
-    @Size(max = 1000,message = "Password should be les then 1000 length")
     private String password;
-
-    private LocalDateTime dateOfCreated;
-
-    @PrePersist
-    private void init() {
-        dateOfCreated = LocalDateTime.now();
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -72,4 +69,18 @@ public class Librarian implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Librarian librarian = (Librarian) o;
+        return id != null && id.equals(librarian.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
+

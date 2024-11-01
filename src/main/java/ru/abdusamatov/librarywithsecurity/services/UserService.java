@@ -2,66 +2,78 @@ package ru.abdusamatov.librarywithsecurity.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.abdusamatov.librarywithsecurity.models.Book;
+import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
+import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static ru.abdusamatov.librarywithsecurity.util.Response.buildResponse;
+import static ru.abdusamatov.librarywithsecurity.util.Result.success;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public List<User> getUserList(){
-        return userRepository.findAll();
-    }
-    public User getUserByID(Long ID) {
-        return userRepository.findById(ID).orElse(null);
-    }
-    public Optional<User> getUserByFullname(String fullname){
-        return userRepository.findByFullName(fullname);
-    }
-    public List<Book> getBooksByPersonID(Long ID) {
-        Optional<User> user = userRepository.findById(ID);
+    public Response<List<UserDto>> getUserList(Integer page, Integer size) {
+        List<UserDto> userDtoList = userRepository
+                .findAll(PageRequest.of(page, size))
+                .map(userMapper::userToDto)
+                .getContent();
 
-        if(user.isPresent()){
-            Hibernate.initialize(user.get().getBooks());
+        return buildResponse(success(OK, "List of users"), userDtoList);
+    }
 
-            user.get().getBooks().forEach( book -> {
-                long holdingTime = Math.abs(book.getTakenAt().getTime()-new Date().getTime());
-                if (holdingTime>864000000){
-                    book.setExpired(true);
-                }
-            });
-            return user.get().getBooks();
-        }else{
-            return Collections.emptyList();
-        }
+    @Transactional(readOnly = true)
+    public Response<UserDto> getUserById(Long id) {
+        UserDto foundUser = userRepository
+                .findById(id)
+                .map(userMapper::userToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+
+        return buildResponse(success(OK, "User successfully found"), foundUser);
     }
+
     @Transactional
-    public boolean createUser(User user) {
-        String userEmail = user.getEmail();
-        if (userRepository.findByEmail(userEmail) != null) return false;
-        log.info("Saving new User with email: {}", userEmail);
-        userRepository.save(user);
-        return true;
+    public Response<UserDto> createUser(UserDto userDto) {
+        User createdUser = userRepository.save(userMapper.dtoToUser(userDto));
+
+        log.info("Saving new User with ID: {}", createdUser.getId());
+        return buildResponse(success(CREATED, "User successfully saved"), userMapper.userToDto(createdUser));
     }
+
     @Transactional
-    public void editPerson(User user, Long ID) {
-        user.setId(ID);
-        userRepository.save(user);
+    public Response<UserDto> updateUser(UserDto dtoToBeUpdated) {
+        UserDto updatedUser = userRepository.findById(dtoToBeUpdated.getId())
+                .map(user -> userMapper.updateUserFromDto(dtoToBeUpdated, user))
+                .map(userRepository::save)
+                .map(userMapper::userToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId()));
+
+        log.info("Updated user with ID: {}", dtoToBeUpdated.getId());
+        return buildResponse(success(OK, "User successfully updated"), updatedUser);
     }
+
     @Transactional
-    public void deleteUserByID(Long ID) {
-        userRepository.deleteById(ID);
+    public Response<Void> deleteUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+
+        userRepository.delete(user);
+
+        log.info("Deleted user with ID: {}", id);
+        return buildResponse(success(OK, "Successfully deleted"), null);
     }
 }

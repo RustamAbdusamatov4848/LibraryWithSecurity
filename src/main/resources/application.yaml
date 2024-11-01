@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: LibraryWithSecurity
+
+  # Database settings
+  datasource:
+    driver-class-name: ${DATASOURCE_DRIVER}
+    url: ${DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+
+  # Flyway settings
+  flyway:
+    enabled: true
+
+  # Hibernate settings
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+    hibernate:
+      ddl-auto: none
+
+  jackson:
+    default-property-inclusion: non_null
