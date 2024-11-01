@@ -10,7 +10,6 @@ import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.util.Response;
-import ru.abdusamatov.librarywithsecurity.util.Result;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static ru.abdusamatov.librarywithsecurity.util.Response.buildResponse;
+import static ru.abdusamatov.librarywithsecurity.util.Result.success;
 
 @Service
 @Slf4j
@@ -33,7 +33,7 @@ public class UserService {
                 .map(userMapper::userToDto)
                 .getContent();
 
-        return buildResponse(Result.success(OK, "List of users"), userDtoList);
+        return buildResponse(success(OK, "List of users"), userDtoList);
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +43,7 @@ public class UserService {
                 .map(userMapper::userToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
 
-        return buildResponse(Result.success(OK, "User successfully found"), foundUser);
+        return buildResponse(success(OK, "User successfully found"), foundUser);
     }
 
     @Transactional
@@ -51,7 +51,7 @@ public class UserService {
         User createdUser = userRepository.save(userMapper.dtoToUser(userDto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
-        return buildResponse(Result.success(CREATED, "User successfully saved"), userMapper.userToDto(createdUser));
+        return buildResponse(success(CREATED, "User successfully saved"), userMapper.userToDto(createdUser));
     }
 
     @Transactional
@@ -63,7 +63,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId()));
 
         log.info("Updated user with ID: {}", dtoToBeUpdated.getId());
-        return buildResponse(Result.success(OK, "User successfully updated"), updatedUser);
+        return buildResponse(success(OK, "User successfully updated"), updatedUser);
     }
 
     @Transactional
@@ -74,6 +74,6 @@ public class UserService {
         userRepository.delete(user);
 
         log.info("Deleted user with ID: {}", id);
-        return buildResponse(Result.success(OK, "Successfully deleted"), null);
+        return buildResponse(success(OK, "Successfully deleted"), null);
     }
 }

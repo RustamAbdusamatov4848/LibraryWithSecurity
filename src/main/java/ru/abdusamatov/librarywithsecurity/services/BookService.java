@@ -16,7 +16,6 @@ import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.util.Response;
-import ru.abdusamatov.librarywithsecurity.util.Result;
 import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
 import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
 
@@ -27,6 +26,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static ru.abdusamatov.librarywithsecurity.util.Response.buildResponse;
+import static ru.abdusamatov.librarywithsecurity.util.Result.success;
 
 
 @Service
@@ -47,7 +47,7 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .getContent();
 
-        return buildResponse(Result.success(OK, "List of books"), bookDtoList);
+        return buildResponse(success(OK, "List of books"), bookDtoList);
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +56,7 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
-        return buildResponse(Result.success(OK, "Book successfully found"), foundBook);
+        return buildResponse(success(OK, "Book successfully found"), foundBook);
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class BookService {
         Book savedBook = bookRepository.save(book);
         log.info("Save book with ID: {}", savedBook.getId());
 
-        return buildResponse(Result.success(CREATED, "Book successfully created"), bookMapper.bookToBookDto(savedBook));
+        return buildResponse(success(CREATED, "Book successfully created"), bookMapper.bookToBookDto(savedBook));
     }
 
     @Transactional
@@ -88,7 +88,7 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookDto.getId()));
 
         log.info("Updated book with ID: {}", updatedBook.getId());
-        return buildResponse(Result.success(OK, "Book successfully updated"), bookMapper.bookToBookDto(updatedBook));
+        return buildResponse(success(OK, "Book successfully updated"), bookMapper.bookToBookDto(updatedBook));
     }
 
     @Transactional
@@ -99,7 +99,7 @@ public class BookService {
         bookRepository.delete(book);
 
         log.info("Deleted book with ID: {}", id);
-        return buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
+        return buildResponse(success(NO_CONTENT, "Successfully deleted"), null);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class BookService {
         bookRepository.save(book);
 
         log.info("Book with id {}, has been successfully released", id);
-        return buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
+        return buildResponse(success(NO_CONTENT, "Book successfully released"), null);
     }
 
     @Transactional
@@ -125,7 +125,7 @@ public class BookService {
         bookRepository.save(book);
 
         log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
-        return buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
+        return buildResponse(success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
     @Transactional(readOnly = true)
@@ -136,6 +136,6 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .toList();
 
-        return buildResponse(Result.success(OK, String.format("Found books with title %s", title)), foundBookDtoList);
+        return buildResponse(success(OK, String.format("Found books with title %s", title)), foundBookDtoList);
     }
 }

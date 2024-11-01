@@ -14,10 +14,13 @@ import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
-import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
-import ru.abdusamatov.librarywithsecurity.util.ApiResponseStatus;
 import ru.abdusamatov.librarywithsecurity.util.Response;
 import ru.abdusamatov.librarywithsecurity.util.mappers.LibrarianMapper;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static ru.abdusamatov.librarywithsecurity.util.Response.buildResponse;
+import static ru.abdusamatov.librarywithsecurity.util.Result.success;
 
 @Service
 @Slf4j
@@ -29,7 +32,7 @@ public class LibrarianService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public ApiResponse<LibrarianDto> createLibrarian(LibrarianDto librarianDto) {
+    public Response<LibrarianDto> createLibrarian(LibrarianDto librarianDto) {
         checkIfEmailExists(librarianDto.getEmail());
 
         Librarian librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
@@ -37,10 +40,7 @@ public class LibrarianService {
         Librarian savedLibrarian = librarianRepository.save(librarianFromDto);
 
         log.info("Saving new Librarian with ID: {}", savedLibrarian.getId());
-        Response<LibrarianDto> response =
-                new Response<>(ApiResponseStatus.SUCCESS, librarianMapper.librarianToLibrarianDto(savedLibrarian));
-
-        return new ApiResponse<>("Librarian was created", response);
+        return buildResponse(success(CREATED, "Librarian was created"), librarianMapper.librarianToLibrarianDto(savedLibrarian));
     }
 
     @Transactional(readOnly = true)
@@ -51,13 +51,10 @@ public class LibrarianService {
         }
     }
 
-    public ApiResponse<String> validateLibrarian(AuthenticationDto authenticationDto) {
+    public Response<Void> validateLibrarian(AuthenticationDto authenticationDto) {
         Authentication authentication = authenticate(authenticationDto);
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Response<String> response = new Response<>(ApiResponseStatus.SUCCESS, "Authentication successful");
-
-        return new ApiResponse<>("Successful validation", response);
+        return buildResponse(success(NO_CONTENT, "Successful validation"), null);
     }
 
     private Authentication authenticate(AuthenticationDto authenticationDto) {
