@@ -47,7 +47,7 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .getContent();
 
-        return buildResponse(Result.of(OK, "List of books"), bookDtoList);
+        return buildResponse(Result.success(OK, "List of books"), bookDtoList);
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +56,7 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
-        return buildResponse(Result.of(OK, "Book successfully found"), foundBook);
+        return buildResponse(Result.success(OK, "Book successfully found"), foundBook);
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class BookService {
         Book savedBook = bookRepository.save(book);
         log.info("Save book with ID: {}", savedBook.getId());
 
-        return buildResponse(Result.of(CREATED, "Book successfully created"), bookMapper.bookToBookDto(savedBook));
+        return buildResponse(Result.success(CREATED, "Book successfully created"), bookMapper.bookToBookDto(savedBook));
     }
 
     @Transactional
@@ -88,7 +88,7 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookDto.getId()));
 
         log.info("Updated book with ID: {}", updatedBook.getId());
-        return buildResponse(Result.of(OK, "Book successfully updated"), bookMapper.bookToBookDto(updatedBook));
+        return buildResponse(Result.success(OK, "Book successfully updated"), bookMapper.bookToBookDto(updatedBook));
     }
 
     @Transactional
@@ -99,7 +99,7 @@ public class BookService {
         bookRepository.delete(book);
 
         log.info("Deleted book with ID: {}", id);
-        return buildResponse(Result.of(NO_CONTENT, "Successfully deleted"), null);
+        return buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class BookService {
         bookRepository.save(book);
 
         log.info("Book with id {}, has been successfully released", id);
-        return buildResponse(Result.of(NO_CONTENT, "Book successfully released"), null);
+        return buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
     }
 
     @Transactional
@@ -125,7 +125,7 @@ public class BookService {
         bookRepository.save(book);
 
         log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
-        return buildResponse(Result.of(NO_CONTENT, "Book successfully assigned"), null);
+        return buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
     @Transactional(readOnly = true)
@@ -136,6 +136,6 @@ public class BookService {
                 .map(bookMapper::bookToBookDto)
                 .toList();
 
-        return buildResponse(Result.of(OK, String.format("Found books with title %s", title)), foundBookDtoList);
+        return buildResponse(Result.success(OK, String.format("Found books with title %s", title)), foundBookDtoList);
     }
 }

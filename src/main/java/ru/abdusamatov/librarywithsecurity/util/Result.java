@@ -15,10 +15,18 @@ public class Result {
     private ResponseStatus status;
     private String description;
 
-    public static Result of(HttpStatus httpStatus, String description) {
+    public static Result success(HttpStatus httpStatus, String description) {
         return Result.builder()
                 .httpStatusCode(httpStatus)
                 .status(ResponseStatus.SUCCESS)
+                .description(description)
+                .build();
+    }
+
+    public static Result error(HttpStatus httpStatus, String description) {
+        return Result.builder()
+                .httpStatusCode(httpStatus)
+                .status(ResponseStatus.ERROR)
                 .description(description)
                 .build();
     }
