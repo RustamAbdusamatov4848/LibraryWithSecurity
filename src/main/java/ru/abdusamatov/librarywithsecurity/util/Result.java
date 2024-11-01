@@ -1,5 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result {
     private HttpStatus httpStatusCode;
     private ResponseStatus status;
@@ -23,11 +25,10 @@ public class Result {
                 .build();
     }
 
-    public static Result error(HttpStatus httpStatus, String description) {
+    public static Result error(HttpStatus httpStatus) {
         return Result.builder()
                 .httpStatusCode(httpStatus)
                 .status(ResponseStatus.ERROR)
-                .description(description)
                 .build();
     }
 }
