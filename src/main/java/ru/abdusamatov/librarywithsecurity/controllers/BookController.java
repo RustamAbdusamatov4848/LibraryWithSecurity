@@ -70,19 +70,19 @@ public class BookController {
 
     @RequestMapping(
             method = RequestMethod.PATCH,
-            value = "/books/{id}/release"
-    )
-    public Response<Void> releaseBook(@PathVariable("id") Long id) {
-        return bookService.releaseBook(id);
-    }
-
-    @RequestMapping(
-            method = RequestMethod.PATCH,
             value = "/books/{id}/assign",
             consumes = {"application/json"}
     )
     public Response<Void> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
         return bookService.assignBook(id, newUser);
+    }
+
+    @RequestMapping(
+            method = RequestMethod.PATCH,
+            value = "/books/{id}/release"
+    )
+    public Response<Void> releaseBook(@PathVariable("id") Long id) {
+        return bookService.releaseBook(id);
     }
 
     @RequestMapping(
