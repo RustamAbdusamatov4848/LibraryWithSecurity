@@ -22,3 +22,6 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: none
+
+  jackson:
+    default-property-inclusion: non_null
