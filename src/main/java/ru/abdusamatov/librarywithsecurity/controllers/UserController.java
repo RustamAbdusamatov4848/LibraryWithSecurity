@@ -2,8 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
-import ru.abdusamatov.librarywithsecurity.util.ApiResponse;
+import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import java.util.List;
 
@@ -26,11 +24,11 @@ public class UserController {
             value = "/users",
             produces = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<List<UserDto>>> getUserList(
+    public Response<List<UserDto>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size) {
 
-        return ResponseEntity.ok(userService.getUserList(page, size));
+        return userService.getUserList(page, size);
     }
 
     @RequestMapping(
@@ -38,8 +36,8 @@ public class UserController {
             value = "/users/{id}",
             produces = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public Response<UserDto> getUserById(@PathVariable("id") Long id) {
+        return userService.getUserById(id);
     }
 
     @RequestMapping(
@@ -48,8 +46,8 @@ public class UserController {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<UserDto>> createUser(@Valid @RequestBody UserDto userDto) {
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
+    public Response<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+        return userService.createUser(userDto);
     }
 
     @RequestMapping(
@@ -58,8 +56,8 @@ public class UserController {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.updateUser(userDto));
+    public Response<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
+        return userService.updateUser(userDto);
     }
 
     @RequestMapping(
@@ -67,7 +65,7 @@ public class UserController {
             value = "/users/{id}",
             produces = {"application/json"}
     )
-    public ResponseEntity<ApiResponse<String>> deleteUserByID(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(userService.deleteUserById(id));
+    public Response<Void> deleteUserByID(@PathVariable("id") Long id) {
+        return userService.deleteUserById(id);
     }
 }
