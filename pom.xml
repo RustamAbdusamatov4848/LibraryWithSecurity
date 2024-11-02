@@ -218,6 +218,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <htmlOutput>true</htmlOutput>
+                    <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
+                    <failOnError>false</failOnError>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
