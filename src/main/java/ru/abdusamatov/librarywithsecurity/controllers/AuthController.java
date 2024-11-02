@@ -10,6 +10,10 @@ import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.util.Result;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +27,10 @@ public class AuthController {
             produces = "application/json"
     )
     public Response<LibrarianDto> createLibrarian(@Valid @RequestBody LibrarianDto librarianDto) {
-        return librarianService.createLibrarian(librarianDto);
+        return Response.buildResponse(
+                Result.success(CREATED, "Librarian was created"),
+                librarianService.createLibrarian(librarianDto)
+        );
     }
 
     @RequestMapping(
@@ -33,6 +40,7 @@ public class AuthController {
             produces = "application/json"
     )
     public Response<Void> login(@Valid @RequestBody AuthenticationDto authenticationDto) {
-        return librarianService.validateLibrarian(authenticationDto);
+        librarianService.validateLibrarian(authenticationDto);
+        return Response.buildResponse(Result.success(NO_CONTENT, "Successful validation"), null);
     }
 }

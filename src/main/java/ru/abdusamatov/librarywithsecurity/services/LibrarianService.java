@@ -14,12 +14,7 @@ import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
-import ru.abdusamatov.librarywithsecurity.util.Response;
-import ru.abdusamatov.librarywithsecurity.util.Result;
 import ru.abdusamatov.librarywithsecurity.util.mappers.LibrarianMapper;
-
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Service
 @Slf4j
@@ -31,7 +26,7 @@ public class LibrarianService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public Response<LibrarianDto> createLibrarian(LibrarianDto librarianDto) {
+    public LibrarianDto createLibrarian(LibrarianDto librarianDto) {
         checkIfEmailExists(librarianDto.getEmail());
 
         Librarian librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
@@ -39,8 +34,7 @@ public class LibrarianService {
         Librarian savedLibrarian = librarianRepository.save(librarianFromDto);
 
         log.info("Saving new Librarian with ID: {}", savedLibrarian.getId());
-        return Response.buildResponse(Result.success(CREATED, "Librarian was created"),
-                librarianMapper.librarianToLibrarianDto(savedLibrarian));
+        return librarianMapper.librarianToLibrarianDto(savedLibrarian);
     }
 
     @Transactional(readOnly = true)
@@ -51,10 +45,9 @@ public class LibrarianService {
         }
     }
 
-    public Response<Void> validateLibrarian(AuthenticationDto authenticationDto) {
+    public void validateLibrarian(AuthenticationDto authenticationDto) {
         Authentication authentication = authenticate(authenticationDto);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return Response.buildResponse(Result.success(NO_CONTENT, "Successful validation"), null);
     }
 
     private Authentication authenticate(AuthenticationDto authenticationDto) {

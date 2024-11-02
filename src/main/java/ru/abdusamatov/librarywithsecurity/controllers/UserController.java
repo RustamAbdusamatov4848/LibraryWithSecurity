@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
 import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.util.Result;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +32,10 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size) {
 
-        return userService.getUserList(page, size);
+        return Response.buildResponse(
+                Result.success(OK, "List of users"),
+                userService.getUserList(page, size)
+        );
     }
 
     @RequestMapping(
@@ -37,7 +44,10 @@ public class UserController {
             produces = {"application/json"}
     )
     public Response<UserDto> getUserById(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
+        return Response.buildResponse(
+                Result.success(OK, "User successfully found"),
+                userService.getUserById(id)
+        );
     }
 
     @RequestMapping(
@@ -47,7 +57,10 @@ public class UserController {
             consumes = {"application/json"}
     )
     public Response<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
+        return Response.buildResponse(
+                Result.success(CREATED, "User successfully saved"),
+                userService.createUser(userDto)
+        );
     }
 
     @RequestMapping(
@@ -57,7 +70,10 @@ public class UserController {
             consumes = {"application/json"}
     )
     public Response<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
-        return userService.updateUser(userDto);
+        return Response.buildResponse(
+                Result.success(OK, "User successfully updated"),
+                userService.updateUser(userDto)
+        );
     }
 
     @RequestMapping(
@@ -66,6 +82,7 @@ public class UserController {
             produces = {"application/json"}
     )
     public Response<Void> deleteUserByID(@PathVariable("id") Long id) {
-        return userService.deleteUserById(id);
+        userService.deleteUserById(id);
+        return Response.buildResponse(Result.success(OK, "Successfully deleted"), null);
     }
 }
