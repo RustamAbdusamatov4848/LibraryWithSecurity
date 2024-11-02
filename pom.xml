@@ -29,6 +29,8 @@
         <mapstruct.version>1.6.2</mapstruct.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-pmd-plugin.version>3.23.0</maven-pmd-plugin.version>
+        <spotbugs-maven-plugin>4.8.6.4</spotbugs-maven-plugin>
+        <spotbugs.version>4.8.6</spotbugs.version>
     </properties>
 
     <dependencies>
@@ -202,6 +204,26 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin}</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs</artifactId>
+                        <version>${spotbugs.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
