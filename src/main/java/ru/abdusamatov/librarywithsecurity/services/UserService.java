@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
@@ -28,7 +29,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public Response<List<UserDto>> getUserList(Integer page, Integer size) {
         List<UserDto> userDtoList = userRepository
-                .findAll(PageRequest.of(page, size))
+                .findAll(PageRequest.of(page, size, Sort.by("id").ascending()))
                 .map(userMapper::userToDto)
                 .getContent();
 

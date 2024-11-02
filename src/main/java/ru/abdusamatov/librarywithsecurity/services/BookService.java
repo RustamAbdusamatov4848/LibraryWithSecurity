@@ -4,7 +4,6 @@ package ru.abdusamatov.librarywithsecurity.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +39,9 @@ public class BookService {
     @Transactional(readOnly = true)
     public Response<List<BookDto>> getBookList(Integer page, Integer size, boolean isSorted) {
         Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
-        Pageable pageable = PageRequest.of(page, size, sort);
 
-        List<BookDto> bookDtoList = bookRepository.findAll(pageable)
+        List<BookDto> bookDtoList = bookRepository
+                .findAll(PageRequest.of(page, size, sort))
                 .map(bookMapper::bookToBookDto)
                 .getContent();
 
