@@ -260,12 +260,17 @@
                                             <minimum>0%</minimum>
                                         </limit>
                                         <limit>
+                                            <counter>CLASS</counter>
+                                            <value>MISSEDCOUNT</value>
+                                            <maximum>0</maximum>
+                                        </limit>
+                                        <limit>
                                             <counter>METHOD</counter>
                                             <value>MISSEDCOUNT</value>
                                             <maximum>0</maximum>
                                         </limit>
                                         <limit>
-                                            <counter>CLASS</counter>
+                                            <counter>LINE</counter>
                                             <value>MISSEDCOUNT</value>
                                             <maximum>0</maximum>
                                         </limit>
