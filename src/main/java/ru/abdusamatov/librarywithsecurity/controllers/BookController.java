@@ -12,8 +12,13 @@ import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
 import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.util.Result;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +34,10 @@ public class BookController {
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") boolean isSorted) {
 
-        return bookService.getBookList(page, size, isSorted);
+        return Response.buildResponse(
+                Result.success(OK, "List of books"),
+                bookService.getBookList(page, size, isSorted)
+        );
     }
 
     @RequestMapping(
@@ -38,7 +46,10 @@ public class BookController {
             produces = {"application/json"}
     )
     public Response<BookDto> showBookById(@PathVariable("id") Long id) {
-        return bookService.getBookById(id);
+        return Response.buildResponse(
+                Result.success(OK, "Book successfully found"),
+                bookService.getBookById(id)
+        );
     }
 
     @RequestMapping(
@@ -48,7 +59,10 @@ public class BookController {
             consumes = {"application/json"}
     )
     public Response<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
-        return bookService.createBook(bookDto);
+        return Response.buildResponse(
+                Result.success(CREATED, "Book successfully created"),
+                bookService.createBook(bookDto)
+        );
     }
 
     @RequestMapping(
@@ -57,7 +71,10 @@ public class BookController {
             consumes = {"application/json"}
     )
     public Response<BookDto> updateBook(@Valid @RequestBody BookDto bookDto) {
-        return bookService.updateBook(bookDto);
+        return Response.buildResponse(
+                Result.success(OK, "Book successfully updated"),
+                bookService.updateBook(bookDto)
+        );
     }
 
     @RequestMapping(
@@ -65,7 +82,8 @@ public class BookController {
             value = "/books/{id}"
     )
     public Response<Void> deleteBook(@PathVariable("id") Long id) {
-        return bookService.deleteBook(id);
+        bookService.deleteBook(id);
+        return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 
     @RequestMapping(
@@ -74,7 +92,8 @@ public class BookController {
             consumes = {"application/json"}
     )
     public Response<Void> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
-        return bookService.assignBook(id, newUser);
+        bookService.assignBook(id,newUser);
+        return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
     @RequestMapping(
@@ -82,7 +101,8 @@ public class BookController {
             value = "/books/{id}/release"
     )
     public Response<Void> releaseBook(@PathVariable("id") Long id) {
-        return bookService.releaseBook(id);
+        bookService.releaseBook(id);
+        return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
     }
 
     @RequestMapping(
@@ -91,6 +111,9 @@ public class BookController {
             produces = {"application/json"}
     )
     public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") String query) {
-        return bookService.searchByTitle(query);
+        return Response.buildResponse(
+                Result.success(OK, String.format("Found books with title %s", query)),
+                bookService.searchByTitle(query)
+        );
     }
 }
