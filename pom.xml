@@ -57,11 +57,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
@@ -267,12 +262,12 @@
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <minimum>0</minimum>
+                                            <maximum>0</maximum>
                                         </limit>
                                         <limit>
                                             <counter>CLASS</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <minimum>0</minimum>
+                                            <maximum>0</maximum>
                                         </limit>
                                     </limits>
                                 </rule>
