@@ -68,8 +68,7 @@ public class BookControllerTest {
 
     @Test
     void shouldReturnBook_whenExistingBookIdProvided() {
-        long id = 1L;
-        bookService.createBook(TestDataProvider.createBookDto());
+        long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
         webTestClient.get().uri("/books/" + id)
                 .exchange()
@@ -227,25 +226,96 @@ public class BookControllerTest {
                 .expectBody()
                 .jsonPath("$.result.httpStatusCode").isEqualTo("NO_CONTENT")
                 .jsonPath("$.result.status").isEqualTo("SUCCESS")
-                .jsonPath("$.result.description").isEqualTo("Successfully assigned");
+                .jsonPath("$.result.description").isEqualTo("Book successfully assigned");
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenInvalidUserProvided() {
+        long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
+        UserDto userDtoToBeAssigned = TestDataProvider.createInvalidUserDto();
+
+        webTestClient.patch().uri("/books/" + bookId + "/assign")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDtoToBeAssigned)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Validation field failed")
+                .jsonPath("$.errors.fullName").isEqualTo("Name should be between 2 to 30 characters long")
+                .jsonPath("$.errors.email").isEqualTo("Invalid email address")
+                .jsonPath("$.errors.dateOfBirth").isEqualTo("Date of birth must be in the past");
     }
 
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
+        UserDto userDtoToBeAssigned = userService.createUser(TestDataProvider.createUserDto());
+        long notExistingBookId = 1000L;
+
+        webTestClient.patch().uri("/books/" + notExistingBookId + "/assign")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDtoToBeAssigned)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Failed entity search")
+                .jsonPath("$.errors.cause").isEqualTo("Book with ID: " + notExistingBookId + ", not found");
 
     }
 
     @Test
     void shouldReleaseBook_whenValidBookIdProvided() {
+        long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
+        webTestClient.patch().uri("/books/" + bookId + "/release")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.result.httpStatusCode").isEqualTo("NO_CONTENT")
+                .jsonPath("$.result.status").isEqualTo("SUCCESS")
+                .jsonPath("$.result.description").isEqualTo("Book successfully released");
     }
 
+    @Test
     void shouldReturnNotFound_whenBookToReleaseDoesNotExist() {
+        long notExistingBookId = 10000L;
 
+        webTestClient.patch().uri("/books/" + notExistingBookId + "/release")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Failed entity search")
+                .jsonPath("$.errors.cause").isEqualTo("Book with ID: " + notExistingBookId + ", not found");
     }
 
+    @Test
     void shouldReturnBooks_whenValidQueryProvided() {
+        int bookListSize = 10;
 
+        List<BookDto> bookDtoList = TestDataProvider.createListBookDto(bookListSize);
+        bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
+        String title = bookDtoList.getFirst().getTitle();
+
+        webTestClient.get().uri("/books/search?query=" + title)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.result.httpStatusCode").isEqualTo("OK")
+                .jsonPath("$.result.status").isEqualTo("SUCCESS")
+                .jsonPath("$.result.description").isEqualTo("Found books with title " + title)
+                .jsonPath("$.data.length()").isEqualTo(1);
     }
 
+    @Test
+    void shouldReturnEmptyBookList_whenQueryDoNotSatisfiesAnyBook() {
+        String title = "Not existing title";
+
+        webTestClient.get().uri("/books/search?query=" + title)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.result.httpStatusCode").isEqualTo("OK")
+                .jsonPath("$.result.status").isEqualTo("SUCCESS")
+                .jsonPath("$.result.description").isEqualTo("Found books with title " + title)
+                .jsonPath("$.data.length()").isEqualTo(0);
+    }
 }

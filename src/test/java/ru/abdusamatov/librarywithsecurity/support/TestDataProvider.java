@@ -14,7 +14,7 @@ public class TestDataProvider {
     public static final String LONG_NAME = "a".repeat(MAX_NAME_LENGTH + 1);
     public static final int INVALID_YEAR_OF_PUBLICATION = 1499;
     public static final String INVALID_EMAIL = "invalid-email";
-    public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().minusDays(1);
+    public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
 
     public static BookDto createBookDto() {
         return BookDto.builder()
