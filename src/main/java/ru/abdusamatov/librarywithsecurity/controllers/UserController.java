@@ -16,6 +16,7 @@ import ru.abdusamatov.librarywithsecurity.util.Result;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -83,6 +84,6 @@ public class UserController {
     )
     public Response<Void> deleteUserByID(@PathVariable("id") Long id) {
         userService.deleteUserById(id);
-        return Response.buildResponse(Result.success(OK, "Successfully deleted"), null);
+        return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 }

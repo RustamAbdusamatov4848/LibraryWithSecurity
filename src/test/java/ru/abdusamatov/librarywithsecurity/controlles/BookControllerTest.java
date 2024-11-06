@@ -57,13 +57,19 @@ public class BookControllerTest {
         List<BookDto> bookDtoList = TestDataProvider.createListBookDto(bookListSize);
         bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
 
-        webTestClient.get().uri("/books?page=0&size=10")
+        webTestClient.get().uri(uriBuilder ->
+                        uriBuilder
+                                .path("/books")
+                                .queryParam("page", 0)
+                                .queryParam("size", 20)
+                                .build())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.result.httpStatusCode").isEqualTo("OK")
                 .jsonPath("$.result.status").isEqualTo("SUCCESS")
-                .jsonPath("$.result.description").isEqualTo("List of books");
+                .jsonPath("$.result.description").isEqualTo("List of books")
+                .jsonPath("$.data.length()").isEqualTo(bookListSize);
     }
 
     @Test
@@ -130,7 +136,7 @@ public class BookControllerTest {
     @Test
     void shouldUpdateBook_whenValidBookDtoProvided() {
         BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto updateBookDto = TestDataProvider.updatedBookDto(bookToBeUpdated);
+        BookDto updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
 
         webTestClient.put().uri("/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -155,7 +161,7 @@ public class BookControllerTest {
         long notExistingId = 10000L;
 
         BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto updateBookDto = TestDataProvider.updatedBookDto(bookToBeUpdated);
+        BookDto updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
         updateBookDto.setId(notExistingId);
 
         webTestClient.put().uri("/books")
@@ -171,7 +177,7 @@ public class BookControllerTest {
     @Test
     void shouldReturnBadRequest_whenUpdateInvalidBookDataProvided() {
         BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto invalidBookDto = TestDataProvider.updatedBookDtoWithInvalidField(bookToBeUpdated);
+        BookDto invalidBookDto = TestDataProvider.updateBookDtoWithInvalidField(bookToBeUpdated);
 
         webTestClient.put().uri("/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -187,8 +193,7 @@ public class BookControllerTest {
 
     @Test
     void shouldReturnNoContent_whenBookDeletedSuccessfully() {
-        BookDto bookDtoToBeDeleted = bookService.createBook(TestDataProvider.createBookDto());
-        long id = bookDtoToBeDeleted.getId();
+        long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
         webTestClient.delete().uri("/books/" + id)
                 .exchange()
