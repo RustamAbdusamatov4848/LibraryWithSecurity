@@ -52,7 +52,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldGetBookList() {
+    void shouldGetAllBooks() {
         int bookListSize = 10;
         List<BookDto> bookDtoList = TestDataProvider.createListBookDto(bookListSize);
         bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
@@ -99,7 +99,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldCreateBook_whenValidBookDtoProvided() {
+    void shouldCreateBook_whenValidDataProvided() {
         BookDto validBookDto = TestDataProvider.createBookDto();
 
         webTestClient.post().uri("/books")
@@ -118,8 +118,8 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequest_whenInvalidBookDataProvided() {
-        BookDto invalidBookDto = TestDataProvider.createInvalidBookDto();
+    void shouldReturnBadRequest_whenBookWithInvalidFields() {
+        BookDto invalidBookDto = TestDataProvider.createBookDtoWithInvalidFields();
 
         webTestClient.post().uri("/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -175,9 +175,9 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequest_whenUpdateInvalidBookDataProvided() {
+    void shouldReturnBadRequest_whenUpdateBookWithInvalidFields() {
         BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto invalidBookDto = TestDataProvider.updateBookDtoWithInvalidField(bookToBeUpdated);
+        BookDto invalidBookDto = TestDataProvider.updateBookDtoWithInvalidFields(bookToBeUpdated);
 
         webTestClient.put().uri("/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -219,7 +219,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldAssignBook_whenValidBookIdAndUserProvided() {
+    void shouldAssignBook_whenValidDataProvided() {
         long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
         UserDto userDtoToBeAssigned = userService.createUser(TestDataProvider.createUserDto());
 
@@ -235,9 +235,9 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequest_whenInvalidUserProvided() {
+    void shouldReturnBadRequest_whenAssignUserWithInvalidFields() {
         long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
-        UserDto userDtoToBeAssigned = TestDataProvider.createInvalidUserDto();
+        UserDto userDtoToBeAssigned = TestDataProvider.createUserDtoWithInvalidFields();
 
         webTestClient.patch().uri("/books/" + bookId + "/assign")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -268,7 +268,7 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldReleaseBook_whenValidBookIdProvided() {
+    void shouldReleaseBook_whenValidDataProvided() {
         long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
         webTestClient.patch().uri("/books/" + bookId + "/release")

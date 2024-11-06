@@ -12,7 +12,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
@@ -23,14 +22,12 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class UserControllerTest {
-    @Autowired
-    private BookRepository bookRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository repository;
 
     @Autowired
-    private UserService userService;
+    private UserService service;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -41,15 +38,14 @@ public class UserControllerTest {
 
     @AfterEach
     void tearDown() {
-        bookRepository.deleteAll();
-        userRepository.deleteAll();
+        repository.deleteAll();
     }
 
     @Test
-    void shouldGetUserList() {
+    void shouldGetAllUsers() {
         int userListSize = 10;
         List<UserDto> userDtoList = TestDataProvider.createListUserDto(userListSize);
-        userDtoList.forEach(userDto -> userService.createUser(userDto));
+        userDtoList.forEach(userDto -> service.createUser(userDto));
 
         webTestClient.get().uri(uriBuilder ->
                         uriBuilder
@@ -68,7 +64,7 @@ public class UserControllerTest {
 
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
-        long id = userService.createUser(TestDataProvider.createUserDto()).getId();
+        long id = service.createUser(TestDataProvider.createUserDto()).getId();
 
         webTestClient.get().uri("/users/" + id)
                 .exchange()
@@ -93,7 +89,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void shouldCreateUser_whenValidUserDtoProvided() {
+    void shouldCreateUser_whenValidDataProvided() {
         UserDto validUserDto = TestDataProvider.createUserDto();
 
         webTestClient.post().uri("/users")
@@ -112,8 +108,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequest_whenInvalidUserDataProvided() {
-        UserDto invalidUserDto = TestDataProvider.createInvalidUserDto();
+    void shouldReturnBadRequest_whenUserWithInvalidFields() {
+        UserDto invalidUserDto = TestDataProvider.createUserDtoWithInvalidFields();
 
         webTestClient.post().uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +125,7 @@ public class UserControllerTest {
 
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
-        UserDto userToBeUpdated = userService.createUser(TestDataProvider.createUserDto());
+        UserDto userToBeUpdated = service.createUser(TestDataProvider.createUserDto());
         UserDto updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated);
 
 
@@ -153,7 +149,7 @@ public class UserControllerTest {
     void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
         long notExistingId = 10000L;
 
-        UserDto userToBeUpdated = userService.createUser(TestDataProvider.createUserDto());
+        UserDto userToBeUpdated = service.createUser(TestDataProvider.createUserDto());
         UserDto updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated);
         updateUserDto.setId(notExistingId);
 
@@ -168,9 +164,9 @@ public class UserControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequest_whenUpdateInvalidBookDataProvided() {
-        UserDto userToBeUpdated = userService.createUser(TestDataProvider.createUserDto());
-        UserDto updateUserDto = TestDataProvider.updateUserDtoWithInvalidField(userToBeUpdated);
+    void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
+        UserDto userToBeUpdated = service.createUser(TestDataProvider.createUserDto());
+        UserDto updateUserDto = TestDataProvider.updateUserDtoWithInvalidFields(userToBeUpdated);
 
         webTestClient.put().uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -187,7 +183,7 @@ public class UserControllerTest {
 
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
-        long id = userService.createUser(TestDataProvider.createUserDto()).getId();
+        long id = service.createUser(TestDataProvider.createUserDto()).getId();
 
         webTestClient.delete().uri("/users/" + id)
                 .exchange()
