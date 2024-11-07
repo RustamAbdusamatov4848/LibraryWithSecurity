@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.mappers.LibrarianMapper;
+import ru.abdusamatov.librarywithsecurity.services.mappers.LibrarianMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

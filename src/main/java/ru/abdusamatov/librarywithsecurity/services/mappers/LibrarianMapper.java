@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.util.mappers;
+package ru.abdusamatov.librarywithsecurity.services.mappers;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

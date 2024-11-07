@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.models.Book;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
+import ru.abdusamatov.librarywithsecurity.services.mappers.BookMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

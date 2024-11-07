@@ -14,8 +14,8 @@ import ru.abdusamatov.librarywithsecurity.models.Book;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
-import ru.abdusamatov.librarywithsecurity.util.mappers.BookMapper;
-import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
+import ru.abdusamatov.librarywithsecurity.services.mappers.BookMapper;
+import ru.abdusamatov.librarywithsecurity.services.mappers.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;

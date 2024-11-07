@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
-import ru.abdusamatov.librarywithsecurity.util.mappers.UserMapper;
+import ru.abdusamatov.librarywithsecurity.services.mappers.UserMapper;
 
 import java.util.List;
 

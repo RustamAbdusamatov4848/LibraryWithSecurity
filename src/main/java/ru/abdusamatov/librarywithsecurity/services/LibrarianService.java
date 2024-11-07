@@ -14,7 +14,7 @@ import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.exceptions.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
-import ru.abdusamatov.librarywithsecurity.util.mappers.LibrarianMapper;
+import ru.abdusamatov.librarywithsecurity.services.mappers.LibrarianMapper;
 
 @Service
 @Slf4j
