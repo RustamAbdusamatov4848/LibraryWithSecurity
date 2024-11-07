@@ -1,10 +1,9 @@
-package ru.abdusamatov.librarywithsecurity.utils;
+package ru.abdusamatov.librarywithsecurity.services.mappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.models.User;
-import ru.abdusamatov.librarywithsecurity.services.mappers.UserMapper;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import java.util.Collections;
 

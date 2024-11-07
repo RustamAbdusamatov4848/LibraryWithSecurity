@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.utils;
+package ru.abdusamatov.librarywithsecurity.services.mappers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,6 @@ import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.services.mappers.LibrarianMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
