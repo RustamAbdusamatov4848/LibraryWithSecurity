@@ -1,12 +1,12 @@
 package ru.abdusamatov.librarywithsecurity.utils;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.models.User;
-import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.services.mappers.UserMapper;
+import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +41,7 @@ public class UserMapperTest {
     }
 
     @Test
-    void shouldUpdateUserFromDto() {
+    void shouldUpdateUserFromDtoWithNonNullBooks() {
         User userToBeUpdated = TestDataProvider.createUser();
         UserDto newUserDto = TestDataProvider.createUserDto();
         newUserDto.setId(userToBeUpdated.getId());
@@ -50,6 +50,25 @@ public class UserMapperTest {
 
         assertThat(updatedUser).isNotNull();
         assertEquals(newUserDto, updatedUser);
+    }
+
+    @Test
+    void shouldNotUpdateUser_whenUserDtoIsNull() {
+        User userToBeUpdated = TestDataProvider.createUser();
+
+        User updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
+
+        assertThat(updatedUser).isSameAs(userToBeUpdated);
+    }
+
+    @Test
+    void shouldUpdateUserFromDtoWithEmptyBookList() {
+        User userToBeUpdated = TestDataProvider.createUser();
+        UserDto newUserDto = TestDataProvider.createUserDto();
+        newUserDto.setBooks(Collections.emptyList());
+        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+
+        assertThat(updatedUser.getBooks()).isEmpty();
     }
 
     @Test
