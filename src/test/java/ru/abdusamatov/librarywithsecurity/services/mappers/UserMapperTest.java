@@ -61,13 +61,26 @@ public class UserMapperTest {
     }
 
     @Test
-    void shouldUpdateUserFromDtoWithEmptyBookList() {
+    void shouldUpdateUserFromDto_whenEmptyBookList() {
         User userToBeUpdated = TestDataProvider.createUser();
         UserDto newUserDto = TestDataProvider.createUserDto();
         newUserDto.setBooks(Collections.emptyList());
+
         User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser.getBooks()).isEmpty();
+    }
+
+    @Test
+    void shouldUpdatedUserFromDto_whenNullBookList() {
+        User userToBeUpdated = TestDataProvider.createUser();
+        userToBeUpdated.setBooks(null);
+        UserDto newUserDto = TestDataProvider.createUserDto();
+        newUserDto.setBooks(TestDataProvider.createListBookDto(10));
+
+        User updatedUser = mapper.updateUserFromDto(newUserDto,userToBeUpdated);
+
+        assertThat(updatedUser.getBooks()).isNotNull().isNotEmpty();
     }
 
     @Test

@@ -40,6 +40,15 @@ public class BookMapperTest {
     }
 
     @Test
+    void shouldMapBookDtoToBook_whenBookDtoNull() {
+        BookDto bookDto = null;
+
+        Book book = mapper.bookDtoToBook(bookDto);
+
+        assertThat(book).isNull();
+    }
+
+    @Test
     void shouldUpdateBookFromDto() {
         Book bookToBeUpdated = TestDataProvider.createBook();
         BookDto newBookDto = TestDataProvider.createBookDto();
@@ -50,6 +59,16 @@ public class BookMapperTest {
 
         assertThat(updatedBook).isNotNull();
         assertEquals(newBookDto, updatedBook);
+    }
+
+    @Test
+    void shouldUpdateBookFromDto_whenBookDtoIsNull() {
+        Book bookToBeUpdated = TestDataProvider.createBook();
+        BookDto newBookDto = null;
+
+        Book updatedBook = mapper.updateBookFromDto(newBookDto,bookToBeUpdated);
+
+        assertThat(updatedBook).isEqualTo(bookToBeUpdated);
     }
 
     @Test
