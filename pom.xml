@@ -218,6 +218,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <linkXRef>false</linkXRef>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
