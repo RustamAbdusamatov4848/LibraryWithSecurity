@@ -168,6 +168,24 @@ public class BookControllerTest extends TestBase {
     }
 
     @Test
+    void shouldReturnNotFound_whenBookToUpdateWithUserIdDoesNotExist() {
+        long notExistingUserId = 10000L;
+
+        BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
+        BookDto updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
+        updateBookDto.setUserId(notExistingUserId);
+
+        webTestClient.put().uri("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateBookDto)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Failed entity search")
+                .jsonPath("$.errors.cause").isEqualTo("User with ID: " + notExistingUserId + ", not found");
+    }
+
+    @Test
     void shouldReturnNoContent_whenBookDeletedSuccessfully() {
         long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
