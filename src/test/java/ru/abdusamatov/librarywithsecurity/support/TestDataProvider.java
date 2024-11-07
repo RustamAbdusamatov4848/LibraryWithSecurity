@@ -4,9 +4,14 @@ import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.models.Book;
+import ru.abdusamatov.librarywithsecurity.models.Librarian;
+import ru.abdusamatov.librarywithsecurity.models.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -24,6 +29,19 @@ public class TestDataProvider {
     public static final String INVALID_EMAIL = "invalid-email";
     public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
     public static final Random RANDOM = new Random();
+
+    public static Book createBook() {
+        User owner = createUser();
+        return Book.builder()
+                .id(1L)
+                .title("Book Title" + getLimitUUID())
+                .authorName("AuthorName")
+                .authorSurname("AuthorSurname")
+                .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
+                .takenAt(LocalDateTime.now())
+                .owner(owner)
+                .build();
+    }
 
     public static BookDto createBookDto() {
         return BookDto.builder()
@@ -77,6 +95,16 @@ public class TestDataProvider {
         return list;
     }
 
+    public static User createUser() {
+        return User.builder()
+                .id(1L)
+                .fullName("Test User" + getLimitUUID(10))
+                .email("testuser" + getLimitUUID(10) + "@example.com")
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                .books(Collections.emptyList())
+                .build();
+    }
+
     public static UserDto createUserDto() {
         return UserDto.builder()
                 .fullName("Test User" + getLimitUUID(10))
@@ -120,6 +148,15 @@ public class TestDataProvider {
         }
 
         return list;
+    }
+
+    public static Librarian createLibrarian() {
+        return Librarian.builder()
+                .id(1L)
+                .fullName("Test librarian" + getLimitUUID(10))
+                .email("testlibrarian" + getLimitUUID(10) + "@example.com")
+                .password(getRandomPassword())
+                .build();
     }
 
     public static LibrarianDto createLibrarianDto() {
