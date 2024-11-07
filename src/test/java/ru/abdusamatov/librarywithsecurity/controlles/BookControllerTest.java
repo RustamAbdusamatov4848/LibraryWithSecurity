@@ -1,16 +1,8 @@
 package ru.abdusamatov.librarywithsecurity.controlles;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
@@ -21,10 +13,7 @@ import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.List;
 
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
-public class BookControllerTest {
+public class BookControllerTest extends TestBase {
 
     @Autowired
     private BookRepository bookRepository;
@@ -37,19 +26,6 @@ public class BookControllerTest {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> pSqlContainer = new PostgreSQLContainer<>("postgres:latest");
-
-    @AfterEach
-    void tearDown() {
-        bookRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
     @Test
     void shouldGetAllBooks() {
@@ -322,5 +298,11 @@ public class BookControllerTest {
                 .jsonPath("$.result.status").isEqualTo("SUCCESS")
                 .jsonPath("$.result.description").isEqualTo("Found books with title " + title)
                 .jsonPath("$.data.length()").isEqualTo(0);
+    }
+
+    @Override
+    protected void clearDatabase() {
+        bookRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }

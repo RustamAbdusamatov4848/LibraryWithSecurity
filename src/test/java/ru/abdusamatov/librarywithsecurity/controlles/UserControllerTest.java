@@ -1,16 +1,8 @@
 package ru.abdusamatov.librarywithsecurity.controlles;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
@@ -18,28 +10,13 @@ import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.List;
 
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
-public class UserControllerTest {
+public class UserControllerTest extends TestBase {
 
     @Autowired
     private UserRepository repository;
 
     @Autowired
     private UserService service;
-
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> pSqlContainer = new PostgreSQLContainer<>("postgres:latest");
-
-    @AfterEach
-    void tearDown() {
-        repository.deleteAll();
-    }
 
     @Test
     void shouldGetAllUsers() {
@@ -205,5 +182,10 @@ public class UserControllerTest {
                 .expectBody()
                 .jsonPath("$.message").isEqualTo("Failed entity search")
                 .jsonPath("$.errors.cause").isEqualTo("User with ID: " + notExistingId + ", not found");
+    }
+
+    @Override
+    protected void clearDatabase() {
+        repository.deleteAll();
     }
 }

@@ -1,44 +1,21 @@
 package ru.abdusamatov.librarywithsecurity.controlles;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
-@Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
-public class AuthControllerTest {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> pSqlContainer = new PostgreSQLContainer<>("postgres:latest");
-
-    @Autowired
-    private WebTestClient webTestClient;
+public class AuthControllerTest extends TestBase {
 
     @Autowired
     private LibrarianRepository repository;
 
     @Autowired
     private LibrarianService service;
-
-    @AfterEach
-    void tearDown() {
-        repository.deleteAll();
-    }
 
     @Test
     public void shouldCreateLibrarian_whenValidDataProvided() {
@@ -122,5 +99,10 @@ public class AuthControllerTest {
                 .expectStatus().isUnauthorized()
                 .expectBody()
                 .jsonPath("$.message").isEqualTo("Failed authorization");
+    }
+
+    @Override
+    protected void clearDatabase() {
+        repository.deleteAll();
     }
 }
