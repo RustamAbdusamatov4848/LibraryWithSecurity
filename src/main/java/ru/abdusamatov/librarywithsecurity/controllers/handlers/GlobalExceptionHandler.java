@@ -1,7 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.controllers.handlers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +12,10 @@ import ru.abdusamatov.librarywithsecurity.exceptions.ResourceNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @ControllerAdvice
 @Slf4j
@@ -27,8 +30,8 @@ public class GlobalExceptionHandler {
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage())
                 );
 
-        ErrorResponse errorResponse = new ErrorResponse("Validation field failed", errors);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST, "Validation field failed", errors);
+        return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -38,8 +41,8 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage();
         Map<String, String> errors = Map.of("cause", message);
 
-        ErrorResponse errorResponse = new ErrorResponse("Failed entity search", errors);
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        ErrorResponse errorResponse = new ErrorResponse(NOT_FOUND, "Failed entity search", errors);
+        return new ResponseEntity<>(errorResponse, NOT_FOUND);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -49,8 +52,8 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage();
         Map<String, String> errors = Map.of("cause", message);
 
-        ErrorResponse errorResponse = new ErrorResponse("Failed authorization", errors);
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        ErrorResponse errorResponse = new ErrorResponse(UNAUTHORIZED, "Failed authorization", errors);
+        return new ResponseEntity<>(errorResponse, UNAUTHORIZED);
     }
 
     @ExceptionHandler(ExistEmailException.class)
@@ -60,8 +63,8 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage();
         Map<String, String> errors = Map.of("cause", message);
 
-        ErrorResponse errorResponse = new ErrorResponse("Failed email validation, already exist", errors);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST, "Failed email validation, already exist", errors);
+        return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 
 }

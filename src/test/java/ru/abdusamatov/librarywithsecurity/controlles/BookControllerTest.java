@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
@@ -21,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
@@ -75,12 +75,17 @@ public class BookControllerTest extends TestBase {
     void shouldReturnNotFound_whenNonExistingBookIdProvided() {
         long id = 1L;
 
-        webTestClient.get().uri("/books/" + id)
+        var response = webTestClient.get().uri("/books/" + id)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody()
-                .jsonPath("$.message").isEqualTo("Failed entity search")
-                .jsonPath("$.errors.cause").isEqualTo("Book with ID: " + id + ", not found");
+                .expectBody(ErrorResponse.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
+        assertThat(response.getMessage()).isEqualTo("Failed entity search");
+        assertThat(response.getErrors()).containsEntry("cause", "Book with ID: " + id + ", not found");
     }
 
     @Test
@@ -303,15 +308,6 @@ public class BookControllerTest extends TestBase {
                 .containsExactly(httpStatusCode, SUCCESS, description);
     }
 
-    private static void assertExceptionMessage(ResponseEntity<ErrorResponse> response, long id) {
-        assertThat(response.getBody().getMessage())
-                .isNotNull()
-                .isNotEmpty()
-                .isEqualTo("Failed entity search");
-        assertThat(response.getBody().getErrors())
-                .containsEntry("cause", "Book with ID: " + id + ", not found");
-    }
-
     private Response<List<BookDto>> getResponseGetBookList() {
         var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -343,25 +339,6 @@ public class BookControllerTest extends TestBase {
         assertThat(response).isNotNull();
         return response;
     }
-
-
-    /*
-        Код для возвращения ответа с ошибкой. ИСПРАВИТЬ!!!
-    */
-    private ResponseEntity<ErrorResponse> getResponseShowBookByIdNotFound(String url) {
-        var response = webTestClient.get().uri(url)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseEntityReference(ErrorResponse.class))
-                .returnResult()
-                .getResponseBody();
-
-        assertThat(response).isNotNull();
-        assertThat(response.getBody()).isNotNull();
-
-        return response;
-    }
-
 
     private Response<BookDto> getResponseCreateBook(BookDto bookDto) {
         var response = webTestClient.post().uri(uriBuilder -> uriBuilder
