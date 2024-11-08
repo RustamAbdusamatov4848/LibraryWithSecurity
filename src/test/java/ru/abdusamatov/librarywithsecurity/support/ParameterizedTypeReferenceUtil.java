@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.support;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 import org.testcontainers.shaded.org.apache.commons.lang3.reflect.TypeUtils;
 import ru.abdusamatov.librarywithsecurity.util.Response;
 
@@ -20,6 +21,10 @@ public class ParameterizedTypeReferenceUtil {
 
     public static <T> ParameterizedTypeReference<Response<List<T>>> getListResponseReference(final Class<T> type) {
         return ParameterizedTypeReference.forType(TypeUtils.parameterize(Response.class, TypeUtils.parameterize(List.class, type)));
+    }
+
+    public static <T> ParameterizedTypeReference<ResponseEntity<T>> getResponseEntityReference(final Class<T> type) {
+        return ParameterizedTypeReference.forType(TypeUtils.parameterize(ResponseEntity.class, type));
     }
 }
 

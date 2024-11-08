@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
@@ -69,12 +71,9 @@ public class BookControllerTest extends TestBase {
     void shouldReturnNotFound_whenNonExistingBookIdProvided() {
         long id = 1L;
 
-        webTestClient.get().uri("/books/" + id)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                .jsonPath("$.message").isEqualTo("Failed entity search")
-                .jsonPath("$.errors.cause").isEqualTo("Book with ID: " + id + ", not found");
+        var response = getResponseShowBookByIdNotFound(id);
+
+        assertExceptionMessage(response, id);
     }
 
     @Test
@@ -327,6 +326,15 @@ public class BookControllerTest extends TestBase {
                 .containsExactly(httpStatusCode, SUCCESS, description);
     }
 
+    private static void assertExceptionMessage(ResponseEntity<ErrorResponse> response, long id) {
+        assertThat(response.getBody().getMessage())
+                .isNotNull()
+                .isNotEmpty()
+                .isEqualTo("Failed entity search");
+        assertThat(response.getBody().getErrors())
+                .containsEntry("cause", "Book with ID: " + id + ", not found");
+    }
+
     private Response<List<BookDto>> getResponseGetBookList() {
         var response = webTestClient.get().uri(uriBuilder ->
                         uriBuilder
@@ -353,6 +361,20 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
+        return response;
+    }
+
+    private ResponseEntity<ErrorResponse> getResponseShowBookByIdNotFound(long id) {
+        var response = webTestClient.get().uri("/books/" + id)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseEntityReference(ErrorResponse.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getBody()).isNotNull();
+
         return response;
     }
 }
