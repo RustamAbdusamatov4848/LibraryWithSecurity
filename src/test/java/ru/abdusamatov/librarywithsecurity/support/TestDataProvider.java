@@ -85,6 +85,16 @@ public class TestDataProvider {
                 .build();
     }
 
+    public static List<Book> createListBook(int size) {
+        List<Book> list = new ArrayList<>(size);
+
+        for (int i = 0; i < size; i++) {
+            list.add(createBook());
+        }
+
+        return list;
+    }
+
     public static List<BookDto> createListBookDto(int size) {
         List<BookDto> list = new ArrayList<>(size);
 

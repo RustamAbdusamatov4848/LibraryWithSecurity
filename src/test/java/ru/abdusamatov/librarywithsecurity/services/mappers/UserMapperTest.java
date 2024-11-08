@@ -1,31 +1,27 @@
 package ru.abdusamatov.librarywithsecurity.services.mappers;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.models.User;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
+
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserMapperTest {
-    private UserMapper mapper;
 
-    @BeforeEach
-    void setUp() {
-        mapper = Mappers.getMapper(UserMapper.class);
-    }
+    private final UserMapper mapper = new UserMapperImpl();
 
     @Test
-    void shouldMapUserToDto() {
+    void shouldMapToDto() {
         User user = TestDataProvider.createUser();
 
         UserDto userDto = mapper.userToDto(user);
 
         assertThat(userDto).isNotNull();
         assertThat(userDto.getBooks().size()).isEqualTo(user.getBooks().size());
-        assertEquals(userDto, user);
+        assertUserEquals(userDto, user);
     }
 
     @Test
@@ -36,11 +32,11 @@ public class UserMapperTest {
         User user = mapper.dtoToUser(userDto);
 
         assertThat(user).isNotNull();
-        assertEquals(userDto, user);
+        assertUserEquals(userDto, user);
     }
 
     @Test
-    void shouldUpdateUserFromDtoWithNonNullBooks() {
+    void shouldUpdateUserFromDto_whenBooksNotNull() {
         User userToBeUpdated = TestDataProvider.createUser();
         UserDto newUserDto = TestDataProvider.createUserDto();
         newUserDto.setId(userToBeUpdated.getId());
@@ -48,7 +44,7 @@ public class UserMapperTest {
         User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser).isNotNull();
-        assertEquals(newUserDto, updatedUser);
+        assertUserEquals(newUserDto, updatedUser);
     }
 
     @Test
@@ -57,11 +53,11 @@ public class UserMapperTest {
 
         User updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
 
-        assertThat(updatedUser).isSameAs(userToBeUpdated);
+        assertThat(updatedUser).isEqualTo(userToBeUpdated);
     }
 
     @Test
-    void shouldUpdateUserFromDto_whenEmptyBookList() {
+    void shouldUpdateUserFromDto_whenBookListIsEmpty() {
         User userToBeUpdated = TestDataProvider.createUser();
         UserDto newUserDto = TestDataProvider.createUserDto();
         newUserDto.setBooks(Collections.emptyList());
@@ -72,15 +68,34 @@ public class UserMapperTest {
     }
 
     @Test
-    void shouldUpdatedUserFromDto_whenNullBookList() {
+    void shouldUpdatedUserFromDto_whenUserHasNullBookList() {
+        int listSize = 10;
         User userToBeUpdated = TestDataProvider.createUser();
         userToBeUpdated.setBooks(null);
         UserDto newUserDto = TestDataProvider.createUserDto();
-        newUserDto.setBooks(TestDataProvider.createListBookDto(10));
+        newUserDto.setBooks(TestDataProvider.createListBookDto(listSize));
 
-        User updatedUser = mapper.updateUserFromDto(newUserDto,userToBeUpdated);
+        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
-        assertThat(updatedUser.getBooks()).isNotNull().isNotEmpty();
+        assertThat(updatedUser.getBooks())
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(listSize);
+    }
+
+    @Test
+    void shouldUpdatedUserFromDto_whenDtoHasNullBookList() {
+        int listSize = 10;
+
+        User userToBeUpdated = TestDataProvider.createUser();
+        userToBeUpdated.setBooks(TestDataProvider.createListBook(listSize));
+
+        UserDto newUserDto = TestDataProvider.createUserDto();
+        newUserDto.setBooks(null);
+
+        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+
+        assertThat(updatedUser.getBooks()).isNull();
     }
 
     @Test
@@ -95,17 +110,11 @@ public class UserMapperTest {
         assertThat(user).isNull();
     }
 
-    private static void assertEquals(UserDto userDto, User user) {
-        assertThat(userDto).extracting(
-                UserDto::getId,
-                UserDto::getFullName,
-                UserDto::getEmail,
-                UserDto::getDateOfBirth
-        ).containsExactly(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getDateOfBirth()
-        );
+    private static void assertUserEquals(UserDto userDto, User user) {
+        assertThat(userDto)
+                .withFailMessage(() -> "Users are not equals")
+                .usingRecursiveComparison()
+                .ignoringFields("books")
+                .isEqualTo(user);
     }
 }
