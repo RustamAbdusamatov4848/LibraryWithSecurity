@@ -21,7 +21,7 @@ public class UserMapperTest {
 
         assertThat(userDto).isNotNull();
         assertThat(userDto.getBooks().size()).isEqualTo(user.getBooks().size());
-        assertUserEquals(userDto, user);
+        assertUsersAreEqual(userDto, user);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class UserMapperTest {
         User user = mapper.dtoToUser(userDto);
 
         assertThat(user).isNotNull();
-        assertUserEquals(userDto, user);
+        assertUsersAreEqual(userDto, user);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class UserMapperTest {
         User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser).isNotNull();
-        assertUserEquals(newUserDto, updatedUser);
+        assertUsersAreEqual(newUserDto, updatedUser);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class UserMapperTest {
         assertThat(user).isNull();
     }
 
-    private static void assertUserEquals(UserDto userDto, User user) {
+    private static void assertUsersAreEqual(UserDto userDto, User user) {
         assertThat(userDto)
                 .withFailMessage(() -> "Users are not equal")
                 .usingRecursiveComparison()

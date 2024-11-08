@@ -1,8 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.services.mappers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.models.Librarian;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
@@ -10,12 +8,8 @@ import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LibrarianMapperTest {
-    private LibrarianMapper mapper;
 
-    @BeforeEach
-    void setUp() {
-        mapper = Mappers.getMapper(LibrarianMapper.class);
-    }
+    private final LibrarianMapper mapper = new LibrarianMapperImpl();
 
     @Test
     void shouldMapLibrarianToLibrarianDto() {
@@ -24,7 +18,7 @@ public class LibrarianMapperTest {
         LibrarianDto librarianDto = mapper.librarianToLibrarianDto(librarian);
 
         assertThat(librarianDto).isNotNull();
-        assertEquals(librarianDto, librarian);
+        assertLibrariansAreEqual(librarianDto, librarian);
     }
 
     @Test
@@ -35,7 +29,7 @@ public class LibrarianMapperTest {
         Librarian librarian = mapper.librarianDtoToLibrarian(librarianDto);
 
         assertThat(librarian).isNotNull();
-        assertEquals(librarianDto, librarian);
+        assertLibrariansAreEqual(librarianDto, librarian);
     }
 
     @Test
@@ -50,15 +44,10 @@ public class LibrarianMapperTest {
         assertThat(librarian).isNull();
     }
 
-    private static void assertEquals(LibrarianDto librarianDto, Librarian librarian) {
-        assertThat(librarianDto).extracting(
-                LibrarianDto::getId,
-                LibrarianDto::getFullName,
-                LibrarianDto::getEmail
-        ).containsExactly(
-                librarian.getId(),
-                librarian.getFullName(),
-                librarian.getEmail()
-        );
+    private static void assertLibrariansAreEqual(LibrarianDto librarianDto, Librarian librarian) {
+        assertThat(librarian)
+                .usingRecursiveComparison()
+                .ignoringFields("password")
+                .isEqualTo(librarianDto);
     }
 }

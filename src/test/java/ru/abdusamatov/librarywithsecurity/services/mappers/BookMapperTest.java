@@ -18,7 +18,7 @@ public class BookMapperTest {
         BookDto bookDto = mapper.bookToBookDto(book);
 
         assertThat(bookDto).isNotNull();
-        assertBookAndBookDtoEqual(bookDto, book);
+        assertBooksAreEqual(bookDto, book);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class BookMapperTest {
         Book book = mapper.bookDtoToBook(bookDto);
 
         assertThat(book).isNotNull();
-        assertBookAndBookDtoEqual(bookDto, book);
+        assertBooksAreEqual(bookDto, book);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class BookMapperTest {
 
         Book updatedBook = mapper.updateBookFromDto(newBookDto, bookToBeUpdated);
 
-        assertBookAndBookDtoEqual(newBookDto, updatedBook);
+        assertBooksAreEqual(newBookDto, updatedBook);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class BookMapperTest {
         assertThat(bookDto).isNull();
     }
 
-    private static void assertBookAndBookDtoEqual(final BookDto bookDto, final Book book) {
+    private static void assertBooksAreEqual(final BookDto bookDto, final Book book) {
         assertThat(book)
                 .withFailMessage("Books are not equal")
                 .usingRecursiveComparison()
