@@ -47,7 +47,7 @@ public class BookControllerTest extends TestBase {
         List<BookDto> bookDtoList = TestDataProvider.createListBookDto(bookListSize);
         bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
 
-        var response = getResponseByGetBookList();
+        var response = getResponseGetBookList();
 
         assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
@@ -59,7 +59,7 @@ public class BookControllerTest extends TestBase {
     void shouldReturnBook_whenExistingBookIdProvided() {
         long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
-        var response = getResponseByShowBookById(id);
+        var response = getResponseShowBookById(id);
 
         assertSuccess(OK, "Book successfully found", response);
         assertThat(response.getData().getId()).isEqualTo(id);
@@ -327,7 +327,7 @@ public class BookControllerTest extends TestBase {
                 .containsExactly(httpStatusCode, SUCCESS, description);
     }
 
-    private Response<List<BookDto>> getResponseByGetBookList() {
+    private Response<List<BookDto>> getResponseGetBookList() {
         var response = webTestClient.get().uri(uriBuilder ->
                         uriBuilder
                                 .path("/books")
@@ -344,7 +344,7 @@ public class BookControllerTest extends TestBase {
         return response;
     }
 
-    private Response<BookDto> getResponseByShowBookById(long id) {
+    private Response<BookDto> getResponseShowBookById(long id) {
         var response = webTestClient.get().uri("/books/" + id)
                 .exchange()
                 .expectStatus().isOk()
