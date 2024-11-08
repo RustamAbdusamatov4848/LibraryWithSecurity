@@ -68,7 +68,7 @@ public class BookMapperTest {
         assertThat(bookDto).isNull();
     }
 
-    private static void assertBookAndBookDtoEqual(BookDto bookDto, Book book) {
+    private static void assertBookAndBookDtoEqual(final BookDto bookDto, final Book book) {
         assertThat(book)
                 .withFailMessage("Books are not equal")
                 .usingRecursiveComparison()
