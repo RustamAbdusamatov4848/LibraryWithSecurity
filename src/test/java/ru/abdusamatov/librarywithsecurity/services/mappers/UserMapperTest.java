@@ -68,7 +68,7 @@ public class UserMapperTest {
     }
 
     @Test
-    void shouldUpdatedUserFromDto_whenUserHasNullBookList() {
+    void shouldUpdateUserFromDto_whenUserHasNullBookList() {
         int listSize = 10;
         User userToBeUpdated = TestDataProvider.createUser();
         userToBeUpdated.setBooks(null);
@@ -84,7 +84,7 @@ public class UserMapperTest {
     }
 
     @Test
-    void shouldUpdatedUserFromDto_whenDtoHasNullBookList() {
+    void shouldUpdateUserFromDto_whenDtoHasNullBookList() {
         int listSize = 10;
 
         User userToBeUpdated = TestDataProvider.createUser();
@@ -112,7 +112,7 @@ public class UserMapperTest {
 
     private static void assertUserEquals(UserDto userDto, User user) {
         assertThat(userDto)
-                .withFailMessage(() -> "Users are not equals")
+                .withFailMessage(() -> "Users are not equal")
                 .usingRecursiveComparison()
                 .ignoringFields("books")
                 .isEqualTo(user);
