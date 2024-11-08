@@ -7,6 +7,7 @@ import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
+import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 public class AuthControllerTest extends TestBase {

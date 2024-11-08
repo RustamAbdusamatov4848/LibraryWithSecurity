@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.support;
+package ru.abdusamatov.librarywithsecurity.context;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;

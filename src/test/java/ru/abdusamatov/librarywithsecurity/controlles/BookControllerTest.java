@@ -9,6 +9,7 @@ import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
+import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.List;

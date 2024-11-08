@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
+import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.controlles;
+package ru.abdusamatov.librarywithsecurity.support;
 
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,7 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ru.abdusamatov.librarywithsecurity.support.PostgreSQLInitializer;
+import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
 
 @ContextConfiguration(initializers = PostgreSQLInitializer.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
