@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.controlles;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
@@ -9,10 +10,16 @@ import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
+import ru.abdusamatov.librarywithsecurity.support.ParameterizedTypeReferenceUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
+import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.OK;
+import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
 
 public class BookControllerTest extends TestBase {
 
@@ -28,39 +35,34 @@ public class BookControllerTest extends TestBase {
     @Autowired
     private UserService userService;
 
+    @Override
+    protected void clearDatabase() {
+        bookRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
     @Test
     void shouldGetAllBooks() {
         int bookListSize = 10;
         List<BookDto> bookDtoList = TestDataProvider.createListBookDto(bookListSize);
         bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
 
-        webTestClient.get().uri(uriBuilder ->
-                        uriBuilder
-                                .path("/books")
-                                .queryParam("page", 0)
-                                .queryParam("size", 20)
-                                .build())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.result.httpStatusCode").isEqualTo("OK")
-                .jsonPath("$.result.status").isEqualTo("SUCCESS")
-                .jsonPath("$.result.description").isEqualTo("List of books")
-                .jsonPath("$.data.length()").isEqualTo(bookListSize);
+        var response = getResponseByGetBookList();
+
+        assertSuccess(OK, "List of books", response);
+        assertThat(response.getData())
+                .isNotNull()
+                .hasSize(bookListSize);
     }
 
     @Test
     void shouldReturnBook_whenExistingBookIdProvided() {
         long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
-        webTestClient.get().uri("/books/" + id)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.data.id").isEqualTo(id)
-                .jsonPath("$.result.httpStatusCode").isEqualTo("OK")
-                .jsonPath("$.result.status").isEqualTo("SUCCESS")
-                .jsonPath("$.result.description").isEqualTo("Book successfully found");
+        var response = getResponseByShowBookById(id);
+
+        assertSuccess(OK, "Book successfully found", response);
+        assertThat(response.getData().getId()).isEqualTo(id);
     }
 
     @Test
@@ -319,9 +321,38 @@ public class BookControllerTest extends TestBase {
                 .jsonPath("$.data.length()").isEqualTo(0);
     }
 
-    @Override
-    protected void clearDatabase() {
-        bookRepository.deleteAll();
-        userRepository.deleteAll();
+    private <T> void assertSuccess(HttpStatus httpStatusCode, String description, Response<T> response) {
+        assertThat(response.getResult())
+                .extracting("httpStatusCode", "status", "description")
+                .containsExactly(httpStatusCode, SUCCESS, description);
+    }
+
+    private Response<List<BookDto>> getResponseByGetBookList() {
+        var response = webTestClient.get().uri(uriBuilder ->
+                        uriBuilder
+                                .path("/books")
+                                .queryParam("page", 0)
+                                .queryParam("size", 20)
+                                .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(BookDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response).isNotNull();
+        return response;
+    }
+
+    private Response<BookDto> getResponseByShowBookById(long id) {
+        var response = webTestClient.get().uri("/books/" + id)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(BookDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response).isNotNull();
+        return response;
     }
 }
