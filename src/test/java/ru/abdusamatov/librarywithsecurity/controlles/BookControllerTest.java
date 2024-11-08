@@ -25,6 +25,8 @@ import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
 
 public class BookControllerTest extends TestBase {
 
+    private static final String BASE_URL = "/books";
+
     @Autowired
     private BookRepository bookRepository;
 
@@ -71,7 +73,7 @@ public class BookControllerTest extends TestBase {
     void shouldReturnNotFound_whenNonExistingBookIdProvided() {
         long id = 1L;
 
-        var response = getResponseShowBookByIdNotFound(id);
+        var response = getResponseShowBookByIdNotFound(id, BASE_URL + "/");
 
         assertExceptionMessage(response, id);
     }
@@ -364,8 +366,8 @@ public class BookControllerTest extends TestBase {
         return response;
     }
 
-    private ResponseEntity<ErrorResponse> getResponseShowBookByIdNotFound(long id) {
-        var response = webTestClient.get().uri("/books/" + id)
+    private ResponseEntity<ErrorResponse> getResponseShowBookByIdNotFound(long id, String url) {
+        var response = webTestClient.get().uri(url + id)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody(ParameterizedTypeReferenceUtil.getResponseEntityReference(ErrorResponse.class))
