@@ -22,11 +22,4 @@ public class Result {
                 .description(description)
                 .build();
     }
-
-    public static Result error(HttpStatus httpStatus) {
-        return Result.builder()
-                .httpStatusCode(httpStatus)
-                .status(ResponseStatus.ERROR)
-                .build();
-    }
 }
