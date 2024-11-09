@@ -2,7 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controlles;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
@@ -14,17 +13,15 @@ import ru.abdusamatov.librarywithsecurity.services.UserService;
 import ru.abdusamatov.librarywithsecurity.support.ParameterizedTypeReferenceUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.support.TestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
-import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
 
 public class BookControllerTest extends TestBase {
 
@@ -67,7 +64,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "List of books", response);
+        TestUtils.assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
                 .isNotNull()
                 .hasSize(bookListSize);
@@ -88,7 +85,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "Book successfully found", response);
+        TestUtils.assertSuccess(OK, "Book successfully found", response);
         assertThat(response.getData().getId()).isEqualTo(id);
     }
 
@@ -107,7 +104,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(id, response);
+        TestUtils.assertNotFoundBook(id, response);
         assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
     }
 
@@ -127,7 +124,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(CREATED, "Book successfully created", response);
+        TestUtils.assertSuccess(CREATED, "Book successfully created", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -157,7 +154,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertFieldErrorForBook(response);
+        TestUtils.assertFieldErrorForBook(response);
     }
 
     @Test
@@ -177,7 +174,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "Book successfully updated", response);
+        TestUtils.assertSuccess(OK, "Book successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -205,7 +202,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(notExistingId, response);
+        TestUtils.assertNotFoundBook(notExistingId, response);
     }
 
 
@@ -227,7 +224,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertFieldErrorForBook(response);
+        TestUtils.assertFieldErrorForBook(response);
     }
 
     @Test
@@ -251,7 +248,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFoundUser(notExistingUserId, response);
+        TestUtils.assertNotFoundUser(notExistingUserId, response);
     }
 
     @Test
@@ -269,7 +266,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(NO_CONTENT, "Successfully deleted", response);
+        TestUtils.assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
     @Test
@@ -287,7 +284,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(notExistingId, response);
+        TestUtils.assertNotFoundBook(notExistingId, response);
     }
 
     @Test
@@ -308,7 +305,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(NO_CONTENT, "Book successfully assigned", response);
+        TestUtils.assertSuccess(NO_CONTENT, "Book successfully assigned", response);
     }
 
     @Test
@@ -329,7 +326,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertFieldErrorForUser(response);
+        TestUtils.assertFieldErrorForUser(response);
     }
 
     @Test
@@ -350,7 +347,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(notExistingBookId, response);
+        TestUtils.assertNotFoundBook(notExistingBookId, response);
     }
 
     @Test
@@ -367,7 +364,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(NO_CONTENT, "Book successfully released", response);
+        TestUtils.assertSuccess(NO_CONTENT, "Book successfully released", response);
     }
 
     @Test
@@ -385,7 +382,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(notExistingBookId, response);
+        TestUtils.assertNotFoundBook(notExistingBookId, response);
     }
 
     @Test
@@ -408,7 +405,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "Found books with title " + query, response);
+        TestUtils.assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData()).hasSize(1);
     }
 
@@ -428,51 +425,7 @@ public class BookControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "Found books with title " + query, response);
+        TestUtils.assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData()).isNull();
-    }
-
-    private <T> void assertSuccess(HttpStatus httpStatusCode, String description, Response<T> response) {
-        assertThat(response.getResult())
-                .extracting("httpStatusCode", "status", "description")
-                .containsExactly(httpStatusCode, SUCCESS, description);
-    }
-
-    private void assertNotFound(long notExistingId, ErrorResponse response) {
-        assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
-        assertThat(response.getMessage())
-                .isEqualTo("Failed entity search");
-        assertThat(response.getErrors().get("cause"))
-                .isEqualTo("Book with ID: " + notExistingId + ", not found");
-
-    }
-
-    private void assertNotFoundUser(long notExistingId, ErrorResponse response) {
-        assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
-        assertThat(response.getMessage())
-                .isEqualTo("Failed entity search");
-        assertThat(response.getErrors().get("cause"))
-                .isEqualTo("User with ID: " + notExistingId + ", not found");
-
-    }
-
-    private void assertFieldErrorForBook(ErrorResponse response) {
-        assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getMessage())
-                .isEqualTo("Validation field failed");
-        assertThat(response.getErrors())
-                .containsEntry("authorName", "Author name must be between 2 and 30 characters long")
-                .containsEntry("authorSurname", "Author surname must be between 2 and 30 characters long")
-                .containsEntry("yearOfPublication", "Year must be greater than 1500");
-    }
-
-    public void assertFieldErrorForUser(ErrorResponse response) {
-        assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getMessage())
-                .isEqualTo("Validation field failed");
-        assertThat(response.getErrors())
-                .containsEntry("fullName", "Name should be between 2 to 30 characters long")
-                .containsEntry("email", "Invalid email address")
-                .containsEntry("dateOfBirth", "Date of birth must be in the past");
     }
 }

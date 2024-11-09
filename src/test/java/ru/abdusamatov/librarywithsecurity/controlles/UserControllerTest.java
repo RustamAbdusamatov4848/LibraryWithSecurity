@@ -2,7 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controlles;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
@@ -11,17 +10,14 @@ import ru.abdusamatov.librarywithsecurity.services.UserService;
 import ru.abdusamatov.librarywithsecurity.support.ParameterizedTypeReferenceUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.support.TestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
-import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
 
 public class UserControllerTest extends TestBase {
 
@@ -57,7 +53,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "List of users", response);
+        TestUtils.assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
                 .asList()
                 .isNotNull()
@@ -80,7 +76,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "User successfully found", response);
+        TestUtils.assertSuccess(OK, "User successfully found", response);
         assertThat(response.getData().getId()).isEqualTo(id);
     }
 
@@ -99,7 +95,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(id, response);
+        TestUtils.assertNotFoundUser(id, response);
     }
 
     @Test
@@ -119,7 +115,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(CREATED, "User successfully saved", response);
+        TestUtils.assertSuccess(CREATED, "User successfully saved", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -146,7 +142,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertFieldError(response);
+        TestUtils.assertFieldErrorForUser(response);
     }
 
     @Test
@@ -168,7 +164,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(OK, "User successfully updated", response);
+        TestUtils.assertSuccess(OK, "User successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -196,7 +192,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(notExistingId, response);
+        TestUtils.assertNotFoundUser(notExistingId, response);
     }
 
     @Test
@@ -217,7 +213,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertFieldError(response);
+        TestUtils.assertFieldErrorForUser(response);
     }
 
     @Test
@@ -235,7 +231,7 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertSuccess(NO_CONTENT, "Successfully deleted", response);
+        TestUtils.assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
     @Test
@@ -253,31 +249,6 @@ public class UserControllerTest extends TestBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertNotFound(notExistingId, response);
-    }
-
-    private <T> void assertSuccess(HttpStatus httpStatusCode, String description, Response<T> response) {
-        assertThat(response.getResult())
-                .extracting("httpStatusCode", "status", "description")
-                .containsExactly(httpStatusCode, SUCCESS, description);
-    }
-
-    private void assertNotFound(long notExistingId, ErrorResponse response) {
-        assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
-        assertThat(response.getMessage())
-                .isEqualTo("Failed entity search");
-        assertThat(response.getErrors().get("cause"))
-                .isEqualTo("User with ID: " + notExistingId + ", not found");
-
-    }
-
-    private void assertFieldError(ErrorResponse response) {
-        assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getMessage())
-                .isEqualTo("Validation field failed");
-        assertThat(response.getErrors())
-                .containsEntry("fullName", "Name should be between 2 to 30 characters long")
-                .containsEntry("email", "Invalid email address")
-                .containsEntry("dateOfBirth", "Date of birth must be in the past");
+        TestUtils.assertNotFoundUser(notExistingId, response);
     }
 }
