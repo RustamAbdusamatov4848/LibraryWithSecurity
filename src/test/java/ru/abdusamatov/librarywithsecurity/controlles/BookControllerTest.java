@@ -11,7 +11,7 @@ import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
 import ru.abdusamatov.librarywithsecurity.services.BookService;
 import ru.abdusamatov.librarywithsecurity.services.UserService;
 import ru.abdusamatov.librarywithsecurity.support.ParameterizedTypeReferenceUtil;
-import ru.abdusamatov.librarywithsecurity.support.TestBase;
+import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.TestUtils;
 
@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-public class BookControllerTest extends TestBase {
+public class BookControllerTest extends TestControllerBase {
 
     private static final String BASE_URL = "books";
 

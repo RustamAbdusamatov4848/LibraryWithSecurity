@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.services.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.support.ParameterizedTypeReferenceUtil;
-import ru.abdusamatov.librarywithsecurity.support.TestBase;
+import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.TestUtils;
 
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-public class AuthControllerTest extends TestBase {
+public class AuthControllerTest extends TestControllerBase {
 
     public static final String BASE_URL = "lib";
 

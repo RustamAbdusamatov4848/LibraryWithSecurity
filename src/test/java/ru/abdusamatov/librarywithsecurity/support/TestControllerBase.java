@@ -11,7 +11,7 @@ import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
 @ContextConfiguration(initializers = PostgreSQLInitializer.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-public abstract class TestBase {
+public abstract class TestControllerBase {
 
     @Autowired
     protected WebTestClient webTestClient;
