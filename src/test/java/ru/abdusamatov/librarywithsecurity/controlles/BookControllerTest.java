@@ -133,6 +133,7 @@ public class BookControllerTest extends TestBase {
                 .usingRecursiveComparison()
                 .ignoringFields("takenAt", "owner", "id")
                 .isEqualTo(validBookDto);
+        assertThat(response.getData().getId()).isNotNull();
         assertThat(response.getData())
                 .extracting("takenAt", "userId")
                 .containsOnlyNulls();
@@ -465,7 +466,7 @@ public class BookControllerTest extends TestBase {
                 .containsEntry("yearOfPublication", "Year must be greater than 1500");
     }
 
-    private void assertFieldErrorForUser(ErrorResponse response) {
+    public void assertFieldErrorForUser(ErrorResponse response) {
         assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
         assertThat(response.getMessage())
                 .isEqualTo("Validation field failed");
