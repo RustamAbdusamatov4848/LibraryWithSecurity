@@ -25,3 +25,12 @@ spring:
 
   jackson:
     default-property-inclusion: non_null
+
+# OpenApi settings
+springdoc:
+  api-docs:
+    enabled: true
+    path: /lib-openapi-docs
+
+server:
+  port: 8081
