@@ -13,21 +13,28 @@ public class LibrarianMapperTest {
 
     @Test
     void shouldMapLibrarianToLibrarianDto() {
-        final var librarian = TestDataProvider.createLibrarian().build();
+        final var librarian = TestDataProvider
+                .createLibrarian()
+                .build();
 
         final var librarianDto = mapper.librarianToLibrarianDto(librarian);
 
-        assertThat(librarianDto).isNotNull();
+        assertThat(librarianDto)
+                .isNotNull();
         assertLibrariansAreEqual(librarianDto, librarian);
     }
 
     @Test
     void shouldMapLibrarianDtoToLibrarian() {
-        final var librarianDto = TestDataProvider.createLibrarianDto().id(1L).build();
+        final var librarianDto = TestDataProvider
+                .createLibrarianDto()
+                .id(1L)
+                .build();
 
         final var librarian = mapper.librarianDtoToLibrarian(librarianDto);
 
-        assertThat(librarian).isNotNull();
+        assertThat(librarian)
+                .isNotNull();
         assertLibrariansAreEqual(librarianDto, librarian);
     }
 

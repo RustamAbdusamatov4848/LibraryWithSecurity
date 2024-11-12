@@ -25,7 +25,8 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .anyRequest().permitAll()
+                        .anyRequest()
+                        .permitAll()
                 )
                 .build();
     }
@@ -33,7 +34,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+        return configuration
+                .getAuthenticationManager();
     }
 
     @Bean

@@ -34,7 +34,9 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     public void shouldCreateLibrarian_whenValidDataProvided() {
-        final var librarianToBeSaved = TestDataProvider.createLibrarianDto().build();
+        final var librarianToBeSaved = TestDataProvider
+                .createLibrarianDto()
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -48,8 +50,10 @@ public class AuthControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(HttpStatus.CREATED, "Librarian was created", response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(HttpStatus.CREATED, "Librarian was created", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -59,7 +63,9 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenBookDataProvidedWithInvalidFields() {
-        final var invalidLibrarianDto = TestDataProvider.createLibrarianDtoWithInvalidFields().build();
+        final var invalidLibrarianDto = TestDataProvider
+                .createLibrarianDtoWithInvalidFields()
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -73,16 +79,21 @@ public class AuthControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertFieldErrorForLibrarian(response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertFieldErrorForLibrarian(response);
     }
 
     @Test
     void shouldReturnBadRequest_whenLibrarianWithEmailIsAlreadyExist() {
-        final var librarianDto = service.createLibrarian(TestDataProvider.createLibrarianDto().build());
+        final var librarianDto = service
+                .createLibrarian(TestDataProvider.createLibrarianDto().build());
         final var emailThatAlreadyExist = librarianDto.getEmail();
 
-        var librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto().email(emailThatAlreadyExist).build();
+        var librarianDtoWithExistEmail = TestDataProvider
+                .createLibrarianDto().email(emailThatAlreadyExist)
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -105,12 +116,16 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNoContent_whenAuthenticationWithValidFields() {
-        final var librarianDto = TestDataProvider.createLibrarianDto().build();
+        final var librarianDto = TestDataProvider
+                .createLibrarianDto()
+                .build();
         final var email = librarianDto.getEmail();
         final var password = librarianDto.getPassword();
         service.createLibrarian(librarianDto);
 
-        final var authenticationDto = TestDataProvider.createAuthenticationDto(email, password).build();
+        final var authenticationDto = TestDataProvider
+                .createAuthenticationDto(email, password)
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")
@@ -124,13 +139,17 @@ public class AuthControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(NO_CONTENT, "Successful validation", response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(NO_CONTENT, "Successful validation", response);
     }
 
     @Test
     void shouldReturnUnauthorized_whenAuthenticationWithInvalidFields() {
-        final var authenticationDto = TestDataProvider.createAuthenticationDto().build();
+        final var authenticationDto = TestDataProvider
+                .createAuthenticationDto()
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")
@@ -144,7 +163,9 @@ public class AuthControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        assertThat(response.getMessage()).isEqualTo("Failed authorization");
+        assertThat(response)
+                .isNotNull();
+        assertThat(response.getMessage())
+                .isEqualTo("Failed authorization");
     }
 }

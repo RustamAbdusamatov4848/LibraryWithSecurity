@@ -173,8 +173,10 @@ public class TestDataProvider {
     }
 
     private static String getLimitUUID(final int limit) {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString().replace("-", "").substring(0, limit + 1);
+        final var uuid = UUID.randomUUID();
+        return uuid.toString()
+                .replace("-", "")
+                .substring(0, limit + 1);
     }
 
     private static UUID getLimitUUID() {
@@ -190,9 +192,9 @@ public class TestDataProvider {
     }
 
     private static String getRandomPassword() {
-        String source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        int passwordLength = random.nextInt(5, MAX_PASSWORD_LENGTH);
+        final var source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        final var random = new Random();
+        final var passwordLength = random.nextInt(5, MAX_PASSWORD_LENGTH);
 
         return random.ints(passwordLength, 0, source.length())
                 .mapToObj(source::charAt)

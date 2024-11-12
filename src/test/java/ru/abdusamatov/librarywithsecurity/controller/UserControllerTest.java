@@ -50,8 +50,10 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(OK, "List of users", response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
                 .asList()
                 .isNotNull()
@@ -61,7 +63,9 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
-        final var id = service.createUser(TestDataProvider.createUserDto().build()).getId();
+        final var id = service
+                .createUser(TestDataProvider.createUserDto().build())
+                .getId();
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -73,9 +77,12 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(OK, "User successfully found", response);
-        assertThat(response.getData().getId()).isEqualTo(id);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(OK, "User successfully found", response);
+        assertThat(response.getData().getId())
+                .isEqualTo(id);
     }
 
     @Test
@@ -92,13 +99,17 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertNotFoundUser(id, response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertNotFoundUser(id, response);
     }
 
     @Test
     void shouldCreateUser_whenValidDataProvided() {
-        final var validUserDto = TestDataProvider.createUserDto().build();
+        final var validUserDto = TestDataProvider
+                .createUserDto()
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -112,20 +123,26 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(CREATED, "User successfully saved", response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(CREATED, "User successfully saved", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .ignoringFields("id", "books")
                 .isEqualTo(validUserDto);
-        assertThat(response.getData().getId()).isNotNull();
-        assertThat(response.getData().getBooks()).isNull();
+        assertThat(response.getData().getId())
+                .isNotNull();
+        assertThat(response.getData().getBooks())
+                .isNull();
     }
 
     @Test
     void shouldReturnBadRequest_whenUserWithInvalidFields() {
-        final var invalidUserDto = TestDataProvider.createUserDtoWithInvalidFields().build();
+        final var invalidUserDto = TestDataProvider
+                .createUserDtoWithInvalidFields()
+                .build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -139,14 +156,19 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertFieldErrorForUser(response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertFieldErrorForUser(response);
     }
 
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
-        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto().build());
-        final var updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated).build();
+        final var userToBeUpdated = service
+                .createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider
+                .updateUserDto(userToBeUpdated)
+                .build();
 
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
@@ -161,8 +183,10 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(OK, "User successfully updated", response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(OK, "User successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -172,8 +196,12 @@ public class UserControllerTest extends TestControllerBase {
     @Test
     void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
-        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto().build());
-        final var updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated).id(notExistingId).build();
+        final var userToBeUpdated = service
+                .createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider
+                .updateUserDto(userToBeUpdated)
+                .id(notExistingId)
+                .build();
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -187,14 +215,19 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertNotFoundUser(notExistingId, response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertNotFoundUser(notExistingId, response);
     }
 
     @Test
     void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
-        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto().build());
-        final var updateUserDto = TestDataProvider.updateUserDtoWithInvalidFields(userToBeUpdated).build();
+        final var userToBeUpdated = service
+                .createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider
+                .updateUserDtoWithInvalidFields(userToBeUpdated)
+                .build();
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -208,13 +241,17 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertFieldErrorForUser(response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertFieldErrorForUser(response);
     }
 
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
-        final var id = service.createUser(TestDataProvider.createUserDto().build()).getId();
+        final var id = service
+                .createUser(TestDataProvider.createUserDto().build())
+                .getId();
 
         final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -226,8 +263,10 @@ public class UserControllerTest extends TestControllerBase {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        TestUtils.assertSuccess(NO_CONTENT, "Successfully deleted", response);
+        assertThat(response)
+                .isNotNull();
+        TestUtils
+                .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
     @Test
