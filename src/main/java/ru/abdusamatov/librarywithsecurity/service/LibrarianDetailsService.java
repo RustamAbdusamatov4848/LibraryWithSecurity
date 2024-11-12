@@ -13,7 +13,7 @@ public class LibrarianDetailsService implements UserDetailsService {
     private final LibrarianRepository repository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         return repository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Librarian with email: " + email + "wasn't found"));

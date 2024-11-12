@@ -26,10 +26,10 @@ public class LibrarianService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public LibrarianDto createLibrarian(LibrarianDto librarianDto) {
+    public LibrarianDto createLibrarian(final LibrarianDto librarianDto) {
         checkIfEmailExists(librarianDto.getEmail());
 
-        Librarian librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
+        var librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
         librarianFromDto.setPassword(passwordEncoder.encode(librarianDto.getPassword()));
         Librarian savedLibrarian = librarianRepository.save(librarianFromDto);
 
@@ -45,12 +45,12 @@ public class LibrarianService {
         }
     }
 
-    public void validateLibrarian(AuthenticationDto authenticationDto) {
-        Authentication authentication = authenticate(authenticationDto);
+    public void validateLibrarian(final AuthenticationDto authenticationDto) {
+        final var authentication = authenticate(authenticationDto);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private Authentication authenticate(AuthenticationDto authenticationDto) {
+    private Authentication authenticate(final AuthenticationDto authenticationDto) {
         return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationDto.getEmail(), authenticationDto.getPassword())
         );

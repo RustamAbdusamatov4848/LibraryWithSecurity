@@ -15,7 +15,7 @@ public class Result {
     private ResponseStatus status;
     private String description;
 
-    public static Result success(HttpStatus httpStatus, String description) {
+    public static Result success(final HttpStatus httpStatus, final String description) {
         return Result.builder()
                 .httpStatusCode(httpStatus)
                 .status(ResponseStatus.SUCCESS)

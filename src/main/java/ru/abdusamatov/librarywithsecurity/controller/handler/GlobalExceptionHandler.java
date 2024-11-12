@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage())
                 );
 
-        ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST, "Validation field failed", errors);
+        final var errorResponse = new ErrorResponse(BAD_REQUEST, "Validation field failed", errors);
         return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 
@@ -38,10 +38,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(ResourceNotFoundException ex) {
         log.error("Failed entity search: {}", ex.getMessage(), ex);
 
-        String message = ex.getMessage();
-        Map<String, String> errors = Map.of("cause", message);
+        final var message = ex.getMessage();
+        final var errors = Map.of("cause", message);
+        final var errorResponse = new ErrorResponse(NOT_FOUND, "Failed entity search", errors);
 
-        ErrorResponse errorResponse = new ErrorResponse(NOT_FOUND, "Failed entity search", errors);
         return new ResponseEntity<>(errorResponse, NOT_FOUND);
     }
 
@@ -49,10 +49,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
         log.error("Failed authorization: {}", ex.getMessage(), ex);
 
-        String message = ex.getMessage();
-        Map<String, String> errors = Map.of("cause", message);
+        final var message = ex.getMessage();
+        final var errors = Map.of("cause", message);
+        final var errorResponse = new ErrorResponse(UNAUTHORIZED, "Failed authorization", errors);
 
-        ErrorResponse errorResponse = new ErrorResponse(UNAUTHORIZED, "Failed authorization", errors);
         return new ResponseEntity<>(errorResponse, UNAUTHORIZED);
     }
 
@@ -60,10 +60,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleExistEmailException(ExistEmailException ex) {
         log.error("Failed email validation: {}", ex.getMessage(), ex);
 
-        String message = ex.getMessage();
-        Map<String, String> errors = Map.of("cause", message);
+        final var message = ex.getMessage();
+        final var errors = Map.of("cause", message);
+        final var errorResponse = new ErrorResponse(BAD_REQUEST, "Failed email validation, already exist", errors);
 
-        ErrorResponse errorResponse = new ErrorResponse(BAD_REQUEST, "Failed email validation, already exist", errors);
         return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 

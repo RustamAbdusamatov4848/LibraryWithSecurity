@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
-import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
@@ -31,8 +30,8 @@ public class BookService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public List<BookDto> getBookList(Integer page, Integer size, boolean isSorted) {
-        Sort sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
+    public List<BookDto> getBookList(final Integer page, final Integer size, final boolean isSorted) {
+        final var sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
 
         return bookRepository
                 .findAll(PageRequest.of(page, size, sort))
@@ -41,26 +40,26 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public BookDto getBookById(Long id) {
+    public BookDto getBookById(final Long id) {
         return bookRepository.findById(id)
                 .map(bookMapper::bookToBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
     }
 
     @Transactional
-    public BookDto createBook(BookDto bookDto) {
-        Book book = bookMapper.bookDtoToBook(bookDto);
+    public BookDto createBook(final BookDto bookDto) {
+        var book = bookMapper.bookDtoToBook(bookDto);
         book.setOwner(null);
 
-        Book savedBook = bookRepository.save(book);
+        final var savedBook = bookRepository.save(book);
         log.info("Save book with ID: {}", savedBook.getId());
 
         return bookMapper.bookToBookDto(savedBook);
     }
 
     @Transactional
-    public BookDto updateBook(BookDto bookDto) {
-        Book updatedBook = bookRepository.findById(bookDto.getId())
+    public BookDto updateBook(final BookDto bookDto) {
+        final var updatedBook = bookRepository.findById(bookDto.getId())
                 .map(book -> {
                     bookMapper.updateBookFromDto(bookDto, book);
                     if (bookDto.getUserId() != null) {
@@ -80,8 +79,8 @@ public class BookService {
     }
 
     @Transactional
-    public void deleteBook(Long id) {
-        Book book = bookRepository.findById(id)
+    public void deleteBook(final Long id) {
+        final var book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
         bookRepository.delete(book);
@@ -89,8 +88,8 @@ public class BookService {
     }
 
     @Transactional
-    public void assignBook(Long bookId, UserDto userDto) {
-        Book book = bookRepository
+    public void assignBook(final Long bookId, final UserDto userDto) {
+        final var book = bookRepository
                 .findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", bookId));
 
         book.setOwner(userMapper.dtoToUser(userDto));
@@ -101,8 +100,8 @@ public class BookService {
     }
 
     @Transactional
-    public void releaseBook(Long id) {
-        Book book = bookRepository.findById(id)
+    public void releaseBook(final Long id) {
+        final var book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
         book.setOwner(null);
@@ -113,7 +112,7 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookDto> searchByTitle(String title) {
+    public List<BookDto> searchByTitle(final String title) {
         return bookRepository
                 .findByTitleStartingWith(title)
                 .stream()
