@@ -79,10 +79,10 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenLibrarianWithEmailIsAlreadyExist() {
-        final var librarianDto = service.createLibrarian(TestDataProvider.createLibrarianDto());
-        String emailThatAlreadyExist = librarianDto.getEmail();
+        final var librarianDto = service.createLibrarian(TestDataProvider.createLibrarianDto().build());
+        final var emailThatAlreadyExist = librarianDto.getEmail();
 
-        var librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto();
+        var librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto().build();
         librarianDtoWithExistEmail.setEmail(emailThatAlreadyExist);
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
@@ -106,9 +106,9 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNoContent_whenAuthenticationWithValidFields() {
-        final var librarianDto = TestDataProvider.createLibrarianDto();
-        String email = librarianDto.getEmail();
-        String password = librarianDto.getPassword();
+        final var librarianDto = TestDataProvider.createLibrarianDto().build();
+        final var email = librarianDto.getEmail();
+        final var password = librarianDto.getPassword();
         service.createLibrarian(librarianDto);
 
         final var authenticationDto = TestDataProvider.createAuthenticationDto(email, password);
