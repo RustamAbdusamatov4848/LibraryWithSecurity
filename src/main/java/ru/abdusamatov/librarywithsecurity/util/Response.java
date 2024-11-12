@@ -19,4 +19,11 @@ public class Response<T> {
                 .result(result)
                 .build();
     }
+
+    public static <T> Response<T> buildResponse(Result result) {
+        return Response.<T>builder()
+                .data(null)
+                .result(result)
+                .build();
+    }
 }
