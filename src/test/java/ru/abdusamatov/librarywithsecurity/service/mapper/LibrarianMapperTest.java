@@ -3,7 +3,6 @@ package ru.abdusamatov.librarywithsecurity.service.mapper;
 import org.junit.jupiter.api.Test;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.model.Librarian;
-import ru.abdusamatov.librarywithsecurity.services.mappers.LibrarianMapperImpl;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;

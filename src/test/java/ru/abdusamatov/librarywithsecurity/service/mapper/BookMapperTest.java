@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
-import ru.abdusamatov.librarywithsecurity.services.mappers.BookMapperImpl;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.stream.Stream;

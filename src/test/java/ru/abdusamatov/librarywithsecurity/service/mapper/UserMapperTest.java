@@ -3,7 +3,6 @@ package ru.abdusamatov.librarywithsecurity.service.mapper;
 import org.junit.jupiter.api.Test;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.User;
-import ru.abdusamatov.librarywithsecurity.services.mappers.UserMapperImpl;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.Collections;
