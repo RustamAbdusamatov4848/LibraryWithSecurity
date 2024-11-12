@@ -13,7 +13,7 @@ public class LibrarianMapperTest {
 
     @Test
     void shouldMapLibrarianToLibrarianDto() {
-        final var librarian = TestDataProvider.createLibrarian();
+        final var librarian = TestDataProvider.createLibrarian().build();
 
         final var librarianDto = mapper.librarianToLibrarianDto(librarian);
 

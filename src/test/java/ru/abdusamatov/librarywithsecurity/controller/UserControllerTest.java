@@ -61,7 +61,7 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
-        final var id = service.createUser(TestDataProvider.createUserDto()).getId();
+        final var id = service.createUser(TestDataProvider.createUserDto().build()).getId();
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -98,7 +98,7 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldCreateUser_whenValidDataProvided() {
-        final var validUserDto = TestDataProvider.createUserDto();
+        final var validUserDto = TestDataProvider.createUserDto().build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -125,7 +125,7 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenUserWithInvalidFields() {
-        final var invalidUserDto = TestDataProvider.createUserDtoWithInvalidFields();
+        final var invalidUserDto = TestDataProvider.createUserDtoWithInvalidFields().build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -145,8 +145,8 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
-        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto());
-        final var updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated);
+        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated).build();
 
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
@@ -172,10 +172,8 @@ public class UserControllerTest extends TestControllerBase {
     @Test
     void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
-        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto());
-        final var updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated);
-
-        updateUserDto.setId(notExistingId);
+        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider.updateUserDto(userToBeUpdated).id(notExistingId).build();
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -195,8 +193,8 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
-        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto());
-        final var updateUserDto = TestDataProvider.updateUserDtoWithInvalidFields(userToBeUpdated);
+        final var userToBeUpdated = service.createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider.updateUserDtoWithInvalidFields(userToBeUpdated).build();
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -216,7 +214,7 @@ public class UserControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
-        final var id = service.createUser(TestDataProvider.createUserDto()).getId();
+        final var id = service.createUser(TestDataProvider.createUserDto().build()).getId();
 
         final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))

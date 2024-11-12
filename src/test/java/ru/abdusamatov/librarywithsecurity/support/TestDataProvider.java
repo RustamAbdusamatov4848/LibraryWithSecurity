@@ -30,8 +30,8 @@ public class TestDataProvider {
     public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
     public static final Random RANDOM = new Random();
 
-    public static Book createBook() {
-        User owner = createUser();
+    public static Book.BookBuilder createBook() {
+        User owner = createUser().build();
         return Book.builder()
                 .id(1L)
                 .title("Book Title" + getLimitUUID())
@@ -39,29 +39,26 @@ public class TestDataProvider {
                 .authorSurname("AuthorSurname")
                 .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
                 .takenAt(LocalDateTime.now())
-                .owner(owner)
-                .build();
+                .owner(owner);
     }
 
-    public static BookDto createBookDto() {
+    public static BookDto.BookDtoBuilder createBookDto() {
         return BookDto.builder()
                 .title("Book Title" + getLimitUUID())
                 .authorName("AuthorName")
                 .authorSurname("AuthorSurname")
-                .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
-                .build();
+                .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()));
     }
 
-    public static BookDto createBookDtoWithInvalidFields() {
+    public static BookDto.BookDtoBuilder createBookDtoWithInvalidFields() {
         return BookDto.builder()
                 .title("Book Title" + getLimitUUID())
                 .authorName(LONG_NAME)
                 .authorSurname(LONG_NAME)
-                .yearOfPublication(INVALID_YEAR_OF_PUBLICATION)
-                .build();
+                .yearOfPublication(INVALID_YEAR_OF_PUBLICATION);
     }
 
-    public static BookDto updateBookDto(final BookDto bookToBeUpdated) {
+    public static BookDto.BookDtoBuilder updateBookDto(final BookDto bookToBeUpdated) {
         return BookDto.builder()
                 .id(bookToBeUpdated.getId())
                 .title("Title updated ")
@@ -69,11 +66,10 @@ public class TestDataProvider {
                 .authorSurname("Author surname updated")
                 .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
                 .userId(bookToBeUpdated.getUserId())
-                .takenAt(bookToBeUpdated.getTakenAt())
-                .build();
+                .takenAt(bookToBeUpdated.getTakenAt());
     }
 
-    public static BookDto updateBookDtoWithInvalidFields(final BookDto bookToBeUpdated) {
+    public static BookDto.BookDtoBuilder updateBookDtoWithInvalidFields(final BookDto bookToBeUpdated) {
         return BookDto.builder()
                 .id(bookToBeUpdated.getId())
                 .title(LONG_TITLE_NAME)
@@ -81,80 +77,73 @@ public class TestDataProvider {
                 .authorSurname(LONG_NAME)
                 .yearOfPublication(getRandomInvalidYearOfPublication())
                 .takenAt(bookToBeUpdated.getTakenAt())
-                .userId(bookToBeUpdated.getUserId())
-                .build();
+                .userId(bookToBeUpdated.getUserId());
     }
 
     public static List<Book> createListBook(final int size) {
         return IntStream.range(0, size)
-                .mapToObj(i -> createBook())
+                .mapToObj(i -> createBook().build())
                 .toList();
     }
 
     public static List<BookDto> createListBookDto(final int size) {
         return IntStream.range(0, size)
-                .mapToObj(i -> createBookDto())
+                .mapToObj(i -> createBookDto().build())
                 .toList();
     }
 
-    public static User createUser() {
+    public static User.UserBuilder createUser() {
         return User.builder()
                 .id(1L)
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .books(Collections.emptyList())
-                .build();
+                .books(Collections.emptyList());
     }
 
-    public static UserDto createUserDto() {
+    public static UserDto.UserDtoBuilder createUserDto() {
         return UserDto.builder()
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
-                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .build();
+                .dateOfBirth(LocalDate.of(1990, 1, 1));
     }
 
-    public static UserDto createUserDtoWithInvalidFields() {
+    public static UserDto.UserDtoBuilder createUserDtoWithInvalidFields() {
         return UserDto.builder()
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
-                .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .build();
+                .dateOfBirth(INVALID_DATA_OF_BIRTH);
     }
 
-    public static UserDto updateUserDto(final UserDto userToBeUpdated) {
+    public static UserDto.UserDtoBuilder updateUserDto(final UserDto userToBeUpdated) {
         return UserDto.builder()
                 .id(userToBeUpdated.getId())
                 .fullName("Fullname updated")
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(getRandomDate(LocalDate.now()))
-                .books(userToBeUpdated.getBooks())
-                .build();
+                .books(userToBeUpdated.getBooks());
     }
 
-    public static UserDto updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
+    public static UserDto.UserDtoBuilder updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
         return UserDto.builder()
                 .id(userToBeUpdated.getId())
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
-                .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .build();
+                .dateOfBirth(INVALID_DATA_OF_BIRTH);
     }
 
     public static List<UserDto> createListUserDto(final int size) {
         return IntStream.range(0, size)
-                .mapToObj(i -> createUserDto())
+                .mapToObj(i -> createUserDto().build())
                 .toList();
     }
 
-    public static Librarian createLibrarian() {
+    public static Librarian.LibrarianBuilder createLibrarian() {
         return Librarian.builder()
                 .id(1L)
                 .fullName("Test librarian" + getLimitUUID(10))
                 .email("testlibrarian" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword())
-                .build();
+                .password(getRandomPassword());
     }
 
     public static LibrarianDto.LibrarianDtoBuilder createLibrarianDto() {
@@ -164,26 +153,23 @@ public class TestDataProvider {
                 .password(getRandomPassword());
     }
 
-    public static LibrarianDto createLibrarianDtoWithInvalidFields() {
+    public static LibrarianDto.LibrarianDtoBuilder createLibrarianDtoWithInvalidFields() {
         return LibrarianDto.builder()
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
-                .password(LONG_PASSWORD)
-                .build();
+                .password(LONG_PASSWORD);
     }
 
-    public static AuthenticationDto createAuthenticationDto() {
+    public static AuthenticationDto.AuthenticationDtoBuilder createAuthenticationDto() {
         return AuthenticationDto.builder()
                 .email("testuser" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword())
-                .build();
+                .password(getRandomPassword());
     }
 
-    public static AuthenticationDto createAuthenticationDto(final String email, final String password) {
+    public static AuthenticationDto.AuthenticationDtoBuilder createAuthenticationDto(final String email, final String password) {
         return AuthenticationDto.builder()
                 .email(email)
-                .password(password)
-                .build();
+                .password(password);
     }
 
     private static String getLimitUUID(final int limit) {

@@ -21,4 +21,3 @@ public class ParameterizedTypeReferenceUtil {
         return ParameterizedTypeReference.forType(TypeUtils.parameterize(Response.class, TypeUtils.parameterize(List.class, type)));
     }
 }
-

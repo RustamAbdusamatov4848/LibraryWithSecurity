@@ -15,9 +15,9 @@ public class UserMapperTest {
 
     @Test
     void shouldMapToDto() {
-        User user = TestDataProvider.createUser();
+        final var user = TestDataProvider.createUser().build();
 
-        UserDto userDto = mapper.userToDto(user);
+        final var userDto = mapper.userToDto(user);
 
         assertThat(userDto).isNotNull();
         assertThat(userDto.getBooks().size()).isEqualTo(user.getBooks().size());
@@ -26,10 +26,9 @@ public class UserMapperTest {
 
     @Test
     void shouldMapDtoToUser() {
-        UserDto userDto = TestDataProvider.createUserDto();
-        userDto.setId(1L);
+        final var userDto = TestDataProvider.createUserDto().id(1L).build();
 
-        User user = mapper.dtoToUser(userDto);
+        final var user = mapper.dtoToUser(userDto);
 
         assertThat(user).isNotNull();
         assertUsersAreEqual(userDto, user);
@@ -37,11 +36,10 @@ public class UserMapperTest {
 
     @Test
     void shouldUpdateUserFromDto_whenBooksNotNull() {
-        User userToBeUpdated = TestDataProvider.createUser();
-        UserDto newUserDto = TestDataProvider.createUserDto();
-        newUserDto.setId(userToBeUpdated.getId());
+        final var userToBeUpdated = TestDataProvider.createUser().build();
+        final var newUserDto = TestDataProvider.createUserDto().id(userToBeUpdated.getId()).build();
 
-        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser).isNotNull();
         assertUsersAreEqual(newUserDto, updatedUser);
@@ -49,33 +47,33 @@ public class UserMapperTest {
 
     @Test
     void shouldNotUpdateUser_whenUserDtoIsNull() {
-        User userToBeUpdated = TestDataProvider.createUser();
+        final var userToBeUpdated = TestDataProvider.createUser().build();
 
-        User updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
+        final var updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
 
         assertThat(updatedUser).isEqualTo(userToBeUpdated);
     }
 
     @Test
     void shouldUpdateUserFromDto_whenBookListIsEmpty() {
-        User userToBeUpdated = TestDataProvider.createUser();
-        UserDto newUserDto = TestDataProvider.createUserDto();
-        newUserDto.setBooks(Collections.emptyList());
+        final var userToBeUpdated = TestDataProvider.createUser().build();
+        final var newUserDto = TestDataProvider.createUserDto().books(Collections.emptyList()).build();
 
-        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser.getBooks()).isEmpty();
     }
 
     @Test
     void shouldUpdateUserFromDto_whenUserHasNullBookList() {
-        int listSize = 10;
-        User userToBeUpdated = TestDataProvider.createUser();
-        userToBeUpdated.setBooks(null);
-        UserDto newUserDto = TestDataProvider.createUserDto();
-        newUserDto.setBooks(TestDataProvider.createListBookDto(listSize));
+        final var listSize = 10;
+        final var userToBeUpdated = TestDataProvider.createUser().books(null).build();
+        final var newUserDto = TestDataProvider
+                .createUserDto()
+                .books(TestDataProvider.createListBookDto(listSize))
+                .build();
 
-        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser.getBooks())
                 .isNotNull()
@@ -85,28 +83,28 @@ public class UserMapperTest {
 
     @Test
     void shouldUpdateUserFromDto_whenDtoHasNullBookList() {
-        int listSize = 10;
+        final var listSize = 10;
+        final var userToBeUpdated = TestDataProvider
+                .createUser()
+                .books(TestDataProvider.createListBook(listSize))
+                .build();
 
-        User userToBeUpdated = TestDataProvider.createUser();
-        userToBeUpdated.setBooks(TestDataProvider.createListBook(listSize));
+        final var newUserDto = TestDataProvider.createUserDto().books(null).build();
 
-        UserDto newUserDto = TestDataProvider.createUserDto();
-        newUserDto.setBooks(null);
-
-        User updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
         assertThat(updatedUser.getBooks()).isNull();
     }
 
     @Test
     void shouldReturnNull_whenUserIsNullInUserToUserDto() {
-        UserDto userDto = mapper.userToDto(null);
+        final var userDto = mapper.userToDto(null);
         assertThat(userDto).isNull();
     }
 
     @Test
     void shouldReturnNull_whenUserDtoIsNullInUserDtoToUser() {
-        User user = mapper.dtoToUser(null);
+        final var user = mapper.dtoToUser(null);
         assertThat(user).isNull();
     }
 
