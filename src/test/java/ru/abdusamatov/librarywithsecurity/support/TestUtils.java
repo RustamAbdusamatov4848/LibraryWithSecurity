@@ -1,7 +1,7 @@
 package ru.abdusamatov.librarywithsecurity.support;
 
 import org.springframework.http.HttpStatus;
-import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
+import ru.abdusamatov.librarywithsecurity.error.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -4,9 +4,9 @@ import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.models.Book;
-import ru.abdusamatov.librarywithsecurity.models.Librarian;
-import ru.abdusamatov.librarywithsecurity.models.User;
+import ru.abdusamatov.librarywithsecurity.model.Book;
+import ru.abdusamatov.librarywithsecurity.model.Librarian;
+import ru.abdusamatov.librarywithsecurity.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
