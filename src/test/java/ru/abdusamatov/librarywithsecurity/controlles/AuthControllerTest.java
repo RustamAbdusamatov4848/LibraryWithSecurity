@@ -34,7 +34,7 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     public void shouldCreateLibrarian_whenValidDataProvided() {
-        final var librarianToBeSaved = TestDataProvider.createLibrarianDto();
+        final var librarianToBeSaved = TestDataProvider.createLibrarianDto().build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -59,7 +59,7 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenBookDataProvidedWithInvalidFields() {
-        final var invalidLibrarianDto = TestDataProvider.createLibrarianDtoWithInvalidFields();
+        final var invalidLibrarianDto = TestDataProvider.createLibrarianDtoWithInvalidFields().build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -82,8 +82,7 @@ public class AuthControllerTest extends TestControllerBase {
         final var librarianDto = service.createLibrarian(TestDataProvider.createLibrarianDto().build());
         final var emailThatAlreadyExist = librarianDto.getEmail();
 
-        var librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto().build();
-        librarianDtoWithExistEmail.setEmail(emailThatAlreadyExist);
+        var librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto().email(emailThatAlreadyExist).build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -111,7 +110,7 @@ public class AuthControllerTest extends TestControllerBase {
         final var password = librarianDto.getPassword();
         service.createLibrarian(librarianDto);
 
-        final var authenticationDto = TestDataProvider.createAuthenticationDto(email, password);
+        final var authenticationDto = TestDataProvider.createAuthenticationDto(email, password).build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")
@@ -131,7 +130,7 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnUnauthorized_whenAuthenticationWithInvalidFields() {
-        final var authenticationDto = TestDataProvider.createAuthenticationDto();
+        final var authenticationDto = TestDataProvider.createAuthenticationDto().build();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")

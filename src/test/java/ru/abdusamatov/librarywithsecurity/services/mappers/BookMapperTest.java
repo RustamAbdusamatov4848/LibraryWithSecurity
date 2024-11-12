@@ -13,9 +13,9 @@ public class BookMapperTest {
 
     @Test
     void shouldMapBookToDto() {
-        Book book = TestDataProvider.createBook();
+        final var book = TestDataProvider.createBook().build();
 
-        BookDto bookDto = mapper.bookToBookDto(book);
+        final var bookDto = mapper.bookToBookDto(book);
 
         assertThat(bookDto).isNotNull();
         assertBooksAreEqual(bookDto, book);
@@ -23,9 +23,9 @@ public class BookMapperTest {
 
     @Test
     void shouldMapDtoToBook() {
-        BookDto bookDto = TestDataProvider.createBookDto();
+        final var bookDto = TestDataProvider.createBookDto().build();
 
-        Book book = mapper.bookDtoToBook(bookDto);
+        final var book = mapper.bookDtoToBook(bookDto);
 
         assertThat(book).isNotNull();
         assertBooksAreEqual(bookDto, book);
@@ -33,28 +33,29 @@ public class BookMapperTest {
 
     @Test
     void shouldMapDtoToBook_whenDtoIsNull() {
-        Book book = mapper.bookDtoToBook(null);
+        final var book = mapper.bookDtoToBook(null);
 
         assertThat(book).isNull();
     }
 
     @Test
     void shouldUpdateBookFromDto() {
-        Book bookToBeUpdated = TestDataProvider.createBook();
-        BookDto newBookDto = TestDataProvider.createBookDto();
-        newBookDto.setId(bookToBeUpdated.getId());
-        newBookDto.setUserId(bookToBeUpdated.getOwner().getId());
+        final var bookToBeUpdated = TestDataProvider.createBook().build();
+        final var newBookDto = TestDataProvider
+                .createBookDto()
+                .id(bookToBeUpdated.getId())
+                .userId(bookToBeUpdated.getOwner().getId()).build();
 
-        Book updatedBook = mapper.updateBookFromDto(newBookDto, bookToBeUpdated);
+        final var updatedBook = mapper.updateBookFromDto(newBookDto, bookToBeUpdated);
 
         assertBooksAreEqual(newBookDto, updatedBook);
     }
 
     @Test
     void shouldUpdateBookFromDto_whenDtoIsNull() {
-        Book bookToBeUpdated = TestDataProvider.createBook();
+        final var bookToBeUpdated = TestDataProvider.createBook().build();
 
-        Book updatedBook = mapper.updateBookFromDto(null, bookToBeUpdated);
+        final var updatedBook = mapper.updateBookFromDto(null, bookToBeUpdated);
 
         assertThat(updatedBook)
                 .usingRecursiveComparison()
@@ -63,7 +64,7 @@ public class BookMapperTest {
 
     @Test
     void shouldReturnNull_whenBookIsNullInBookToDto() {
-        BookDto bookDto = mapper.bookToBookDto(null);
+        final var bookDto = mapper.bookToBookDto(null);
 
         assertThat(bookDto).isNull();
     }
