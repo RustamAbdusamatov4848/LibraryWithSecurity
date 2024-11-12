@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repositories.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repositories.UserRepository;
@@ -14,8 +13,6 @@ import ru.abdusamatov.librarywithsecurity.support.ParameterizedTypeReferenceUtil
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.TestUtils;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -47,8 +44,8 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldGetAllBooks() {
-        int bookListSize = 10;
-        var bookDtoList = TestDataProvider.createListBookDto(bookListSize);
+        final var bookListSize = 10;
+        final var bookDtoList = TestDataProvider.createListBookDto(bookListSize);
         bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
@@ -72,7 +69,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBook_whenExistingBookIdProvided() {
-        long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
+        final var id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -91,7 +88,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNotFound_whenNonExistingBookIdProvided() {
-        long id = 1L;
+        final var id = 1L;
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -110,7 +107,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldCreateBook_whenValidDataProvided() {
-        var validBookDto = TestDataProvider.createBookDto();
+        final var validBookDto = TestDataProvider.createBookDto();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL).build()
@@ -138,7 +135,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenBookWithInvalidFields() {
-        BookDto invalidBookDto = TestDataProvider.createBookDtoWithInvalidFields();
+        final var invalidBookDto = TestDataProvider.createBookDtoWithInvalidFields();
 
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
@@ -159,8 +156,8 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldUpdateBook_whenValidBookDtoProvided() {
-        BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
+        final var bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
+        final var updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL).build()
@@ -183,10 +180,10 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNotFound_whenBookToUpdateDoesNotExist() {
-        long notExistingId = 10000L;
+        final var notExistingId = 10000L;
+        final var bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
+        final var updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
 
-        BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
         updateBookDto.setId(notExistingId);
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
@@ -208,8 +205,8 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenUpdateBookWithInvalidFields() {
-        BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto invalidBookDto = TestDataProvider.updateBookDtoWithInvalidFields(bookToBeUpdated);
+        final var bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
+        final var invalidBookDto = TestDataProvider.updateBookDtoWithInvalidFields(bookToBeUpdated);
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -229,10 +226,10 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNotFound_whenBookToUpdateWithUserIdDoesNotExist() {
-        long notExistingUserId = 10000L;
+        final var notExistingUserId = 10000L;
+        final var bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
+        final var updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
 
-        BookDto bookToBeUpdated = bookService.createBook(TestDataProvider.createBookDto());
-        BookDto updateBookDto = TestDataProvider.updateBookDto(bookToBeUpdated);
         updateBookDto.setUserId(notExistingUserId);
 
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
@@ -253,7 +250,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNoContent_whenBookDeletedSuccessfully() {
-        long id = bookService.createBook(TestDataProvider.createBookDto()).getId();
+        final var id = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
         final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -271,7 +268,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNotFound_whenBookToDeleteDoesNotExist() {
-        long notExistingId = 10000L;
+        final var notExistingId = 10000L;
 
         final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(notExistingId))
@@ -289,10 +286,10 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldAssignBook_whenValidDataProvided() {
-        long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
-        UserDto userDtoToBeAssigned = userService.createUser(TestDataProvider.createUserDto());
+        final var bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
+        final var userDtoToBeAssigned = userService.createUser(TestDataProvider.createUserDto());
 
-        var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(bookId), "assign")
                         .build()
                 )
@@ -310,8 +307,8 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenAssignUserWithInvalidFields() {
-        long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
-        UserDto userDtoToBeAssigned = TestDataProvider.createUserDtoWithInvalidFields();
+        final var bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
+        final var userDtoToBeAssigned = TestDataProvider.createUserDtoWithInvalidFields();
 
         final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(bookId), "assign")
@@ -331,8 +328,8 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
-        UserDto userDtoToBeAssigned = userService.createUser(TestDataProvider.createUserDto());
-        long notExistingBookId = 1000L;
+        final var userDtoToBeAssigned = userService.createUser(TestDataProvider.createUserDto());
+        final var notExistingBookId = 1000L;
 
         final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(notExistingBookId), "assign")
@@ -352,7 +349,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReleaseBook_whenValidDataProvided() {
-        long bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
+        final var bookId = bookService.createBook(TestDataProvider.createBookDto()).getId();
 
         final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(bookId), "release")
@@ -369,7 +366,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNotFound_whenBookToReleaseDoesNotExist() {
-        long notExistingBookId = 10000L;
+        final var notExistingBookId = 10000L;
 
         final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(notExistingBookId), "release")
@@ -387,11 +384,11 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBooks_whenValidQueryProvided() {
-        int bookListSize = 10;
-
-        List<BookDto> bookDtoList = TestDataProvider.createListBookDto(bookListSize);
+        final var bookListSize = 10;
+        final var bookDtoList = TestDataProvider.createListBookDto(bookListSize);
         bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
-        String query = bookDtoList.getFirst().getTitle();
+
+        final var query = bookDtoList.getFirst().getTitle();
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "search")
@@ -411,7 +408,7 @@ public class BookControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnEmptyBookList_whenQueryDoNotSatisfiesAnyBook() {
-        String query = "Not existing title";
+        final var query = "Not existing title";
 
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "search")

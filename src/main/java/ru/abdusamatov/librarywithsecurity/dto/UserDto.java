@@ -7,19 +7,17 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @ToString(exclude = "books")
 @Builder
 public class UserDto {

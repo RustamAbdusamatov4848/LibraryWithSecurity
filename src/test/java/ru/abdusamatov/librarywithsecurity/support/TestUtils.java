@@ -10,13 +10,16 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
 
 public class TestUtils {
-    public static <T> void assertSuccess(HttpStatus httpStatusCode, String description, Response<T> response) {
+    public static <T> void assertSuccess(
+            final HttpStatus httpStatusCode,
+            final String description,
+            final Response<T> response) {
         assertThat(response.getResult())
                 .extracting("httpStatusCode", "status", "description")
                 .containsExactly(httpStatusCode, SUCCESS, description);
     }
 
-    public static void assertFieldErrorForBook(ErrorResponse response) {
+    public static void assertFieldErrorForBook(final ErrorResponse response) {
         assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
         assertThat(response.getMessage())
                 .isEqualTo("Validation field failed");
@@ -26,7 +29,7 @@ public class TestUtils {
                 .containsEntry("yearOfPublication", "Year must be greater than 1500");
     }
 
-    public static void assertFieldErrorForUser(ErrorResponse response) {
+    public static void assertFieldErrorForUser(final ErrorResponse response) {
         assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
         assertThat(response.getMessage())
                 .isEqualTo("Validation field failed");
@@ -36,7 +39,7 @@ public class TestUtils {
                 .containsEntry("dateOfBirth", "Date of birth must be in the past");
     }
 
-    public static void assertFieldErrorForLibrarian(ErrorResponse response) {
+    public static void assertFieldErrorForLibrarian(final ErrorResponse response) {
         assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
         assertThat(response.getMessage())
                 .isEqualTo("Validation field failed");
@@ -46,7 +49,7 @@ public class TestUtils {
                 .containsEntry("password", "Password should be equals or less than 100 characters long");
     }
 
-    public static void assertNotFoundBook(long id, ErrorResponse response) {
+    public static void assertNotFoundBook(final long id, final ErrorResponse response) {
         assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
         assertThat(response.getMessage())
                 .isEqualTo("Failed entity search");
@@ -54,7 +57,7 @@ public class TestUtils {
                 .isEqualTo("Book with ID: " + id + ", not found");
     }
 
-    public static void assertNotFoundUser(long id, ErrorResponse response) {
+    public static void assertNotFoundUser(final long id, final ErrorResponse response) {
         assertThat(response.getStatus()).isEqualTo(NOT_FOUND);
         assertThat(response.getMessage())
                 .isEqualTo("Failed entity search");

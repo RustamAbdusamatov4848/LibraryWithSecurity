@@ -10,11 +10,11 @@ import ru.abdusamatov.librarywithsecurity.models.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 
 public class TestDataProvider {
@@ -61,7 +61,7 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static BookDto updateBookDto(BookDto bookToBeUpdated) {
+    public static BookDto updateBookDto(final BookDto bookToBeUpdated) {
         return BookDto.builder()
                 .id(bookToBeUpdated.getId())
                 .title("Title updated ")
@@ -73,7 +73,7 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static BookDto updateBookDtoWithInvalidFields(BookDto bookToBeUpdated) {
+    public static BookDto updateBookDtoWithInvalidFields(final BookDto bookToBeUpdated) {
         return BookDto.builder()
                 .id(bookToBeUpdated.getId())
                 .title(LONG_TITLE_NAME)
@@ -85,24 +85,16 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static List<Book> createListBook(int size) {
-        List<Book> list = new ArrayList<>(size);
-
-        for (int i = 0; i < size; i++) {
-            list.add(createBook());
-        }
-
-        return list;
+    public static List<Book> createListBook(final int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> createBook())
+                .toList();
     }
 
-    public static List<BookDto> createListBookDto(int size) {
-        List<BookDto> list = new ArrayList<>(size);
-
-        for (int i = 0; i < size; i++) {
-            list.add(createBookDto());
-        }
-
-        return list;
+    public static List<BookDto> createListBookDto(final int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> createBookDto())
+                .toList();
     }
 
     public static User createUser() {
@@ -131,7 +123,7 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static UserDto updateUserDto(UserDto userToBeUpdated) {
+    public static UserDto updateUserDto(final UserDto userToBeUpdated) {
         return UserDto.builder()
                 .id(userToBeUpdated.getId())
                 .fullName("Fullname updated")
@@ -141,7 +133,7 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static UserDto updateUserDtoWithInvalidFields(UserDto userToBeUpdated) {
+    public static UserDto updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
         return UserDto.builder()
                 .id(userToBeUpdated.getId())
                 .fullName(LONG_NAME)
@@ -150,14 +142,10 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static List<UserDto> createListUserDto(int size) {
-        List<UserDto> list = new ArrayList<>(size);
-
-        for (int i = 0; i < size; i++) {
-            list.add(createUserDto());
-        }
-
-        return list;
+    public static List<UserDto> createListUserDto(final int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> createUserDto())
+                .toList();
     }
 
     public static Librarian createLibrarian() {
@@ -192,14 +180,14 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static AuthenticationDto createAuthenticationDto(String email, String password) {
+    public static AuthenticationDto createAuthenticationDto(final String email, final String password) {
         return AuthenticationDto.builder()
                 .email(email)
                 .password(password)
                 .build();
     }
 
-    private static String getLimitUUID(int limit) {
+    private static String getLimitUUID(final int limit) {
         UUID uuid = UUID.randomUUID();
         return uuid.toString().replace("-", "").substring(0, limit + 1);
     }
@@ -208,7 +196,7 @@ public class TestDataProvider {
         return UUID.randomUUID();
     }
 
-    private static LocalDate getRandomDate(LocalDate now) {
+    private static LocalDate getRandomDate(final LocalDate now) {
         return now.minusYears(RANDOM.nextLong(100));
     }
 
@@ -218,15 +206,12 @@ public class TestDataProvider {
 
     private static String getRandomPassword() {
         String source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-        StringBuilder result = new StringBuilder();
         Random random = new Random();
         int passwordLength = random.nextInt(5, MAX_PASSWORD_LENGTH);
 
-        for (int i = 0; i < passwordLength; i++) {
-            result.append(source.charAt(random.nextInt(0, source.length())));
-        }
-
-        return result.toString();
+        return random.ints(passwordLength, 0, source.length())
+                .mapToObj(source::charAt)
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 }

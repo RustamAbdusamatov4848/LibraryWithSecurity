@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.errors.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repositories.LibrarianRepository;
@@ -35,7 +34,7 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     public void shouldCreateLibrarian_whenValidDataProvided() {
-        LibrarianDto librarianToBeSaved = TestDataProvider.createLibrarianDto();
+        final var librarianToBeSaved = TestDataProvider.createLibrarianDto();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -60,7 +59,7 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenBookDataProvidedWithInvalidFields() {
-        LibrarianDto invalidLibrarianDto = TestDataProvider.createLibrarianDtoWithInvalidFields();
+        final var invalidLibrarianDto = TestDataProvider.createLibrarianDtoWithInvalidFields();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
@@ -80,10 +79,10 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnBadRequest_whenLibrarianWithEmailIsAlreadyExist() {
-        LibrarianDto librarianDto = service.createLibrarian(TestDataProvider.createLibrarianDto());
+        final var librarianDto = service.createLibrarian(TestDataProvider.createLibrarianDto());
         String emailThatAlreadyExist = librarianDto.getEmail();
 
-        LibrarianDto librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto();
+        var librarianDtoWithExistEmail = TestDataProvider.createLibrarianDto();
         librarianDtoWithExistEmail.setEmail(emailThatAlreadyExist);
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
@@ -107,12 +106,12 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnNoContent_whenAuthenticationWithValidFields() {
-        LibrarianDto librarianDto = TestDataProvider.createLibrarianDto();
+        final var librarianDto = TestDataProvider.createLibrarianDto();
         String email = librarianDto.getEmail();
         String password = librarianDto.getPassword();
         service.createLibrarian(librarianDto);
 
-        AuthenticationDto authenticationDto = TestDataProvider.createAuthenticationDto(email, password);
+        final var authenticationDto = TestDataProvider.createAuthenticationDto(email, password);
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")
@@ -132,7 +131,7 @@ public class AuthControllerTest extends TestControllerBase {
 
     @Test
     void shouldReturnUnauthorized_whenAuthenticationWithInvalidFields() {
-        AuthenticationDto authenticationDto = TestDataProvider.createAuthenticationDto();
+        final var authenticationDto = TestDataProvider.createAuthenticationDto();
 
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")
