@@ -4,17 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.error.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestExistingResource;
 import ru.abdusamatov.librarywithsecurity.support.TestStatus;
-import ru.abdusamatov.librarywithsecurity.support.TestVerification;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -106,16 +104,13 @@ public class BookControllerTest extends TestControllerBase {
                 )
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundBook(id, response);
-        assertThat(response.getStatus())
-                .isEqualTo(NOT_FOUND);
+        assertBookNotFound(response);
     }
 
     @Test
@@ -166,7 +161,7 @@ public class BookControllerTest extends TestControllerBase {
                 .bodyValue(invalidBookDto)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
@@ -222,14 +217,13 @@ public class BookControllerTest extends TestControllerBase {
                 .bodyValue(updateBookDto)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundBook(notExistingId, response);
+        assertBookNotFound(response);
     }
 
 
@@ -249,7 +243,7 @@ public class BookControllerTest extends TestControllerBase {
                 .bodyValue(invalidBookDto)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
@@ -276,14 +270,13 @@ public class BookControllerTest extends TestControllerBase {
                 .bodyValue(updateBookDto)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundUser(notExistingUserId, response);
+        UserControllerTest.assertUserNotFound(response);
     }
 
     @Test
@@ -318,14 +311,13 @@ public class BookControllerTest extends TestControllerBase {
                 )
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundBook(notExistingId, response);
+        assertBookNotFound(response);
     }
 
     @Test
@@ -371,14 +363,13 @@ public class BookControllerTest extends TestControllerBase {
                 .bodyValue(userDtoToBeAssigned)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestVerification
-                .assertFieldErrorForUser(response);
+        UserControllerTest.assertFieldErrorForUser(response);
     }
 
     @Test
@@ -395,14 +386,13 @@ public class BookControllerTest extends TestControllerBase {
                 .bodyValue(userDtoToBeAssigned)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundBook(notExistingBookId, response);
+        assertBookNotFound(response);
     }
 
     @Test
@@ -436,14 +426,13 @@ public class BookControllerTest extends TestControllerBase {
                 )
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundBook(notExistingBookId, response);
+        assertBookNotFound(response);
     }
 
     @Test
@@ -498,14 +487,11 @@ public class BookControllerTest extends TestControllerBase {
                 .isNull();
     }
 
-    private static void assertFieldErrorForBook(final ErrorResponse response) {
-        assertThat(response.getStatus())
-                .isEqualTo(BAD_REQUEST);
-        assertThat(response.getMessage())
-                .isEqualTo("Validation field failed");
-        assertThat(response.getErrors())
-                .containsEntry("authorName", "Author name must be between 2 and 30 characters long")
-                .containsEntry("authorSurname", "Author surname must be between 2 and 30 characters long")
-                .containsEntry("yearOfPublication", "Year must be greater than 1500");
+    private static void assertBookNotFound(final Response<Void> response) {
+        TestStatus.assertError(NOT_FOUND, "Failed entity search", response);
+    }
+
+    private static void assertFieldErrorForBook(final Response<Void> response) {
+        TestStatus.assertError(BAD_REQUEST, "Validation field failed", response);
     }
 }

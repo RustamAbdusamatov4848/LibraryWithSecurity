@@ -4,18 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.error.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestExistingResource;
 import ru.abdusamatov.librarywithsecurity.support.TestStatus;
-import ru.abdusamatov.librarywithsecurity.support.TestVerification;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -97,14 +97,13 @@ public class UserControllerTest extends TestControllerBase {
                 )
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundUser(id, response);
+        assertUserNotFound(response);
     }
 
     @Test
@@ -154,14 +153,13 @@ public class UserControllerTest extends TestControllerBase {
                 .bodyValue(invalidUserDto)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestVerification
-                .assertFieldErrorForUser(response);
+        assertFieldErrorForUser(response);
     }
 
     @Test
@@ -213,14 +211,13 @@ public class UserControllerTest extends TestControllerBase {
                 .bodyValue(updateUserDto)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestExistingResource
-                .assertNotFoundUser(notExistingId, response);
+        assertUserNotFound(response);
     }
 
     @Test
@@ -239,14 +236,13 @@ public class UserControllerTest extends TestControllerBase {
                 .bodyValue(updateUserDto)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestVerification
-                .assertFieldErrorForUser(response);
+        assertFieldErrorForUser(response);
     }
 
     @Test
@@ -281,12 +277,19 @@ public class UserControllerTest extends TestControllerBase {
                 )
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        TestExistingResource
-                .assertNotFoundUser(notExistingId, response);
+        assertUserNotFound(response);
+    }
+
+    public static void assertUserNotFound(final Response<Void> response) {
+        TestStatus.assertError(NOT_FOUND, "Failed entity search", response);
+    }
+
+    public static void assertFieldErrorForUser(final Response<Void> response) {
+        TestStatus.assertError(BAD_REQUEST, "Validation field failed", response);
     }
 }

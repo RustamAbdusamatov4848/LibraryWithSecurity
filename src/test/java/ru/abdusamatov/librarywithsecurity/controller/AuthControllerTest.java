@@ -5,18 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
-import ru.abdusamatov.librarywithsecurity.error.ErrorResponse;
 import ru.abdusamatov.librarywithsecurity.repository.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.service.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.TestStatus;
-import ru.abdusamatov.librarywithsecurity.support.TestVerification;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class AuthControllerTest extends TestControllerBase {
 
@@ -76,14 +75,14 @@ public class AuthControllerTest extends TestControllerBase {
                 .bodyValue(invalidLibrarianDto)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestVerification
-                .assertFieldErrorForLibrarian(response);
+        TestStatus
+                .assertError(BAD_REQUEST, "Validation field failed", response);
     }
 
     @Test
@@ -104,15 +103,13 @@ public class AuthControllerTest extends TestControllerBase {
                 .bodyValue(librarianDtoWithExistEmail)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getMessage()).isEqualTo("Failed email validation, already exist");
-        assertThat(response.getErrors().get("cause"))
-                .isEqualTo(String.format("%s email is already exist, try another one", emailThatAlreadyExist));
+        TestStatus
+                .assertError(BAD_REQUEST, "Failed email validation, already exist", response);
     }
 
     @Test
@@ -160,13 +157,12 @@ public class AuthControllerTest extends TestControllerBase {
                 .bodyValue(authenticationDto)
                 .exchange()
                 .expectStatus().isUnauthorized()
-                .expectBody(ErrorResponse.class)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        assertThat(response.getMessage())
-                .isEqualTo("Failed authorization");
+        TestStatus.assertError(UNAUTHORIZED, "Failed authorization", response);
     }
 }
