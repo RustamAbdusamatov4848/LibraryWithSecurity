@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
@@ -91,18 +92,8 @@ public class UserControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenNonExistingUserIdProvided() {
         final var id = 10000L;
 
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(id))
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeGetUserById(id, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertUserNotFound(response);
     }
 
@@ -145,20 +136,8 @@ public class UserControllerTest extends TestControllerBase {
                 .createUserDtoWithInvalidFields()
                 .build();
 
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(invalidUserDto)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeCreateUser(invalidUserDto, BAD_REQUEST);
 
-        assertThat(response)
-                .isNotNull();
         assertFieldErrorForUser(response);
     }
 
@@ -203,20 +182,8 @@ public class UserControllerTest extends TestControllerBase {
                 .id(notExistingId)
                 .build();
 
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateUserDto)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeUpdateUser(updateUserDto, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertUserNotFound(response);
     }
 
@@ -228,20 +195,8 @@ public class UserControllerTest extends TestControllerBase {
                 .updateUserDtoWithInvalidFields(userToBeUpdated)
                 .build();
 
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateUserDto)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeUpdateUser(updateUserDto, BAD_REQUEST);
 
-        assertThat(response)
-                .isNotNull();
         assertFieldErrorForUser(response);
     }
 
@@ -271,18 +226,93 @@ public class UserControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenBookToDeleteDoesNotExist() {
         final var notExistingId = 10000L;
 
-        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(notExistingId))
+        final var response = executeDeleteUserById(notExistingId, NOT_FOUND);
+
+        assertUserNotFound(response);
+    }
+
+    public Response<Void> executeGetUserById(
+            final long id,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
                         .build()
                 )
                 .exchange()
-                .expectStatus().isNotFound()
+                .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(response).isNotNull();
-        assertUserNotFound(response);
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeCreateUser(
+            final UserDto userDto,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeUpdateUser(
+            final UserDto userDto,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeDeleteUserById(
+            final long id,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
     }
 
     public static void assertUserNotFound(final Response<Void> response) {
@@ -292,4 +322,5 @@ public class UserControllerTest extends TestControllerBase {
     public static void assertFieldErrorForUser(final Response<Void> response) {
         TestStatus.assertError(BAD_REQUEST, "Validation field failed", response);
     }
+
 }

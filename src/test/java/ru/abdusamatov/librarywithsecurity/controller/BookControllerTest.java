@@ -2,8 +2,10 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
+import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
@@ -98,18 +100,8 @@ public class BookControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenNonExistingBookIdProvided() {
         final var id = 1L;
 
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(id))
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeGetBookById(id, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertBookNotFound(response);
     }
 
@@ -152,21 +144,8 @@ public class BookControllerTest extends TestControllerBase {
                 .createBookDtoWithInvalidFields()
                 .build();
 
+        final var response = executeCreateBook(invalidBookDto, BAD_REQUEST);
 
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(invalidBookDto)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
-
-        assertThat(response)
-                .isNotNull();
         assertFieldErrorForBook(response);
     }
 
@@ -209,20 +188,8 @@ public class BookControllerTest extends TestControllerBase {
                 .id(notExistingId)
                 .build();
 
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateBookDto)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeUpdateBook(updateBookDto, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertBookNotFound(response);
     }
 
@@ -235,20 +202,8 @@ public class BookControllerTest extends TestControllerBase {
                 .updateBookDtoWithInvalidFields(bookToBeUpdated)
                 .build();
 
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(invalidBookDto)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeUpdateBook(invalidBookDto, BAD_REQUEST);
 
-        assertThat(response)
-                .isNotNull();
         assertFieldErrorForBook(response);
     }
 
@@ -262,20 +217,8 @@ public class BookControllerTest extends TestControllerBase {
                 .userId(notExistingUserId)
                 .build();
 
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateBookDto)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeUpdateBook(updateBookDto, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         UserControllerTest.assertUserNotFound(response);
     }
 
@@ -305,18 +248,8 @@ public class BookControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenBookToDeleteDoesNotExist() {
         final var notExistingId = 10000L;
 
-        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(notExistingId))
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeDeleteBook(notExistingId, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertBookNotFound(response);
     }
 
@@ -355,20 +288,8 @@ public class BookControllerTest extends TestControllerBase {
                 .createUserDtoWithInvalidFields()
                 .build();
 
-        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(bookId), "assign")
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userDtoToBeAssigned)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeAssignBook(bookId, userDtoToBeAssigned, BAD_REQUEST);
 
-        assertThat(response)
-                .isNotNull();
         UserControllerTest.assertFieldErrorForUser(response);
     }
 
@@ -378,20 +299,8 @@ public class BookControllerTest extends TestControllerBase {
                 .createUser(TestDataProvider.createUserDto().build());
         final var notExistingBookId = 1000L;
 
-        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(notExistingBookId), "assign")
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userDtoToBeAssigned)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeAssignBook(notExistingBookId, userDtoToBeAssigned, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertBookNotFound(response);
     }
 
@@ -420,18 +329,8 @@ public class BookControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenBookToReleaseDoesNotExist() {
         final var notExistingBookId = 10000L;
 
-        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(notExistingBookId), "release")
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeReleaseBook(notExistingBookId, NOT_FOUND);
 
-        assertThat(response)
-                .isNotNull();
         assertBookNotFound(response);
     }
 
@@ -468,23 +367,153 @@ public class BookControllerTest extends TestControllerBase {
     void shouldReturnEmptyBookList_whenQueryDoNotSatisfiesAnyBook() {
         final var query = "Not existing title";
 
+        final var response = executeSearchByTitle(query, OK);
+
+        TestStatus
+                .assertSuccess(OK, "Found books with title " + query, response);
+        assertThat(response.getData())
+                .isNull();
+    }
+
+    public Response<Void> executeGetBookById(
+            final Long id,
+            final HttpStatus status
+    ) {
         final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, "search")
-                        .queryParam("query", query)
+                        .pathSegment(BASE_URL, String.valueOf(id))
                         .build()
                 )
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
-                .assertSuccess(OK, "Found books with title " + query, response);
-        assertThat(response.getData())
-                .isNull();
+
+        return response;
+    }
+
+    public Response<Void> executeCreateBook(
+            final BookDto bookDto,
+            HttpStatus status
+    ) {
+        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL).build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(bookDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeUpdateBook(
+            final BookDto bookDto,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL).build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(bookDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeDeleteBook(
+            final Long id,
+            final HttpStatus status) {
+        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeAssignBook(
+            final Long bookId,
+            final UserDto userDto,
+            final HttpStatus status) {
+        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(bookId), "assign")
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeReleaseBook(
+            final Long id,
+            final HttpStatus status) {
+        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id), "release")
+                        .build())
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeSearchByTitle(
+            final String query,
+            final HttpStatus status) {
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, "search")
+                        .queryParam("query", query)
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
     }
 
     private static void assertBookNotFound(final Response<Void> response) {
