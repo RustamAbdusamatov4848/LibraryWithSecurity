@@ -10,7 +10,8 @@ import ru.abdusamatov.librarywithsecurity.repository.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.service.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestUtils;
+import ru.abdusamatov.librarywithsecurity.support.TestStatus;
+import ru.abdusamatov.librarywithsecurity.support.TestVerification;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +53,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(HttpStatus.CREATED, "Librarian was created", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -81,7 +82,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestVerification
                 .assertFieldErrorForLibrarian(response);
     }
 
@@ -141,7 +142,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(NO_CONTENT, "Successful validation", response);
     }
 

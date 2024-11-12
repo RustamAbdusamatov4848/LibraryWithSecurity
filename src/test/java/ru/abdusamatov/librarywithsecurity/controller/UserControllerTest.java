@@ -9,7 +9,9 @@ import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestUtils;
+import ru.abdusamatov.librarywithsecurity.support.TestExistingResource;
+import ru.abdusamatov.librarywithsecurity.support.TestStatus;
+import ru.abdusamatov.librarywithsecurity.support.TestVerification;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +54,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
                 .asList()
@@ -79,7 +81,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "User successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
@@ -101,7 +103,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestExistingResource
                 .assertNotFoundUser(id, response);
     }
 
@@ -125,7 +127,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(CREATED, "User successfully saved", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -158,7 +160,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestVerification
                 .assertFieldErrorForUser(response);
     }
 
@@ -185,7 +187,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "User successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -217,7 +219,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestExistingResource
                 .assertNotFoundUser(notExistingId, response);
     }
 
@@ -243,7 +245,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestVerification
                 .assertFieldErrorForUser(response);
     }
 
@@ -265,7 +267,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
@@ -284,6 +286,7 @@ public class UserControllerTest extends TestControllerBase {
                 .getResponseBody();
 
         assertThat(response).isNotNull();
-        TestUtils.assertNotFoundUser(notExistingId, response);
+        TestExistingResource
+                .assertNotFoundUser(notExistingId, response);
     }
 }

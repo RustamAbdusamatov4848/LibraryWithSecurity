@@ -11,7 +11,9 @@ import ru.abdusamatov.librarywithsecurity.service.BookService;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestUtils;
+import ru.abdusamatov.librarywithsecurity.support.TestExistingResource;
+import ru.abdusamatov.librarywithsecurity.support.TestStatus;
+import ru.abdusamatov.librarywithsecurity.support.TestVerification;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +65,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -88,7 +90,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "Book successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
@@ -110,7 +112,8 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils.assertNotFoundBook(id, response);
+        TestExistingResource
+                .assertNotFoundBook(id, response);
         assertThat(response.getStatus())
                 .isEqualTo(NOT_FOUND);
     }
@@ -134,7 +137,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(CREATED, "Book successfully created", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -193,7 +196,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "Book successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -225,7 +228,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestExistingResource
                 .assertNotFoundBook(notExistingId, response);
     }
 
@@ -279,7 +282,8 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils.assertNotFoundUser(notExistingUserId, response);
+        TestExistingResource
+                .assertNotFoundUser(notExistingUserId, response);
     }
 
     @Test
@@ -300,7 +304,8 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils.assertSuccess(NO_CONTENT, "Successfully deleted", response);
+        TestStatus
+                .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
     @Test
@@ -319,7 +324,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestExistingResource
                 .assertNotFoundBook(notExistingId, response);
     }
 
@@ -345,7 +350,8 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils.assertSuccess(NO_CONTENT, "Book successfully assigned", response);
+        TestStatus
+                .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
     }
 
     @Test
@@ -371,7 +377,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestVerification
                 .assertFieldErrorForUser(response);
     }
 
@@ -395,7 +401,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestExistingResource
                 .assertNotFoundBook(notExistingBookId, response);
     }
 
@@ -416,7 +422,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(NO_CONTENT, "Book successfully released", response);
     }
 
@@ -436,7 +442,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestExistingResource
                 .assertNotFoundBook(notExistingBookId, response);
     }
 
@@ -463,7 +469,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData())
                 .hasSize(1);
@@ -486,7 +492,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestUtils
+        TestStatus
                 .assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData())
                 .isNull();
