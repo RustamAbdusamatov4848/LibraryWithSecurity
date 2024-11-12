@@ -157,12 +157,11 @@ public class TestDataProvider {
                 .build();
     }
 
-    public static LibrarianDto createLibrarianDto() {
+    public static LibrarianDto.LibrarianDtoBuilder createLibrarianDto() {
         return LibrarianDto.builder()
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword())
-                .build();
+                .password(getRandomPassword());
     }
 
     public static LibrarianDto createLibrarianDtoWithInvalidFields() {

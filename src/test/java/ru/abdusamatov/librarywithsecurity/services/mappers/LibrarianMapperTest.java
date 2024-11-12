@@ -13,9 +13,9 @@ public class LibrarianMapperTest {
 
     @Test
     void shouldMapLibrarianToLibrarianDto() {
-        Librarian librarian = TestDataProvider.createLibrarian();
+        final var librarian = TestDataProvider.createLibrarian();
 
-        LibrarianDto librarianDto = mapper.librarianToLibrarianDto(librarian);
+        final var librarianDto = mapper.librarianToLibrarianDto(librarian);
 
         assertThat(librarianDto).isNotNull();
         assertLibrariansAreEqual(librarianDto, librarian);
@@ -23,10 +23,9 @@ public class LibrarianMapperTest {
 
     @Test
     void shouldMapLibrarianDtoToLibrarian() {
-        LibrarianDto librarianDto = TestDataProvider.createLibrarianDto();
-        librarianDto.setId(1L);
+        final var librarianDto = TestDataProvider.createLibrarianDto().id(1L).build();
 
-        Librarian librarian = mapper.librarianDtoToLibrarian(librarianDto);
+        final var librarian = mapper.librarianDtoToLibrarian(librarianDto);
 
         assertThat(librarian).isNotNull();
         assertLibrariansAreEqual(librarianDto, librarian);
@@ -34,17 +33,17 @@ public class LibrarianMapperTest {
 
     @Test
     void shouldReturnNull_whenLibrarianIsNullInLibrarianToDto() {
-        LibrarianDto librarianDto = mapper.librarianToLibrarianDto(null);
+        final var librarianDto = mapper.librarianToLibrarianDto(null);
         assertThat(librarianDto).isNull();
     }
 
     @Test
     void shouldReturnNull_whenLibrarianDtoIsNullInDtoToLibrarian() {
-        Librarian librarian = mapper.librarianDtoToLibrarian(null);
+        final var librarian = mapper.librarianDtoToLibrarian(null);
         assertThat(librarian).isNull();
     }
 
-    private static void assertLibrariansAreEqual(LibrarianDto librarianDto, Librarian librarian) {
+    private static void assertLibrariansAreEqual(final LibrarianDto librarianDto, final Librarian librarian) {
         assertThat(librarian)
                 .usingRecursiveComparison()
                 .ignoringFields("password")
