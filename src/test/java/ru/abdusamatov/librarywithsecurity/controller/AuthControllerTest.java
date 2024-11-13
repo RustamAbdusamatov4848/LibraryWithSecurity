@@ -34,6 +34,7 @@ public class AuthControllerTest extends TestControllerBase {
         repository.deleteAll();
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     public void shouldCreateLibrarian_whenValidDataProvided() {
         final var librarianToBeSaved = TestDataProvider
@@ -90,6 +91,7 @@ public class AuthControllerTest extends TestControllerBase {
                 .assertError(BAD_REQUEST, "Failed email validation, already exist", response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnNoContent_whenAuthenticationWithValidFields() {
         final var librarianDto = TestDataProvider

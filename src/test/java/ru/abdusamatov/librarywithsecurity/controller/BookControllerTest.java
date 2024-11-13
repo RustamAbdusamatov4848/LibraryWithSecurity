@@ -72,6 +72,7 @@ public class BookControllerTest extends TestControllerBase {
                 .hasSize(bookListSize);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnBook_whenExistingBookIdProvided() {
         final var id = bookService.createBook(TestDataProvider.createBookDto()
@@ -149,6 +150,7 @@ public class BookControllerTest extends TestControllerBase {
         assertFieldErrorForBook(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldUpdateBook_whenValidBookDtoProvided() {
         final var bookToBeUpdated = bookService
@@ -222,6 +224,7 @@ public class BookControllerTest extends TestControllerBase {
         UserControllerTest.assertUserNotFound(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnNoContent_whenBookDeletedSuccessfully() {
         final var id = bookService
@@ -253,6 +256,7 @@ public class BookControllerTest extends TestControllerBase {
         assertBookNotFound(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldAssignBook_whenValidDataProvided() {
         final var bookId = bookService
@@ -304,6 +308,7 @@ public class BookControllerTest extends TestControllerBase {
         assertBookNotFound(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReleaseBook_whenValidDataProvided() {
         final var bookId = bookService
@@ -334,6 +339,7 @@ public class BookControllerTest extends TestControllerBase {
         assertBookNotFound(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnBooks_whenValidQueryProvided() {
         final var bookListSize = 10;

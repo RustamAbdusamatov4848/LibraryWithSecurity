@@ -64,6 +64,7 @@ public class UserControllerTest extends TestControllerBase {
                 .hasSize(userListSize);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
         final var id = service
@@ -97,6 +98,7 @@ public class UserControllerTest extends TestControllerBase {
         assertUserNotFound(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldCreateUser_whenValidDataProvided() {
         final var validUserDto = TestDataProvider
@@ -141,6 +143,7 @@ public class UserControllerTest extends TestControllerBase {
         assertFieldErrorForUser(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
         final var userToBeUpdated = service
@@ -200,6 +203,7 @@ public class UserControllerTest extends TestControllerBase {
         assertFieldErrorForUser(response);
     }
 
+    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
         final var id = service
