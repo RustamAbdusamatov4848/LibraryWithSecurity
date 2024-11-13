@@ -18,7 +18,7 @@ public class LibrarianMapperTest {
 
     @ParameterizedTest
     @MethodSource("shouldMapLibrarianToDto")
-    void shouldMapLibrarianToDto(Librarian toBeMapped, LibrarianDto expected) {
+    void shouldMapLibrarianToDto(final Librarian toBeMapped, final LibrarianDto expected) {
         final var actual = mapper.librarianToLibrarianDto(toBeMapped);
 
         assertThat(actual)
@@ -29,7 +29,7 @@ public class LibrarianMapperTest {
 
     @ParameterizedTest
     @MethodSource("shouldMapDtoToLibrarian")
-    void shouldMapDtoToLibrarian(LibrarianDto dtoToBeUpdated, Librarian expected) {
+    void shouldMapDtoToLibrarian(final LibrarianDto dtoToBeUpdated, final Librarian expected) {
         final var actual = mapper.librarianDtoToLibrarian(dtoToBeUpdated);
 
         assertThat(actual)
@@ -57,7 +57,7 @@ public class LibrarianMapperTest {
                 .createLibrarian()
                 .build();
 
-        LibrarianDto expected = TestDataProvider
+        final var expected = TestDataProvider
                 .createLibrarianDto()
                 .id(librarian.getId())
                 .fullName(librarian.getFullName())
@@ -68,11 +68,11 @@ public class LibrarianMapperTest {
     }
 
     public static Stream<Arguments> shouldMapDtoToLibrarian() {
-        LibrarianDto dtoToBeMapped = TestDataProvider
+        final var dtoToBeMapped = TestDataProvider
                 .createLibrarianDto()
                 .build();
 
-        Librarian expected = TestDataProvider
+        final var expected = TestDataProvider
                 .createLibrarian()
                 .id(dtoToBeMapped.getId())
                 .fullName(dtoToBeMapped.getFullName())

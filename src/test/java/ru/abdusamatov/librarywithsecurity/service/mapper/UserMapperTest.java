@@ -113,11 +113,11 @@ public class UserMapperTest {
     }
 
     public static Stream<Arguments> shouldMapUserToDto() {
-        User user = TestDataProvider
+        final var user = TestDataProvider
                 .createUser()
                 .build();
 
-        UserDto expected = TestDataProvider
+        final var expected = TestDataProvider
                 .createUserDto()
                 .id(user.getId())
                 .fullName(user.getFullName())
@@ -130,12 +130,12 @@ public class UserMapperTest {
     }
 
     public static Stream<Arguments> shouldMapDtoToUser() {
-        UserDto dtoToBeMapped = TestDataProvider
+        final var dtoToBeMapped = TestDataProvider
                 .createUserDto()
                 .books(Collections.emptyList())
                 .build();
 
-        User expected = TestDataProvider
+        final var expected = TestDataProvider
                 .createUser()
                 .id(dtoToBeMapped.getId())
                 .fullName(dtoToBeMapped.getFullName())
@@ -148,11 +148,11 @@ public class UserMapperTest {
     }
 
     public static Stream<Arguments> shouldUpdateUserFromDto() {
-        User existingUser = TestDataProvider
+        final var existingUser = TestDataProvider
                 .createUser()
                 .build();
 
-        UserDto newDto = TestDataProvider
+        final var newDto = TestDataProvider
                 .createUserDto()
                 .fullName("Updated FullName")
                 .email("updated@example.com")
@@ -160,7 +160,7 @@ public class UserMapperTest {
                 .books(Collections.emptyList())
                 .build();
 
-        User expected = TestDataProvider
+        final var expected = TestDataProvider
                 .createUser()
                 .id(existingUser.getId())
                 .fullName(newDto.getFullName())
