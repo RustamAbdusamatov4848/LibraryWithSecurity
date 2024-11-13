@@ -30,8 +30,8 @@ public class UserController {
             produces = {"application/json"}
     )
     public Response<List<UserDto>> getUserList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size) {
+            @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
 
         return Response.buildResponse(
                 Result.success(OK, "List of users"),
@@ -44,7 +44,7 @@ public class UserController {
             value = "/users/{id}",
             produces = {"application/json"}
     )
-    public Response<UserDto> getUserById(@PathVariable("id") Long id) {
+    public Response<UserDto> getUserById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully found"),
                 userService.getUserById(id)
@@ -57,7 +57,7 @@ public class UserController {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    public Response<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+    public Response<UserDto> createUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "User successfully saved"),
                 userService.createUser(userDto)
@@ -70,7 +70,7 @@ public class UserController {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    public Response<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
+    public Response<UserDto> updateUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully updated"),
                 userService.updateUser(userDto)
@@ -82,7 +82,7 @@ public class UserController {
             value = "/users/{id}",
             produces = {"application/json"}
     )
-    public Response<Void> deleteUserByID(@PathVariable("id") Long id) {
+    public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
         userService.deleteUserById(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }

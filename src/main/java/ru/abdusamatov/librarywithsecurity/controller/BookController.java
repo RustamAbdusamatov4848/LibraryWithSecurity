@@ -30,9 +30,9 @@ public class BookController {
             value = "/books",
             produces = {"application/json"})
     public Response<List<BookDto>> getBookList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
-            @RequestParam(value = "sort", required = false, defaultValue = "true") boolean isSorted) {
+            @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size,
+            @RequestParam(value = "sort", required = false, defaultValue = "true") final boolean isSorted) {
 
         return Response.buildResponse(
                 Result.success(OK, "List of books"),
@@ -45,7 +45,7 @@ public class BookController {
             value = "/books/{id}",
             produces = {"application/json"}
     )
-    public Response<BookDto> showBookById(@PathVariable("id") Long id) {
+    public Response<BookDto> showBookById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "Book successfully found"),
                 bookService.getBookById(id)
@@ -58,7 +58,7 @@ public class BookController {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    public Response<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
+    public Response<BookDto> createBook(@Valid @RequestBody final BookDto bookDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "Book successfully created"),
                 bookService.createBook(bookDto)
@@ -70,7 +70,7 @@ public class BookController {
             value = "/books",
             consumes = {"application/json"}
     )
-    public Response<BookDto> updateBook(@Valid @RequestBody BookDto bookDto) {
+    public Response<BookDto> updateBook(@Valid @RequestBody final BookDto bookDto) {
         return Response.buildResponse(
                 Result.success(OK, "Book successfully updated"),
                 bookService.updateBook(bookDto)
@@ -81,7 +81,7 @@ public class BookController {
             method = RequestMethod.DELETE,
             value = "/books/{id}"
     )
-    public Response<Void> deleteBook(@PathVariable("id") Long id) {
+    public Response<Void> deleteBook(@PathVariable("id") final Long id) {
         bookService.deleteBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
@@ -91,7 +91,7 @@ public class BookController {
             value = "/books/{id}/assign",
             consumes = {"application/json"}
     )
-    public Response<Void> assignBook(@PathVariable("id") Long id, @Valid @RequestBody UserDto newUser) {
+    public Response<Void> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
         bookService.assignBook(id, newUser);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
@@ -100,7 +100,7 @@ public class BookController {
             method = RequestMethod.PATCH,
             value = "/books/{id}/release"
     )
-    public Response<Void> releaseBook(@PathVariable("id") Long id) {
+    public Response<Void> releaseBook(@PathVariable("id") final Long id) {
         bookService.releaseBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
     }
@@ -110,7 +110,7 @@ public class BookController {
             value = "/books/search",
             produces = {"application/json"}
     )
-    public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") String query) {
+    public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") final String query) {
         return Response.buildResponse(
                 Result.success(OK, String.format("Found books with title %s", query)),
                 bookService.searchByTitle(query)

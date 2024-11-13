@@ -65,7 +65,11 @@ public class GlobalExceptionHandler {
         return exceptionHandler(BAD_REQUEST, "Failed email validation, already exist", errors);
     }
 
-    public ResponseEntity<Response<Void>> exceptionHandler(HttpStatus status, String description, Map<String, String> errors) {
+    public ResponseEntity<Response<Void>> exceptionHandler(
+            final HttpStatus status,
+            final String description,
+            final Map<String, String> errors
+    ) {
         var result = Result.error(status, description, errors);
         return ResponseEntity
                 .status(status)

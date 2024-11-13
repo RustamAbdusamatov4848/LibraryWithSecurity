@@ -38,7 +38,7 @@ public class LibrarianService {
     }
 
     @Transactional(readOnly = true)
-    public void checkIfEmailExists(String librarianEmail) {
+    public void checkIfEmailExists(final String librarianEmail) {
         if (librarianRepository.existsByEmail(librarianEmail)) {
             log.warn("Attempt to register with existing email: {}", librarianEmail);
             throw new ExistEmailException(librarianEmail);

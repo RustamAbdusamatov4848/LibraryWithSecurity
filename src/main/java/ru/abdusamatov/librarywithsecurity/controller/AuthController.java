@@ -26,7 +26,7 @@ public class AuthController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public Response<LibrarianDto> createLibrarian(@Valid @RequestBody LibrarianDto librarianDto) {
+    public Response<LibrarianDto> createLibrarian(@Valid @RequestBody final LibrarianDto librarianDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "Librarian was created"),
                 librarianService.createLibrarian(librarianDto)
@@ -39,7 +39,7 @@ public class AuthController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public Response<Void> login(@Valid @RequestBody AuthenticationDto authenticationDto) {
+    public Response<Void> login(@Valid @RequestBody final AuthenticationDto authenticationDto) {
         librarianService.validateLibrarian(authenticationDto);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successful validation"), null);
     }
