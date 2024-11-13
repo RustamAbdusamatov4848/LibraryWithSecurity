@@ -1,11 +1,15 @@
 package ru.abdusamatov.librarywithsecurity.service.mapper;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,115 +17,87 @@ public class UserMapperTest {
 
     private final UserMapper mapper = new UserMapperImpl();
 
-    @Test
-    void shouldMapToDto() {
-        final var user = TestDataProvider
-                .createUser()
-                .build();
+    @ParameterizedTest
+    @MethodSource("shouldMapUserToDto")
+    void shouldMapUserToDto(final User toBeMapped, final UserDto expected) {
+        final var actual = mapper.userToDto(toBeMapped);
 
-        final var userDto = mapper.userToDto(user);
-
-        assertThat(userDto)
-                .isNotNull();
-        assertThat(userDto.getBooks().size())
-                .isEqualTo(user.getBooks().size());
-        assertUsersAreEqual(userDto, user);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 
-    @Test
-    void shouldMapDtoToUser() {
-        final var userDto = TestDataProvider
-                .createUserDto()
-                .id(1L)
-                .build();
+    @ParameterizedTest
+    @MethodSource("shouldMapDtoToUser")
+    void shouldMapDtoToUser(final UserDto dtoToBeMapped, final User expected) {
+        final var actual = mapper.dtoToUser(dtoToBeMapped);
 
-        final var user = mapper.dtoToUser(userDto);
-
-        assertThat(user)
-                .isNotNull();
-        assertUsersAreEqual(userDto, user);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 
-    @Test
-    void shouldUpdateUserFromDto_whenBooksNotNull() {
-        final var userToBeUpdated = TestDataProvider
-                .createUser()
-                .build();
-        final var newUserDto = TestDataProvider
-                .createUserDto().id(userToBeUpdated.getId())
-                .build();
+    @ParameterizedTest
+    @MethodSource("shouldUpdateUserFromDto")
+    void shouldUpdateUserFromDto(
+            final UserDto newUserDto,
+            final User userToBeUpdated,
+            final User expected
+    ) {
+        final var actual = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
-        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
-
-        assertThat(updatedUser)
-                .isNotNull();
-        assertUsersAreEqual(newUserDto, updatedUser);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 
-    @Test
-    void shouldNotUpdateUser_whenUserDtoIsNull() {
-        final var userToBeUpdated = TestDataProvider
-                .createUser()
-                .build();
+    @ParameterizedTest
+    @MethodSource("shouldUpdateUserFromDto")
+    void shouldNotUpdateUser_whenUserDtoIsNull(
+            final UserDto newUserDto,
+            final User userToBeUpdated,
+            final User expected
+    ) {
+        final var actual = mapper.updateUserFromDto(null, userToBeUpdated);
 
-        final var updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
-
-        assertThat(updatedUser)
+        assertThat(actual)
+                .usingRecursiveComparison()
                 .isEqualTo(userToBeUpdated);
     }
 
-    @Test
-    void shouldUpdateUserFromDto_whenBookListIsEmpty() {
-        final var userToBeUpdated = TestDataProvider
-                .createUser()
-                .build();
-        final var newUserDto = TestDataProvider
-                .createUserDto()
-                .books(Collections.emptyList())
-                .build();
-
-        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
-
-        assertThat(updatedUser.getBooks())
-                .isEmpty();
-    }
-
-    @Test
-    void shouldUpdateUserFromDto_whenUserHasNullBookList() {
+    @ParameterizedTest
+    @MethodSource("shouldUpdateUserFromDto")
+    void shouldUpdateUserFromDto_whenUserHasNullBookList(
+            UserDto newUserDto,
+            User userToBeUpdated,
+            final User expected
+    ) {
         final var listSize = 10;
-        final var userToBeUpdated = TestDataProvider
-                .createUser()
-                .books(null)
-                .build();
-        final var newUserDto = TestDataProvider
-                .createUserDto()
-                .books(TestDataProvider.createListBookDto(listSize))
-                .build();
+        newUserDto.setBooks(TestDataProvider.createListBookDto(listSize));
+        userToBeUpdated.setBooks(null);
 
-        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var actual = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
-        assertThat(updatedUser.getBooks())
+        assertThat(actual.getBooks())
                 .isNotNull()
-                .isNotEmpty()
                 .hasSize(listSize);
     }
 
-    @Test
-    void shouldUpdateUserFromDto_whenDtoHasNullBookList() {
+    @ParameterizedTest
+    @MethodSource("shouldUpdateUserFromDto")
+    void shouldUpdateUserFromDto_whenDtoHasNullBookList(
+            UserDto newUserDto,
+            User userToBeUpdated,
+            final User expected
+    ) {
         final var listSize = 10;
-        final var userToBeUpdated = TestDataProvider
-                .createUser()
-                .books(TestDataProvider.createListBook(listSize))
-                .build();
+        userToBeUpdated.setBooks(TestDataProvider.createListBook(listSize));
+        newUserDto.setBooks(null);
 
-        final var newUserDto = TestDataProvider
-                .createUserDto()
-                .books(null)
-                .build();
+        final var actual = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
 
-        final var updatedUser = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
-
-        assertThat(updatedUser.getBooks()).isNull();
+        assertThat(actual.getBooks())
+                .isNull();
     }
 
     @Test
@@ -136,11 +112,63 @@ public class UserMapperTest {
         assertThat(user).isNull();
     }
 
-    private static void assertUsersAreEqual(UserDto userDto, User user) {
-        assertThat(userDto)
-                .withFailMessage(() -> "Users are not equal")
-                .usingRecursiveComparison()
-                .ignoringFields("books")
-                .isEqualTo(user);
+    public static Stream<Arguments> shouldMapUserToDto() {
+        User user = TestDataProvider
+                .createUser()
+                .build();
+
+        UserDto expected = TestDataProvider
+                .createUserDto()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .dateOfBirth(user.getDateOfBirth())
+                .books(Collections.emptyList())
+                .build();
+
+        return Stream.of(Arguments.arguments(user, expected));
+    }
+
+    public static Stream<Arguments> shouldMapDtoToUser() {
+        UserDto dtoToBeMapped = TestDataProvider
+                .createUserDto()
+                .books(Collections.emptyList())
+                .build();
+
+        User expected = TestDataProvider
+                .createUser()
+                .id(dtoToBeMapped.getId())
+                .fullName(dtoToBeMapped.getFullName())
+                .email(dtoToBeMapped.getEmail())
+                .dateOfBirth(dtoToBeMapped.getDateOfBirth())
+                .books(Collections.emptyList())
+                .build();
+
+        return Stream.of(Arguments.arguments(dtoToBeMapped, expected));
+    }
+
+    public static Stream<Arguments> shouldUpdateUserFromDto() {
+        User existingUser = TestDataProvider
+                .createUser()
+                .build();
+
+        UserDto newDto = TestDataProvider
+                .createUserDto()
+                .fullName("Updated FullName")
+                .email("updated@example.com")
+                .dateOfBirth(existingUser.getDateOfBirth())
+                .books(Collections.emptyList())
+                .build();
+
+        User expected = TestDataProvider
+                .createUser()
+                .id(existingUser.getId())
+                .fullName(newDto.getFullName())
+                .email(newDto.getEmail())
+                .dateOfBirth(existingUser.getDateOfBirth())
+                .books(existingUser.getBooks())
+                .build();
+
+        return Stream.of(Arguments.arguments(newDto, existingUser, expected));
     }
 }
