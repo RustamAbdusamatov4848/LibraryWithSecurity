@@ -1,0 +1,330 @@
+package ru.abdusamatov.librarywithsecurity.controller;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
+import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
+import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
+import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+
+public class UserControllerTest extends TestControllerBase {
+
+    public static final String BASE_URL = "users";
+
+    @Autowired
+    private UserRepository repository;
+
+    @Autowired
+    private UserService service;
+
+    @Override
+    protected void clearDatabase() {
+        repository.deleteAll();
+    }
+
+    @Test
+    void shouldGetAllUsers() {
+        final var userListSize = 10;
+        final var userDtoList = TestDataProvider.createListUserDto(userListSize);
+        userDtoList.forEach(userDto -> service.createUser(userDto));
+
+        final var response = webTestClient.get().uri(uriBuilder ->
+                        uriBuilder
+                                .pathSegment(BASE_URL)
+                                .queryParam("page", 0)
+                                .queryParam("size", 20)
+                                .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+        AssertTestStatusUtil
+                .assertSuccess(OK, "List of users", response);
+        assertThat(response.getData())
+                .asList()
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(userListSize);
+    }
+
+    //TODO убрать дублирование в TRAIN-1833
+    @Test
+    void shouldReturnUser_whenExistingUserIdProvided() {
+        final var id = service
+                .createUser(TestDataProvider.createUserDto().build())
+                .getId();
+
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(UserDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+        AssertTestStatusUtil
+                .assertSuccess(OK, "User successfully found", response);
+        assertThat(response.getData().getId())
+                .isEqualTo(id);
+    }
+
+    @Test
+    void shouldReturnNotFound_whenNonExistingUserIdProvided() {
+        final var id = 10000L;
+
+        final var response = executeGetUserById(id, NOT_FOUND);
+
+        assertUserNotFound(response);
+    }
+
+    //TODO убрать дублирование в TRAIN-1833
+    @Test
+    void shouldCreateUser_whenValidDataProvided() {
+        final var validUserDto = TestDataProvider
+                .createUserDto()
+                .build();
+
+        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(validUserDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(UserDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+        AssertTestStatusUtil
+                .assertSuccess(CREATED, "User successfully saved", response);
+        assertThat(response.getData())
+                .isNotNull()
+                .usingRecursiveComparison()
+                .ignoringFields("id", "books")
+                .isEqualTo(validUserDto);
+        assertThat(response.getData().getId())
+                .isNotNull();
+        assertThat(response.getData().getBooks())
+                .isNull();
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenUserWithInvalidFields() {
+        final var invalidUserDto = TestDataProvider
+                .createUserDtoWithInvalidFields()
+                .build();
+
+        final var response = executeCreateUser(invalidUserDto, BAD_REQUEST);
+
+        assertFieldErrorForUser(response);
+    }
+
+    //TODO убрать дублирование в TRAIN-1833
+    @Test
+    void shouldUpdateUser_whenValidUserDtoProvided() {
+        final var userToBeUpdated = service
+                .createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider
+                .updateUserDto(userToBeUpdated)
+                .build();
+
+
+        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateUserDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(UserDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+        AssertTestStatusUtil
+                .assertSuccess(OK, "User successfully updated", response);
+        assertThat(response.getData())
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(updateUserDto);
+    }
+
+    @Test
+    void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
+        final var notExistingId = 10000L;
+        final var userToBeUpdated = service
+                .createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider
+                .updateUserDto(userToBeUpdated)
+                .id(notExistingId)
+                .build();
+
+        final var response = executeUpdateUser(updateUserDto, NOT_FOUND);
+
+        assertUserNotFound(response);
+    }
+
+    @Test
+    void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
+        final var userToBeUpdated = service
+                .createUser(TestDataProvider.createUserDto().build());
+        final var updateUserDto = TestDataProvider
+                .updateUserDtoWithInvalidFields(userToBeUpdated)
+                .build();
+
+        final var response = executeUpdateUser(updateUserDto, BAD_REQUEST);
+
+        assertFieldErrorForUser(response);
+    }
+
+    //TODO убрать дублирование в TRAIN-1833
+    @Test
+    void shouldReturnNoContent_whenUserDeletedSuccessfully() {
+        final var id = service
+                .createUser(TestDataProvider.createUserDto().build())
+                .getId();
+
+        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+        AssertTestStatusUtil
+                .assertSuccess(NO_CONTENT, "Successfully deleted", response);
+    }
+
+    @Test
+    void shouldReturnNotFound_whenBookToDeleteDoesNotExist() {
+        final var notExistingId = 10000L;
+
+        final var response = executeDeleteUserById(notExistingId, NOT_FOUND);
+
+        assertUserNotFound(response);
+    }
+
+    public Response<Void> executeGetUserById(
+            final long id,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeCreateUser(
+            final UserDto userDto,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeUpdateUser(
+            final UserDto userDto,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userDto)
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public Response<Void> executeDeleteUserById(
+            final long id,
+            final HttpStatus status
+    ) {
+        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    public static void assertUserNotFound(final Response<Void> response) {
+        AssertTestStatusUtil.assertError(NOT_FOUND, "Failed entity search", response);
+    }
+
+    public static void assertFieldErrorForUser(final Response<Void> response) {
+        AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
+    }
+
+}
