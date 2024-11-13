@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.service.LibrarianService;
-import ru.abdusamatov.librarywithsecurity.util.Response;
-import ru.abdusamatov.librarywithsecurity.util.Result;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;

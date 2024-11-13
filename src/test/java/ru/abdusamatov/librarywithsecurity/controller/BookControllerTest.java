@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestStatus;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
-import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -65,7 +65,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -90,7 +90,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "Book successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
@@ -124,7 +124,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(CREATED, "Book successfully created", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -170,7 +170,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "Book successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -240,7 +240,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
@@ -275,7 +275,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
     }
 
@@ -321,7 +321,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Book successfully released", response);
     }
 
@@ -357,7 +357,7 @@ public class BookControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData())
                 .hasSize(1);
@@ -369,7 +369,7 @@ public class BookControllerTest extends TestControllerBase {
 
         final var response = executeSearchByTitle(query, OK);
 
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData())
                 .isNull();
@@ -517,10 +517,10 @@ public class BookControllerTest extends TestControllerBase {
     }
 
     private static void assertBookNotFound(final Response<Void> response) {
-        TestStatus.assertError(NOT_FOUND, "Failed entity search", response);
+        AssertTestStatusUtil.assertError(NOT_FOUND, "Failed entity search", response);
     }
 
     private static void assertFieldErrorForBook(final Response<Void> response) {
-        TestStatus.assertError(BAD_REQUEST, "Validation field failed", response);
+        AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
     }
 }

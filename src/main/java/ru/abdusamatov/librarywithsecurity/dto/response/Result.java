@@ -1,10 +1,11 @@
-package ru.abdusamatov.librarywithsecurity.util;
+package ru.abdusamatov.librarywithsecurity.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
 
 import java.util.Map;
 

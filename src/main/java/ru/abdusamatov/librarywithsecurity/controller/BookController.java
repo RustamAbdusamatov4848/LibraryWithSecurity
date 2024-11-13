@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.util.Response;
-import ru.abdusamatov.librarywithsecurity.util.Result;
 
 import java.util.List;
 

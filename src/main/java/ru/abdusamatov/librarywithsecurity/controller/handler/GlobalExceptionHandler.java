@@ -7,10 +7,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.exception.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
-import ru.abdusamatov.librarywithsecurity.util.Response;
-import ru.abdusamatov.librarywithsecurity.util.Result;
 
 import java.util.HashMap;
 import java.util.Map;

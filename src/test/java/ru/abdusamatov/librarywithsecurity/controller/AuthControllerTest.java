@@ -6,13 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.service.LibrarianService;
+import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestStatus;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
-import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -54,7 +54,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(HttpStatus.CREATED, "Librarian was created", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -71,7 +71,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         final var response = executeCreateLibrarian(invalidLibrarianDto, BAD_REQUEST);
 
-        TestStatus
+        AssertTestStatusUtil
                 .assertError(BAD_REQUEST, "Validation field failed", response);
     }
 
@@ -86,7 +86,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         final var response = executeCreateLibrarian(librarianDtoWithExistEmail, BAD_REQUEST);
 
-        TestStatus
+        AssertTestStatusUtil
                 .assertError(BAD_REQUEST, "Failed email validation, already exist", response);
     }
 
@@ -116,7 +116,7 @@ public class AuthControllerTest extends TestControllerBase {
         assertThat(response)
                 .isNotNull();
 
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successful validation", response);
     }
 
@@ -128,7 +128,7 @@ public class AuthControllerTest extends TestControllerBase {
 
         final var response = executeValidateLibrarian(authenticationDto, UNAUTHORIZED);
 
-        TestStatus.assertError(UNAUTHORIZED, "Failed authorization", response);
+        AssertTestStatusUtil.assertError(UNAUTHORIZED, "Failed authorization", response);
     }
 
     private Response<Void> executeCreateLibrarian(

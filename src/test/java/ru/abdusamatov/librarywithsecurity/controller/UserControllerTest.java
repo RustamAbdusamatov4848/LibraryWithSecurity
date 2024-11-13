@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.support.TestStatus;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
-import ru.abdusamatov.librarywithsecurity.util.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -55,7 +55,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
                 .asList()
@@ -82,7 +82,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "User successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
@@ -117,7 +117,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(CREATED, "User successfully saved", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -164,7 +164,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(OK, "User successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -218,7 +218,7 @@ public class UserControllerTest extends TestControllerBase {
 
         assertThat(response)
                 .isNotNull();
-        TestStatus
+        AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
@@ -316,11 +316,11 @@ public class UserControllerTest extends TestControllerBase {
     }
 
     public static void assertUserNotFound(final Response<Void> response) {
-        TestStatus.assertError(NOT_FOUND, "Failed entity search", response);
+        AssertTestStatusUtil.assertError(NOT_FOUND, "Failed entity search", response);
     }
 
     public static void assertFieldErrorForUser(final Response<Void> response) {
-        TestStatus.assertError(BAD_REQUEST, "Validation field failed", response);
+        AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
     }
 
 }

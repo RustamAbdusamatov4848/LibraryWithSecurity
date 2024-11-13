@@ -1,13 +1,13 @@
 package ru.abdusamatov.librarywithsecurity.support;
 
 import org.springframework.http.HttpStatus;
-import ru.abdusamatov.librarywithsecurity.util.Response;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.ERROR;
 import static ru.abdusamatov.librarywithsecurity.util.ResponseStatus.SUCCESS;
 
-public class TestStatus {
+public class AssertTestStatusUtil {
     public static <T> void assertSuccess(
             final HttpStatus httpStatusCode,
             final String description,

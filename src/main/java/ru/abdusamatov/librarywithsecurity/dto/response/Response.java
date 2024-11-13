@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.util;
+package ru.abdusamatov.librarywithsecurity.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
