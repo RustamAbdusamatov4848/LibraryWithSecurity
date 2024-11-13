@@ -79,7 +79,6 @@ public class AuthControllerTest extends TestControllerBase {
                 .assertError(BAD_REQUEST, "Failed email validation, already exist", response);
     }
 
-    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnNoContent_whenAuthenticationWithValidFields() {
         final var librarianDto = TestDataProvider
@@ -91,7 +90,7 @@ public class AuthControllerTest extends TestControllerBase {
                 .createAuthenticationDto(librarianDto.getEmail(), librarianDto.getPassword())
                 .build();
 
-        final var response = executeValidateLibrarian(NO_CONTENT, authenticationDto);
+        final var response = executeValidateLibrarian(OK, authenticationDto);
 
         AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successful validation", response);

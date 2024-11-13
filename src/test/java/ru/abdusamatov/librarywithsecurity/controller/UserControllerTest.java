@@ -13,6 +13,8 @@ import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -41,20 +43,8 @@ public class UserControllerTest extends TestControllerBase {
         final var userDtoList = TestDataProvider.createListUserDto(userListSize);
         userDtoList.forEach(userDto -> service.createUser(userDto));
 
-        final var response = webTestClient.get().uri(uriBuilder ->
-                        uriBuilder
-                                .pathSegment(BASE_URL)
-                                .queryParam("page", 0)
-                                .queryParam("size", 20)
-                                .build())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
-                .returnResult()
-                .getResponseBody();
+        final var response = executeGetAllUsers(OK);
 
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
@@ -62,6 +52,16 @@ public class UserControllerTest extends TestControllerBase {
                 .isNotNull()
                 .isNotEmpty()
                 .hasSize(userListSize);
+    }
+
+    @Test
+    void shouldReturnEmptyList_whenUserAreAbsent() {
+        final var response = executeGetAllUsers(OK);
+
+        AssertTestStatusUtil
+                .assertSuccess(OK, "List of users", response);
+        assertThat(response.getData())
+                .isEmpty();
     }
 
     @Test
@@ -184,6 +184,25 @@ public class UserControllerTest extends TestControllerBase {
         final var response = executeDeleteUserById(NOT_FOUND, notExistingId);
 
         assertUserNotFound(response);
+    }
+
+    private Response<List<UserDto>> executeGetAllUsers(final HttpStatus httpStatus) {
+        final var response = webTestClient.get().uri(uriBuilder ->
+                        uriBuilder
+                                .pathSegment(BASE_URL)
+                                .queryParam("page", 0)
+                                .queryParam("size", 20)
+                                .build())
+                .exchange()
+                .expectStatus().isEqualTo(httpStatus)
+                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
     }
 
     private <T> Response<T> executeGetUserById(
