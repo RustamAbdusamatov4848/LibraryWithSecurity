@@ -17,6 +17,7 @@ import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class AuthControllerTest extends TestControllerBase {
@@ -34,27 +35,14 @@ public class AuthControllerTest extends TestControllerBase {
         repository.deleteAll();
     }
 
-    //TODO убрать дублирование в TRAIN-1833
     @Test
     public void shouldCreateLibrarian_whenValidDataProvided() {
         final var librarianToBeSaved = TestDataProvider
                 .createLibrarianDto()
                 .build();
 
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, "registration")
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(librarianToBeSaved)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(LibrarianDto.class))
-                .returnResult()
-                .getResponseBody();
+        final var response = executeCreateLibrarian(OK, librarianToBeSaved, LibrarianDto.class);
 
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(HttpStatus.CREATED, "Librarian was created", response);
         assertThat(response.getData())
@@ -70,7 +58,7 @@ public class AuthControllerTest extends TestControllerBase {
                 .createLibrarianDtoWithInvalidFields()
                 .build();
 
-        final var response = executeCreateLibrarian(invalidLibrarianDto, BAD_REQUEST);
+        final var response = executeCreateLibrarian(BAD_REQUEST, invalidLibrarianDto, Void.class);
 
         AssertTestStatusUtil
                 .assertError(BAD_REQUEST, "Validation field failed", response);
@@ -85,7 +73,7 @@ public class AuthControllerTest extends TestControllerBase {
                 .createLibrarianDto().email(emailThatAlreadyExist)
                 .build();
 
-        final var response = executeCreateLibrarian(librarianDtoWithExistEmail, BAD_REQUEST);
+        final var response = executeCreateLibrarian(BAD_REQUEST, librarianDtoWithExistEmail, Void.class);
 
         AssertTestStatusUtil
                 .assertError(BAD_REQUEST, "Failed email validation, already exist", response);
@@ -103,20 +91,7 @@ public class AuthControllerTest extends TestControllerBase {
                 .createAuthenticationDto(librarianDto.getEmail(), librarianDto.getPassword())
                 .build();
 
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, "login")
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(authenticationDto)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
-
-        assertThat(response)
-                .isNotNull();
+        final var response = executeValidateLibrarian(NO_CONTENT, authenticationDto);
 
         AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successful validation", response);
@@ -128,24 +103,26 @@ public class AuthControllerTest extends TestControllerBase {
                 .createAuthenticationDto()
                 .build();
 
-        final var response = executeValidateLibrarian(authenticationDto, UNAUTHORIZED);
+        final var response = executeValidateLibrarian(UNAUTHORIZED, authenticationDto);
 
-        AssertTestStatusUtil.assertError(UNAUTHORIZED, "Failed authorization", response);
+        AssertTestStatusUtil
+                .assertError(UNAUTHORIZED, "Failed authorization", response);
     }
 
-    private Response<Void> executeCreateLibrarian(
-            final LibrarianDto librarianToBeSaved,
-            final HttpStatus status
+    private <T> Response<T> executeCreateLibrarian(
+            final HttpStatus status,
+            final LibrarianDto dto,
+            final Class<T> typeResponse
     ) {
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "registration")
                         .build()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(librarianToBeSaved)
+                .bodyValue(dto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(typeResponse))
                 .returnResult()
                 .getResponseBody();
 
@@ -156,8 +133,8 @@ public class AuthControllerTest extends TestControllerBase {
     }
 
     private Response<Void> executeValidateLibrarian(
-            final AuthenticationDto authenticationDto,
-            final HttpStatus httpStatus
+            final HttpStatus httpStatus,
+            final AuthenticationDto authenticationDto
     ) {
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "login")
