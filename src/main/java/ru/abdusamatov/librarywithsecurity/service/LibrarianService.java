@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.exception.ExistEmailException;
-import ru.abdusamatov.librarywithsecurity.model.Librarian;
 import ru.abdusamatov.librarywithsecurity.repository.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.LibrarianMapper;
 
@@ -31,7 +30,7 @@ public class LibrarianService {
 
         var librarianFromDto = librarianMapper.librarianDtoToLibrarian(librarianDto);
         librarianFromDto.setPassword(passwordEncoder.encode(librarianDto.getPassword()));
-        Librarian savedLibrarian = librarianRepository.save(librarianFromDto);
+        final var savedLibrarian = librarianRepository.save(librarianFromDto);
 
         log.info("Saving new Librarian with ID: {}", savedLibrarian.getId());
         return librarianMapper.librarianToLibrarianDto(savedLibrarian);
