@@ -29,7 +29,7 @@ spring:
   #Redis settings
   data:
     redis:
-      host: localhost
+      host: ${SPRING_DATA_REDIS_HOST}
       port: 6379
   cache:
     type: redis
