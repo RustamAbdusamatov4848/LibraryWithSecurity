@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,7 +69,7 @@ public class BookController {
         );
     }
 
-    @CacheEvict(value = "book", key = "#bookDto.id")
+    @CachePut(value = "book", key = "#bookDto.id")
     @RequestMapping(
             method = RequestMethod.PUT,
             value = "/books",
@@ -91,7 +92,7 @@ public class BookController {
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 
-    @CacheEvict(value = "book", key = "#id")
+    @CachePut(value = "book", key = "#id")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/books/{id}/assign",
@@ -102,12 +103,11 @@ public class BookController {
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
+    @CachePut(value = "book", key = "#id")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/books/{id}/release"
     )
-
-    @CacheEvict(value = "book", key = "#id")
     public Response<Void> releaseBook(@PathVariable("id") final Long id) {
         bookService.releaseBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);

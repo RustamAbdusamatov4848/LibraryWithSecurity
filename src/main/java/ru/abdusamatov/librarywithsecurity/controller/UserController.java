@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,7 +69,7 @@ public class UserController {
     }
 
 
-    @CacheEvict(value = "user", key = "#userDto.id")
+    @CachePut(value = "user", key = "#userDto.id")
     @RequestMapping(
             method = RequestMethod.PUT,
             value = "/users",
