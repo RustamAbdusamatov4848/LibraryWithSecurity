@@ -1,4 +1,6 @@
 spring:
+
+  #Application settings
   application:
     name: LibraryWithSecurity
 
@@ -8,7 +10,6 @@ spring:
     url: ${DATASOURCE_URL}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
-
 
   # Flyway settings
   flyway:
@@ -22,9 +23,16 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: none
-
   jackson:
     default-property-inclusion: non_null
+
+  #Redis settings
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
 
 # OpenApi settings
 springdoc:

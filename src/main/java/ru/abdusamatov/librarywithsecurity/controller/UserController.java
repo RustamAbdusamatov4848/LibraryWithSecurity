@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,6 +25,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "user")
 public class UserController {
     private final UserService userService;
 
@@ -42,7 +44,7 @@ public class UserController {
         );
     }
 
-    @Cacheable(value = "user", key = "#id")
+    @Cacheable(key = "#id")
     @RequestMapping(
             method = RequestMethod.GET,
             value = "/users/{id}",
@@ -69,7 +71,7 @@ public class UserController {
     }
 
 
-    @CachePut(value = "user", key = "#userDto.id")
+    @CachePut(key = "#userDto.id")
     @RequestMapping(
             method = RequestMethod.PUT,
             value = "/users",
@@ -83,7 +85,7 @@ public class UserController {
         );
     }
 
-    @CacheEvict(value = "user", key = "#id")
+    @CacheEvict(key = "#id")
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/users/{id}",

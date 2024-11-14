@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "book")
 public class BookController {
     private final BookService bookService;
 
@@ -43,7 +45,7 @@ public class BookController {
         );
     }
 
-    @Cacheable(value = "book", key = "#id")
+    @Cacheable(key = "#id")
     @RequestMapping(
             method = RequestMethod.GET,
             value = "/books/{id}",
@@ -69,7 +71,7 @@ public class BookController {
         );
     }
 
-    @CachePut(value = "book", key = "#bookDto.id")
+    @CachePut(key = "#bookDto.id")
     @RequestMapping(
             method = RequestMethod.PUT,
             value = "/books",
@@ -82,7 +84,7 @@ public class BookController {
         );
     }
 
-    @CacheEvict(value = "book", key = "id")
+    @CacheEvict(key = "id")
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/books/{id}"
@@ -92,7 +94,7 @@ public class BookController {
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 
-    @CachePut(value = "book", key = "#id")
+    @CachePut(key = "#id")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/books/{id}/assign",
@@ -103,7 +105,7 @@ public class BookController {
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
-    @CachePut(value = "book", key = "#id")
+    @CachePut(key = "#id")
     @RequestMapping(
             method = RequestMethod.PATCH,
             value = "/books/{id}/release"
