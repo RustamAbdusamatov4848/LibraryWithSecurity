@@ -2,6 +2,8 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +41,7 @@ public class UserController {
         );
     }
 
+    @Cacheable(value = "user", key = "#id")
     @RequestMapping(
             method = RequestMethod.GET,
             value = "/users/{id}",
@@ -64,6 +67,8 @@ public class UserController {
         );
     }
 
+
+    @CacheEvict(value = "user", key = "#userDto.id")
     @RequestMapping(
             method = RequestMethod.PUT,
             value = "/users",
@@ -77,6 +82,7 @@ public class UserController {
         );
     }
 
+    @CacheEvict(value = "user", key = "#id")
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/users/{id}",
