@@ -6,10 +6,13 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
@@ -25,13 +28,12 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/users")
 @CacheConfig(cacheNames = "user")
 public class UserController {
     private final UserService userService;
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/users",
+    @GetMapping(
             produces = {"application/json"}
     )
     public Response<List<UserDto>> getUserList(
@@ -45,9 +47,8 @@ public class UserController {
     }
 
     @Cacheable(key = "#id")
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/users/{id}",
+    @GetMapping(
+            value = "/{id}",
             produces = {"application/json"}
     )
     public Response<UserDto> getUserById(@PathVariable("id") final Long id) {
@@ -57,9 +58,7 @@ public class UserController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/users",
+    @PostMapping(
             produces = {"application/json"},
             consumes = {"application/json"}
     )
@@ -72,9 +71,7 @@ public class UserController {
 
 
     @CachePut(key = "#userDto.id")
-    @RequestMapping(
-            method = RequestMethod.PUT,
-            value = "/users",
+    @PutMapping(
             produces = {"application/json"},
             consumes = {"application/json"}
     )
@@ -86,9 +83,8 @@ public class UserController {
     }
 
     @CacheEvict(key = "#id")
-    @RequestMapping(
-            method = RequestMethod.DELETE,
-            value = "/users/{id}",
+    @DeleteMapping(
+            value = "/{id}",
             produces = {"application/json"}
     )
     public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {

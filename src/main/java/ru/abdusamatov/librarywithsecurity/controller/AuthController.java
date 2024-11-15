@@ -2,9 +2,9 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
@@ -17,12 +17,12 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/lib")
 public class AuthController {
     private final LibrarianService librarianService;
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/lib/registration",
+    @PostMapping(
+            value = "/registration",
             consumes = "application/json",
             produces = "application/json"
     )
@@ -33,9 +33,8 @@ public class AuthController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/lib/login",
+    @PostMapping(
+            value = "/login",
             consumes = "application/json",
             produces = "application/json"
     )

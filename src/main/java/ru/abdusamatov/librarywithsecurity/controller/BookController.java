@@ -6,10 +6,14 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
@@ -26,13 +30,12 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/books")
 @CacheConfig(cacheNames = "book")
 public class BookController {
     private final BookService bookService;
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/books",
+    @GetMapping(
             produces = {"application/json"})
     public Response<List<BookDto>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
@@ -46,9 +49,8 @@ public class BookController {
     }
 
     @Cacheable(key = "#id")
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/books/{id}",
+    @GetMapping(
+            value = "/{id}",
             produces = {"application/json"}
     )
     public Response<BookDto> showBookById(@PathVariable("id") final Long id) {
@@ -58,9 +60,7 @@ public class BookController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/books",
+    @PostMapping(
             produces = {"application/json"},
             consumes = {"application/json"}
     )
@@ -72,9 +72,7 @@ public class BookController {
     }
 
     @CachePut(key = "#bookDto.id")
-    @RequestMapping(
-            method = RequestMethod.PUT,
-            value = "/books",
+    @PutMapping(
             consumes = {"application/json"}
     )
     public Response<BookDto> updateBook(@Valid @RequestBody final BookDto bookDto) {
@@ -85,9 +83,8 @@ public class BookController {
     }
 
     @CacheEvict(key = "#id")
-    @RequestMapping(
-            method = RequestMethod.DELETE,
-            value = "/books/{id}"
+    @DeleteMapping(
+            value = "/{id}"
     )
     public Response<Void> deleteBook(@PathVariable("id") final Long id) {
         bookService.deleteBook(id);
@@ -95,9 +92,8 @@ public class BookController {
     }
 
     @CachePut(key = "#id")
-    @RequestMapping(
-            method = RequestMethod.PATCH,
-            value = "/books/{id}/assign",
+    @PatchMapping(
+            value = "/{id}/assign",
             consumes = {"application/json"}
     )
     public Response<Void> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
@@ -106,9 +102,8 @@ public class BookController {
     }
 
     @CachePut(key = "#id")
-    @RequestMapping(
-            method = RequestMethod.PATCH,
-            value = "/books/{id}/release"
+    @PatchMapping(
+            value = "/{id}/release"
     )
     public Response<Void> releaseBook(@PathVariable("id") final Long id) {
         bookService.releaseBook(id);
@@ -116,9 +111,8 @@ public class BookController {
     }
 
     @Cacheable(value = "bookTitle", key = "#query")
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/books/search",
+    @GetMapping(
+            value = "/search",
             produces = {"application/json"}
     )
     public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") final String query) {
