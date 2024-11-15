@@ -2,6 +2,10 @@ package ru.abdusamatov.librarywithsecurity.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "user")
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -28,6 +33,7 @@ public class UserService {
                 .getContent();
     }
 
+    @Cacheable(key = "#id")
     @Transactional(readOnly = true)
     public UserDto getUserById(final Long id) {
         return userRepository
@@ -37,13 +43,14 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto createUser(final UserDto userDto) {
-        final var createdUser = userRepository.save(userMapper.dtoToUser(userDto));
+    public UserDto createUser(final UserDto dto) {
+        final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
         return userMapper.userToDto(createdUser);
     }
 
+    @CachePut(key = "#dtoToBeUpdated.id")
     @Transactional
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
@@ -56,6 +63,7 @@ public class UserService {
         return updatedUser;
     }
 
+    @CacheEvict(key = "#id")
     @Transactional
     public void deleteUserById(final Long id) {
         final var user = userRepository.findById(id)

@@ -2,10 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,13 +25,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-@CacheConfig(cacheNames = "user")
 public class UserController {
     private final UserService userService;
 
-    @GetMapping(
-            produces = {"application/json"}
-    )
+    @GetMapping(produces = {"application/json"})
     public Response<List<UserDto>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
@@ -46,11 +39,7 @@ public class UserController {
         );
     }
 
-    @Cacheable(key = "#id")
-    @GetMapping(
-            value = "/{id}",
-            produces = {"application/json"}
-    )
+    @GetMapping(value = "/{id}", produces = {"application/json"})
     public Response<UserDto> getUserById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully found"),
@@ -58,10 +47,7 @@ public class UserController {
         );
     }
 
-    @PostMapping(
-            produces = {"application/json"},
-            consumes = {"application/json"}
-    )
+    @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
     public Response<UserDto> createUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "User successfully saved"),
@@ -69,12 +55,7 @@ public class UserController {
         );
     }
 
-
-    @CachePut(key = "#userDto.id")
-    @PutMapping(
-            produces = {"application/json"},
-            consumes = {"application/json"}
-    )
+    @PutMapping(produces = {"application/json"}, consumes = {"application/json"})
     public Response<UserDto> updateUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully updated"),
@@ -82,11 +63,7 @@ public class UserController {
         );
     }
 
-    @CacheEvict(key = "#id")
-    @DeleteMapping(
-            value = "/{id}",
-            produces = {"application/json"}
-    )
+    @DeleteMapping(value = "/{id}", produces = {"application/json"})
     public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
         userService.deleteUserById(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);

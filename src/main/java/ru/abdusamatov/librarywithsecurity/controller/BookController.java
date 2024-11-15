@@ -2,10 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,12 +27,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
-@CacheConfig(cacheNames = "book")
 public class BookController {
     private final BookService bookService;
 
-    @GetMapping(
-            produces = {"application/json"})
+    @GetMapping(produces = {"application/json"})
     public Response<List<BookDto>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size,
@@ -48,11 +42,7 @@ public class BookController {
         );
     }
 
-    @Cacheable(key = "#id")
-    @GetMapping(
-            value = "/{id}",
-            produces = {"application/json"}
-    )
+    @GetMapping(value = "/{id}", produces = {"application/json"})
     public Response<BookDto> showBookById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "Book successfully found"),
@@ -60,10 +50,7 @@ public class BookController {
         );
     }
 
-    @PostMapping(
-            produces = {"application/json"},
-            consumes = {"application/json"}
-    )
+    @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
     public Response<BookDto> createBook(@Valid @RequestBody final BookDto bookDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "Book successfully created"),
@@ -71,10 +58,7 @@ public class BookController {
         );
     }
 
-    @CachePut(key = "#bookDto.id")
-    @PutMapping(
-            consumes = {"application/json"}
-    )
+    @PutMapping(consumes = {"application/json"})
     public Response<BookDto> updateBook(@Valid @RequestBody final BookDto bookDto) {
         return Response.buildResponse(
                 Result.success(OK, "Book successfully updated"),
@@ -82,39 +66,25 @@ public class BookController {
         );
     }
 
-    @CacheEvict(key = "#id")
-    @DeleteMapping(
-            value = "/{id}"
-    )
+    @DeleteMapping(value = "/{id}")
     public Response<Void> deleteBook(@PathVariable("id") final Long id) {
         bookService.deleteBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 
-    @CachePut(key = "#id")
-    @PatchMapping(
-            value = "/{id}/assign",
-            consumes = {"application/json"}
-    )
+    @PatchMapping(value = "/{id}/assign", consumes = {"application/json"})
     public Response<Void> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
         bookService.assignBook(id, newUser);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
-    @CachePut(key = "#id")
-    @PatchMapping(
-            value = "/{id}/release"
-    )
+    @PatchMapping(value = "/{id}/release")
     public Response<Void> releaseBook(@PathVariable("id") final Long id) {
         bookService.releaseBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
     }
 
-    @Cacheable(value = "bookTitle", key = "#query")
-    @GetMapping(
-            value = "/search",
-            produces = {"application/json"}
-    )
+    @GetMapping(value = "/search", produces = {"application/json"})
     public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") final String query) {
         return Response.buildResponse(
                 Result.success(OK, String.format("Found books with title %s", query)),
