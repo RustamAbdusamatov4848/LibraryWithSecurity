@@ -7,7 +7,7 @@ import org.testcontainers.utility.DockerImageName;
 import ru.abdusamatov.librarywithsecurity.container.RedisContainer;
 
 public class RedisInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-    private static final DockerImageName IMAGE = DockerImageName.parse("redis:latest");
+    private static final DockerImageName IMAGE = DockerImageName.parse("redis:7.4.1-alpine3.20");
     public static final RedisContainer CONTAINER = new RedisContainer(IMAGE);
 
     @Override
