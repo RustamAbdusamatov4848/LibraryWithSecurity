@@ -14,7 +14,7 @@ public class RedisInitializer implements ApplicationContextInitializer<Configura
     public void initialize(final ConfigurableApplicationContext applicationContext) {
         CONTAINER.start();
         TestPropertyValues.of(
-                "spring.redis.url=" + CONTAINER.getUrl()
+                "spring.data.redis.url=" + CONTAINER.getUrl()
         ).applyTo(applicationContext.getEnvironment());
     }
 }

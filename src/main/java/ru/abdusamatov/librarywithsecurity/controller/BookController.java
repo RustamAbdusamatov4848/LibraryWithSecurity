@@ -84,7 +84,7 @@ public class BookController {
         );
     }
 
-    @CacheEvict(key = "id")
+    @CacheEvict(key = "#id")
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/books/{id}"
