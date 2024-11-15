@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString(exclude = "books")
 @Builder
-public class UserDto {
+public class UserDto implements Serializable {
 
     private Long id;
 

@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Result {
+public class Result implements Serializable {
     private HttpStatus httpStatusCode;
     private ResponseStatus status;
     private String description;
