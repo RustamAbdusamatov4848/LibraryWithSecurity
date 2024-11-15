@@ -7,8 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
+import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 
-@ContextConfiguration(initializers = PostgreSQLInitializer.class)
+@ContextConfiguration(initializers = {
+        PostgreSQLInitializer.class,
+        RedisInitializer.class
+})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public abstract class TestControllerBase {
