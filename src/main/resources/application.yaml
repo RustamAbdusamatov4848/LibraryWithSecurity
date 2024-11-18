@@ -33,6 +33,8 @@ spring:
       port: ${REDIS_PORT}
   cache:
     type: redis
+    redis:
+      time-to-live: 60000
 
 # OpenApi settings
 springdoc:
