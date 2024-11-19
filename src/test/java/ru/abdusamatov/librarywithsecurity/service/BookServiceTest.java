@@ -1,8 +1,8 @@
-package ru.abdusamatov.librarywithsecurity.service.mapper;
+package ru.abdusamatov.librarywithsecurity.service;
 
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 
-public class UserServiceTest extends TestBase {
+public class BookServiceTest extends TestBase {
     @Override
     protected void clearDatabase() {
 
