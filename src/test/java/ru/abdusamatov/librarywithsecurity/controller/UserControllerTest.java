@@ -9,7 +9,7 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
-import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
+import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-public class UserControllerTest extends TestControllerBase {
+public class UserControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";
 

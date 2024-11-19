@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.LibrarianRepository;
 import ru.abdusamatov.librarywithsecurity.service.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
-import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
+import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-public class AuthControllerTest extends TestControllerBase {
+public class AuthControllerTest extends TestBase {
 
     public static final String BASE_URL = "lib";
 

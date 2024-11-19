@@ -15,7 +15,7 @@ import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 })
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-public abstract class TestControllerBase {
+public abstract class TestBase {
 
     @Autowired
     protected WebTestClient webTestClient;
