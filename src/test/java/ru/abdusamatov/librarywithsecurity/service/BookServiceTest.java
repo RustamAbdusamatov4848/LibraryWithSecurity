@@ -84,7 +84,7 @@ public class BookServiceTest extends TestBase {
         return bookService.createBook(book);
     }
 
-    private void assertBookInCache(Long id, BookDto expectedBook) {
+    private void assertBookInCache(final Long id, final BookDto expectedBook) {
         final var cache = cacheManager.getCache(BOOK_CACHE);
 
         assertThat(cache)
@@ -95,7 +95,7 @@ public class BookServiceTest extends TestBase {
                 .isEqualTo(expectedBook.getId());
     }
 
-    private void assertBookNotInCache(Long id) {
+    private void assertBookNotInCache(final Long id) {
         final var cache = cacheManager.getCache(BOOK_CACHE);
 
         assertThat(cache)
