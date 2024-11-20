@@ -1,15 +1,21 @@
 package ru.abdusamatov.librarywithsecurity.service;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 
@@ -18,7 +24,7 @@ public class BookServiceTest extends TestBase {
     private static final String BOOK_CACHE = "book";
 
     @Autowired
-    private BookService bookService;
+    private BookService service;
 
     @Autowired
     private CacheManager cacheManager;
@@ -31,64 +37,57 @@ public class BookServiceTest extends TestBase {
         bookRepository.deleteAll();
     }
 
-    @Test
-    void shouldCallRepositoryOnce_whenGetBookById() {
-        final var book = createAndCacheBook();
+    @ParameterizedTest
+    @MethodSource("createBook")
+    void shouldCallRepositoryOnce_whenGetBookById(final BookDto dtoToBeSaved) {
+        final var book = service.createBook(dtoToBeSaved);
         final var id = book.getId();
 
-        bookService.getBookById(id);
+        service.getBookById(id);
         assertCacheNotNull();
-        bookService.getBookById(id);
+        service.getBookById(id);
 
+        assertBookInCache(id, book);
         verify(bookRepository, atMostOnce())
                 .findById(id);
-        assertBookInCache(id, book);
     }
 
-    @Test
-    void shouldUpdateCacheBook_whenUpdateBook() {
-        final var savedBook = createAndCacheBook();
-        cacheManager.getCache(BOOK_CACHE).put(savedBook.getId(), savedBook);
+    @ParameterizedTest
+    @MethodSource("createBook")
+    void shouldUpdateCacheBook_whenUpdateBook(final BookDto dtoToBeSaved) {
+        final var savedBook = addSavedEntityToCache(dtoToBeSaved);
 
         final var updatedBook = TestDataProvider
                 .updateBookDto(savedBook)
                 .build();
 
-        bookService.updateBook(updatedBook);
+        service.updateBook(updatedBook);
 
         assertBookInCache(updatedBook.getId(), updatedBook);
     }
 
-    @Test
-    void shouldDeleteBookFromCache_whenDeleteBook() {
-        final var savedBook = createAndCacheBook();
+    @ParameterizedTest
+    @MethodSource("createBook")
+    void shouldDeleteBookFromCache_whenDeleteBook(final BookDto dtoToBeSaved) {
+        final var savedBook = addSavedEntityToCache(dtoToBeSaved);
         final var id = savedBook.getId();
-        cacheManager.getCache(BOOK_CACHE).put(id, savedBook);
 
-        bookService.deleteBook(id);
+        service.deleteBook(id);
 
         assertBookNotInCache(id);
     }
 
-    private void assertCacheNotNull() {
-        var cache = cacheManager.getCache(BOOK_CACHE);
+    private Cache assertCacheNotNull() {
+        final var cache = cacheManager.getCache(BOOK_CACHE);
 
-        assertThat(cache)
-                .isNotNull();
-    }
+        assertNotNull(cache);
 
-    private BookDto createAndCacheBook() {
-        final var book = TestDataProvider
-                .createBookDto()
-                .build();
-        return bookService.createBook(book);
+        return cache;
     }
 
     private void assertBookInCache(final Long id, final BookDto expectedBook) {
-        final var cache = cacheManager.getCache(BOOK_CACHE);
+        final var cache = assertCacheNotNull();
 
-        assertThat(cache)
-                .isNotNull();
         assertThat(cache.get(id, BookDto.class))
                 .isNotNull()
                 .extracting(BookDto::getId)
@@ -96,11 +95,24 @@ public class BookServiceTest extends TestBase {
     }
 
     private void assertBookNotInCache(final Long id) {
-        final var cache = cacheManager.getCache(BOOK_CACHE);
+        final var cache = assertCacheNotNull();
 
-        assertThat(cache)
-                .isNotNull();
         assertThat(cache.get(id))
                 .isNull();
+    }
+
+    private static Stream<Arguments> createBook() {
+        final var book = TestDataProvider
+                .createBookDto()
+                .build();
+
+        return Stream.of(Arguments.arguments(book));
+    }
+
+    private BookDto addSavedEntityToCache(final BookDto dtoToSaved) {
+        final var savedBook = service.createBook(dtoToSaved);
+        cacheManager.getCache(BOOK_CACHE).put(savedBook.getId(), savedBook);
+
+        return savedBook;
     }
 }

@@ -98,7 +98,7 @@ public class UserServiceTest extends TestBase {
                 .isEqualTo(expectedUser.getId());
     }
 
-    public static Stream<Arguments> createUser() {
+    private static Stream<Arguments> createUser() {
         final var user = TestDataProvider
                 .createUserDto()
                 .build();
