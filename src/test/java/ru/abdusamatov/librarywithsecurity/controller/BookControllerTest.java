@@ -88,7 +88,7 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnNotFound_whenNonExistingBookIdProvided() {
-        final var id = 1L;
+        final var id = 10000L;
 
         final var response = executeGetBookById(NOT_FOUND, id, Void.class);
 

@@ -18,17 +18,17 @@ import static org.mockito.Mockito.verify;
 public class UserServiceTest extends TestBase {
 
     @Autowired
-    private UserService userService;
+    private UserService service;
 
     @Autowired
     private CacheManager cacheManager;
 
     @SpyBean
-    private UserRepository userRepository;
+    private UserRepository repository;
 
     @Override
     protected void clearDatabase() {
-        userRepository.deleteAll();
+        repository.deleteAll();
     }
 
     @Test
@@ -36,15 +36,15 @@ public class UserServiceTest extends TestBase {
         final var savedUser = createAndCacheUser();
         final var id = savedUser.getId();
 
-        userService.getUserById(id);
+        service.getUserById(id);
 
         var cache = cacheManager.getCache("user");
         assertThat(cache)
                 .isNotNull();
 
-        userService.getUserById(id);
+        service.getUserById(id);
 
-        verify(userRepository, atMostOnce())
+        verify(repository, atMostOnce())
                 .findById(id);
         assertUserInCache(savedUser);
     }
@@ -56,12 +56,12 @@ public class UserServiceTest extends TestBase {
                 .updateUserDto(savedUser)
                 .build();
 
-        userService.updateUser(updatedUser);
+        service.updateUser(updatedUser);
 
         assertUserInCache(updatedUser);
-        verify(userRepository, times(1))
+        verify(repository, times(1))
                 .findById(savedUser.getId());
-        verify(userRepository, times(2))
+        verify(repository, times(2))
                 .save(any());
     }
 
@@ -69,12 +69,12 @@ public class UserServiceTest extends TestBase {
     void shouldDeleteUserFromCache_whenDeleteUserEvictsCache() {
         final var savedUser = createAndCacheUser();
 
-        userService.deleteUserById(savedUser.getId());
+        service.deleteUserById(savedUser.getId());
 
         assertUserNotInCache(savedUser);
-        verify(userRepository, times(1))
+        verify(repository, times(1))
                 .findById(savedUser.getId());
-        verify(userRepository, times(1))
+        verify(repository, times(1))
                 .delete(any());
     }
 
@@ -83,7 +83,7 @@ public class UserServiceTest extends TestBase {
                 .createUserDto()
                 .build();
 
-        return userService.createUser(user);
+        return service.createUser(user);
     }
 
     private void assertUserInCache(final UserDto expectedUser) {
