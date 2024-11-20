@@ -1,6 +1,8 @@
 package ru.abdusamatov.librarywithsecurity.service;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cache.CacheManager;
@@ -9,7 +11,10 @@ import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 
@@ -31,9 +36,10 @@ public class UserServiceTest extends TestBase {
         repository.deleteAll();
     }
 
-    @Test
-    void shouldCallRepositoryOnce_whenGetUserById() {
-        final var savedUser = createAndCacheUser();
+    @ParameterizedTest
+    @MethodSource("createUser")
+    void shouldCallRepositoryOnce_whenGetUserById(final UserDto dtoToSaved) {
+        final var savedUser = service.createUser(dtoToSaved);
         final var id = savedUser.getId();
 
         service.getUserById(id);
@@ -47,10 +53,10 @@ public class UserServiceTest extends TestBase {
                 .findById(id);
     }
 
-    @Test
-    void shouldUpdateCacheUser_whenUpdateUser() {
-        final var savedUser = createAndCacheUser();
-        cacheManager.getCache(USER_CACHE).put(savedUser.getId(), savedUser);
+    @ParameterizedTest
+    @MethodSource("createUser")
+    void shouldUpdateCacheUser_whenUpdateUser(final UserDto dtoToSaved) {
+        final var savedUser = addSavedEntityToCache(dtoToSaved);
 
         final var updatedUser = TestDataProvider
                 .updateUserDto(savedUser)
@@ -61,34 +67,42 @@ public class UserServiceTest extends TestBase {
         assertUserInCache(updatedUser);
     }
 
-    @Test
-    void shouldDeleteUserFromCache_whenDeleteUser() {
-        final var savedUser = createAndCacheUser();
+    @ParameterizedTest
+    @MethodSource("createUser")
+    void shouldDeleteUserFromCache_whenDeleteUser(final UserDto dtoToSaved) {
+        final var savedUser = addSavedEntityToCache(dtoToSaved);
 
         service.deleteUserById(savedUser.getId());
 
         final var cache = cacheManager.getCache(USER_CACHE);
 
-        assertThat(cache)
-                .isNotNull();
+        assertNotNull(cache);
         assertThat(cache.get(savedUser.getId()))
                 .isNull();
     }
 
-    private UserDto createAndCacheUser() {
-        final var user = TestDataProvider
-                .createUserDto()
-                .build();
+    private UserDto addSavedEntityToCache(final UserDto dtoToSaved) {
+        final var savedUser = service.createUser(dtoToSaved);
+        cacheManager.getCache(USER_CACHE).put(savedUser.getId(), savedUser);
 
-        return service.createUser(user);
+        return savedUser;
     }
 
     private void assertUserInCache(final UserDto expectedUser) {
         final var cache = cacheManager.getCache(USER_CACHE);
 
+        assertNotNull(cache);
         assertThat(cache.get(expectedUser.getId(), UserDto.class))
                 .isNotNull()
                 .extracting(UserDto::getId)
                 .isEqualTo(expectedUser.getId());
+    }
+
+    public static Stream<Arguments> createUser() {
+        final var user = TestDataProvider
+                .createUserDto()
+                .build();
+
+        return Stream.of(Arguments.arguments(user));
     }
 }
