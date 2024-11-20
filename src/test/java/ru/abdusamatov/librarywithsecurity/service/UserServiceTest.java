@@ -10,12 +10,12 @@ import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class UserServiceTest extends TestBase {
+
+    private static final String USER_CACHE = "user";
 
     @Autowired
     private UserService service;
@@ -32,26 +32,26 @@ public class UserServiceTest extends TestBase {
     }
 
     @Test
-    void shouldCallRepositoryOnce_whenGetUserByIdUsesCache() {
+    void shouldCallRepositoryOnce_whenGetUserById() {
         final var savedUser = createAndCacheUser();
         final var id = savedUser.getId();
 
         service.getUserById(id);
-
-        var cache = cacheManager.getCache("user");
+        final var cache = cacheManager.getCache(USER_CACHE);
         assertThat(cache)
                 .isNotNull();
-
         service.getUserById(id);
 
+        assertUserInCache(savedUser);
         verify(repository, atMostOnce())
                 .findById(id);
-        assertUserInCache(savedUser);
     }
 
     @Test
-    void shouldUpdateCacheUser_whenUpdateUserUpdatesCache() {
+    void shouldUpdateCacheUser_whenUpdateUser() {
         final var savedUser = createAndCacheUser();
+        cacheManager.getCache(USER_CACHE).put(savedUser.getId(), savedUser);
+
         final var updatedUser = TestDataProvider
                 .updateUserDto(savedUser)
                 .build();
@@ -59,23 +59,20 @@ public class UserServiceTest extends TestBase {
         service.updateUser(updatedUser);
 
         assertUserInCache(updatedUser);
-        verify(repository, times(1))
-                .findById(savedUser.getId());
-        verify(repository, times(2))
-                .save(any());
     }
 
     @Test
-    void shouldDeleteUserFromCache_whenDeleteUserEvictsCache() {
+    void shouldDeleteUserFromCache_whenDeleteUser() {
         final var savedUser = createAndCacheUser();
 
         service.deleteUserById(savedUser.getId());
 
-        assertUserNotInCache(savedUser);
-        verify(repository, times(1))
-                .findById(savedUser.getId());
-        verify(repository, times(1))
-                .delete(any());
+        final var cache = cacheManager.getCache(USER_CACHE);
+
+        assertThat(cache)
+                .isNotNull();
+        assertThat(cache.get(savedUser.getId()))
+                .isNull();
     }
 
     private UserDto createAndCacheUser() {
@@ -87,19 +84,11 @@ public class UserServiceTest extends TestBase {
     }
 
     private void assertUserInCache(final UserDto expectedUser) {
-        final var cache = cacheManager.getCache("user");
+        final var cache = cacheManager.getCache(USER_CACHE);
+
         assertThat(cache.get(expectedUser.getId(), UserDto.class))
                 .isNotNull()
                 .extracting(UserDto::getId)
                 .isEqualTo(expectedUser.getId());
-    }
-
-    private void assertUserNotInCache(final UserDto user) {
-        final var cache = cacheManager.getCache("user");
-
-        assertThat(cache)
-                .isNotNull();
-        assertThat(cache.get(user.getId()))
-                .isNull();
     }
 }

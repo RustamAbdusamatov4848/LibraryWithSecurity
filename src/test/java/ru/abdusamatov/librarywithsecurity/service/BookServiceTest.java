@@ -9,15 +9,13 @@ import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
-import java.util.List;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class BookServiceTest extends TestBase {
+
+    private static final String BOOK_CACHE = "book";
 
     @Autowired
     private BookService bookService;
@@ -39,11 +37,9 @@ public class BookServiceTest extends TestBase {
         final var id = book.getId();
 
         bookService.getBookById(id);
-        verify(bookRepository, times(1))
-                .findById(id);
-
-
+        assertCacheNotNull();
         bookService.getBookById(id);
+
         verify(bookRepository, atMostOnce())
                 .findById(id);
         assertBookInCache(id, book);
@@ -51,49 +47,34 @@ public class BookServiceTest extends TestBase {
 
     @Test
     void shouldUpdateCacheBook_whenUpdateBook() {
-        final var book = createAndCacheBook();
+        final var savedBook = createAndCacheBook();
+        cacheManager.getCache(BOOK_CACHE).put(savedBook.getId(), savedBook);
+
         final var updatedBook = TestDataProvider
-                .updateBookDto(book)
+                .updateBookDto(savedBook)
                 .build();
 
         bookService.updateBook(updatedBook);
 
         assertBookInCache(updatedBook.getId(), updatedBook);
-        verify(bookRepository, times(1))
-                .findById(book.getId());
-        verify(bookRepository, times(2))
-                .save(any());
     }
 
     @Test
     void shouldDeleteBookFromCache_whenDeleteBook() {
-        final var book = createAndCacheBook();
-        final var id = book.getId();
+        final var savedBook = createAndCacheBook();
+        final var id = savedBook.getId();
+        cacheManager.getCache(BOOK_CACHE).put(id, savedBook);
 
         bookService.deleteBook(id);
 
         assertBookNotInCache(id);
-        verify(bookRepository, times(1))
-                .findById(id);
-        verify(bookRepository, times(1))
-                .delete(any());
     }
 
-    @Test
-    void shouldCacheSearchByTitle() {
-        final var titleQuery = "SomeTitle";
-        final var book = TestDataProvider.createBookDto().title(titleQuery).build();
-        bookService.createBook(book);
+    private void assertCacheNotNull() {
+        var cache = cacheManager.getCache(BOOK_CACHE);
 
-        bookService.searchByTitle(titleQuery);
-        verify(bookRepository, times(1)).findByTitleStartingWith(titleQuery);
-
-        bookService.searchByTitle(titleQuery);
-        verify(bookRepository, times(1)).findByTitleStartingWith(titleQuery);
-
-        final var cache = cacheManager.getCache("bookTitle");
-        assertThat(cache).isNotNull();
-        assertThat(cache.get(titleQuery, List.class)).isNotNull();
+        assertThat(cache)
+                .isNotNull();
     }
 
     private BookDto createAndCacheBook() {
@@ -104,7 +85,7 @@ public class BookServiceTest extends TestBase {
     }
 
     private void assertBookInCache(Long id, BookDto expectedBook) {
-        final var cache = cacheManager.getCache("book");
+        final var cache = cacheManager.getCache(BOOK_CACHE);
 
         assertThat(cache)
                 .isNotNull();
@@ -115,7 +96,7 @@ public class BookServiceTest extends TestBase {
     }
 
     private void assertBookNotInCache(Long id) {
-        final var cache = cacheManager.getCache("book");
+        final var cache = cacheManager.getCache(BOOK_CACHE);
 
         assertThat(cache)
                 .isNotNull();

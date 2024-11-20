@@ -121,7 +121,6 @@ public class BookService {
         log.info("Book with id {}, has been successfully released", id);
     }
 
-    @Cacheable(value = "bookTitle", key = "#query")
     @Transactional(readOnly = true)
     public List<BookDto> searchByTitle(final String query) {
         return bookRepository

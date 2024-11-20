@@ -9,7 +9,7 @@ import java.time.Duration;
 public class RedisContainer extends GenericContainer<RedisContainer> {
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("redis");
     private static final int REDIS_PORT = 6379;
-    private static final long TTL = 60000;
+    private static final long TTL = 600000;
 
     public RedisContainer(final DockerImageName dockerImageName) {
         super(dockerImageName);
