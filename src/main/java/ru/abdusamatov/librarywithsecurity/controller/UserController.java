@@ -28,7 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping
     public Response<List<UserDto>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
@@ -39,7 +39,7 @@ public class UserController {
         );
     }
 
-    @GetMapping(value = "/{id}", produces = {"application/json"})
+    @GetMapping(value = "/{id}")
     public Response<UserDto> getUserById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully found"),
@@ -47,7 +47,7 @@ public class UserController {
         );
     }
 
-    @PostMapping(produces = {"application/json"}, consumes = {"application/json"})
+    @PostMapping
     public Response<UserDto> createUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "User successfully saved"),
@@ -55,7 +55,7 @@ public class UserController {
         );
     }
 
-    @PutMapping(produces = {"application/json"}, consumes = {"application/json"})
+    @PutMapping
     public Response<UserDto> updateUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully updated"),
@@ -63,7 +63,7 @@ public class UserController {
         );
     }
 
-    @DeleteMapping(value = "/{id}", produces = {"application/json"})
+    @DeleteMapping(value = "/{id}")
     public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
         userService.deleteUserById(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);

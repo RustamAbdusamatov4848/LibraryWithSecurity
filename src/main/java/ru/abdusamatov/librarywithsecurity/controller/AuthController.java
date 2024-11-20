@@ -21,11 +21,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class AuthController {
     private final LibrarianService librarianService;
 
-    @PostMapping(
-            value = "/registration",
-            consumes = "application/json",
-            produces = "application/json"
-    )
+    @PostMapping(value = "/registration")
     public Response<LibrarianDto> createLibrarian(@Valid @RequestBody final LibrarianDto librarianDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "Librarian was created"),
@@ -33,11 +29,7 @@ public class AuthController {
         );
     }
 
-    @PostMapping(
-            value = "/login",
-            consumes = "application/json",
-            produces = "application/json"
-    )
+    @PostMapping(value = "/login")
     public Response<Void> login(@Valid @RequestBody final AuthenticationDto authenticationDto) {
         librarianService.validateLibrarian(authenticationDto);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successful validation"), null);
