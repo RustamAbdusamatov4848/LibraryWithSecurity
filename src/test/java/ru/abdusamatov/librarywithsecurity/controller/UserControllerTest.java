@@ -9,9 +9,11 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
-import ru.abdusamatov.librarywithsecurity.support.TestControllerBase;
+import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -20,7 +22,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-public class UserControllerTest extends TestControllerBase {
+public class UserControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";
 
@@ -41,20 +43,8 @@ public class UserControllerTest extends TestControllerBase {
         final var userDtoList = TestDataProvider.createListUserDto(userListSize);
         userDtoList.forEach(userDto -> service.createUser(userDto));
 
-        final var response = webTestClient.get().uri(uriBuilder ->
-                        uriBuilder
-                                .pathSegment(BASE_URL)
-                                .queryParam("page", 0)
-                                .queryParam("size", 20)
-                                .build())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
-                .returnResult()
-                .getResponseBody();
+        final var response = executeGetAllUsers(OK);
 
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
@@ -64,25 +54,24 @@ public class UserControllerTest extends TestControllerBase {
                 .hasSize(userListSize);
     }
 
-    //TODO убрать дублирование в TRAIN-1833
+    @Test
+    void shouldReturnEmptyList_whenUserAreAbsent() {
+        final var response = executeGetAllUsers(OK);
+
+        AssertTestStatusUtil
+                .assertSuccess(OK, "List of users", response);
+        assertThat(response.getData())
+                .isEmpty();
+    }
+
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
         final var id = service
                 .createUser(TestDataProvider.createUserDto().build())
                 .getId();
 
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(id))
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(UserDto.class))
-                .returnResult()
-                .getResponseBody();
+        final var response = executeGetUserById(OK, id, UserDto.class);
 
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(OK, "User successfully found", response);
         assertThat(response.getData().getId())
@@ -93,32 +82,19 @@ public class UserControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenNonExistingUserIdProvided() {
         final var id = 10000L;
 
-        final var response = executeGetUserById(id, NOT_FOUND);
+        final var response = executeGetUserById(NOT_FOUND, id, Void.class);
 
         assertUserNotFound(response);
     }
 
-    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldCreateUser_whenValidDataProvided() {
         final var validUserDto = TestDataProvider
                 .createUserDto()
                 .build();
 
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(validUserDto)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(UserDto.class))
-                .returnResult()
-                .getResponseBody();
+        final var response = executeCreateUser(OK, validUserDto, UserDto.class);
 
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(CREATED, "User successfully saved", response);
         assertThat(response.getData())
@@ -138,12 +114,11 @@ public class UserControllerTest extends TestControllerBase {
                 .createUserDtoWithInvalidFields()
                 .build();
 
-        final var response = executeCreateUser(invalidUserDto, BAD_REQUEST);
+        final var response = executeCreateUser(BAD_REQUEST, invalidUserDto, Void.class);
 
         assertFieldErrorForUser(response);
     }
 
-    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
         final var userToBeUpdated = service
@@ -152,21 +127,8 @@ public class UserControllerTest extends TestControllerBase {
                 .updateUserDto(userToBeUpdated)
                 .build();
 
+        final var response = executeUpdateUser(OK, updateUserDto, UserDto.class);
 
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL)
-                        .build()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateUserDto)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(UserDto.class))
-                .returnResult()
-                .getResponseBody();
-
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(OK, "User successfully updated", response);
         assertThat(response.getData())
@@ -185,7 +147,7 @@ public class UserControllerTest extends TestControllerBase {
                 .id(notExistingId)
                 .build();
 
-        final var response = executeUpdateUser(updateUserDto, NOT_FOUND);
+        final var response = executeUpdateUser(NOT_FOUND, updateUserDto, Void.class);
 
         assertUserNotFound(response);
     }
@@ -198,30 +160,19 @@ public class UserControllerTest extends TestControllerBase {
                 .updateUserDtoWithInvalidFields(userToBeUpdated)
                 .build();
 
-        final var response = executeUpdateUser(updateUserDto, BAD_REQUEST);
+        final var response = executeUpdateUser(BAD_REQUEST, updateUserDto, Void.class);
 
         assertFieldErrorForUser(response);
     }
 
-    //TODO убрать дублирование в TRAIN-1833
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
         final var id = service
                 .createUser(TestDataProvider.createUserDto().build())
                 .getId();
 
-        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(id))
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
-                .returnResult()
-                .getResponseBody();
+        final var response = executeDeleteUserById(OK, id);
 
-        assertThat(response)
-                .isNotNull();
         AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
@@ -230,22 +181,21 @@ public class UserControllerTest extends TestControllerBase {
     void shouldReturnNotFound_whenBookToDeleteDoesNotExist() {
         final var notExistingId = 10000L;
 
-        final var response = executeDeleteUserById(notExistingId, NOT_FOUND);
+        final var response = executeDeleteUserById(NOT_FOUND, notExistingId);
 
         assertUserNotFound(response);
     }
 
-    public Response<Void> executeGetUserById(
-            final long id,
-            final HttpStatus status
-    ) {
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL, String.valueOf(id))
-                        .build()
-                )
+    private Response<List<UserDto>> executeGetAllUsers(final HttpStatus httpStatus) {
+        final var response = webTestClient.get().uri(uriBuilder ->
+                        uriBuilder
+                                .pathSegment(BASE_URL)
+                                .queryParam("page", 0)
+                                .queryParam("size", 20)
+                                .build())
                 .exchange()
-                .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectStatus().isEqualTo(httpStatus)
+                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
                 .returnResult()
                 .getResponseBody();
 
@@ -255,9 +205,31 @@ public class UserControllerTest extends TestControllerBase {
         return response;
     }
 
-    public Response<Void> executeCreateUser(
+    private <T> Response<T> executeGetUserById(
+            final HttpStatus status,
+            final long id,
+            final Class<T> responseType
+    ) {
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id))
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    private <T> Response<T> executeCreateUser(
+            final HttpStatus status,
             final UserDto userDto,
-            final HttpStatus status
+            final Class<T> responseType
     ) {
         final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -267,7 +239,7 @@ public class UserControllerTest extends TestControllerBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -277,9 +249,10 @@ public class UserControllerTest extends TestControllerBase {
         return response;
     }
 
-    public Response<Void> executeUpdateUser(
+    private <T> Response<T> executeUpdateUser(
+            final HttpStatus status,
             final UserDto userDto,
-            final HttpStatus status
+            final Class<T> responseType
     ) {
         final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
@@ -289,7 +262,7 @@ public class UserControllerTest extends TestControllerBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -299,9 +272,9 @@ public class UserControllerTest extends TestControllerBase {
         return response;
     }
 
-    public Response<Void> executeDeleteUserById(
-            final long id,
-            final HttpStatus status
+    private Response<Void> executeDeleteUserById(
+            final HttpStatus status,
+            final long id
     ) {
         final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
@@ -319,11 +292,11 @@ public class UserControllerTest extends TestControllerBase {
         return response;
     }
 
-    public static void assertUserNotFound(final Response<Void> response) {
+    static void assertUserNotFound(final Response<Void> response) {
         AssertTestStatusUtil.assertError(NOT_FOUND, "Failed entity search", response);
     }
 
-    public static void assertFieldErrorForUser(final Response<Void> response) {
+    static void assertFieldErrorForUser(final Response<Void> response) {
         AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
     }
 

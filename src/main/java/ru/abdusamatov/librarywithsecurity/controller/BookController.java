@@ -2,10 +2,14 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
@@ -22,13 +26,11 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/books")
 public class BookController {
     private final BookService bookService;
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/books",
-            produces = {"application/json"})
+    @GetMapping
     public Response<List<BookDto>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size,
@@ -40,11 +42,7 @@ public class BookController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/books/{id}",
-            produces = {"application/json"}
-    )
+    @GetMapping(value = "/{id}")
     public Response<BookDto> showBookById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "Book successfully found"),
@@ -52,12 +50,7 @@ public class BookController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/books",
-            produces = {"application/json"},
-            consumes = {"application/json"}
-    )
+    @PostMapping
     public Response<BookDto> createBook(@Valid @RequestBody final BookDto bookDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "Book successfully created"),
@@ -65,11 +58,7 @@ public class BookController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.PUT,
-            value = "/books",
-            consumes = {"application/json"}
-    )
+    @PutMapping
     public Response<BookDto> updateBook(@Valid @RequestBody final BookDto bookDto) {
         return Response.buildResponse(
                 Result.success(OK, "Book successfully updated"),
@@ -77,39 +66,25 @@ public class BookController {
         );
     }
 
-    @RequestMapping(
-            method = RequestMethod.DELETE,
-            value = "/books/{id}"
-    )
+    @DeleteMapping(value = "/{id}")
     public Response<Void> deleteBook(@PathVariable("id") final Long id) {
         bookService.deleteBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 
-    @RequestMapping(
-            method = RequestMethod.PATCH,
-            value = "/books/{id}/assign",
-            consumes = {"application/json"}
-    )
+    @PatchMapping(value = "/{id}/assign")
     public Response<Void> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
         bookService.assignBook(id, newUser);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
     }
 
-    @RequestMapping(
-            method = RequestMethod.PATCH,
-            value = "/books/{id}/release"
-    )
+    @PatchMapping(value = "/{id}/release")
     public Response<Void> releaseBook(@PathVariable("id") final Long id) {
         bookService.releaseBook(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
     }
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/books/search",
-            produces = {"application/json"}
-    )
+    @GetMapping(value = "/search")
     public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") final String query) {
         return Response.buildResponse(
                 Result.success(OK, String.format("Found books with title %s", query)),

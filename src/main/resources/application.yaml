@@ -1,4 +1,6 @@
 spring:
+
+  #Application settings
   application:
     name: LibraryWithSecurity
 
@@ -9,10 +11,18 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
-
   # Flyway settings
   flyway:
     enabled: true
+    driver-class-name: ${DATASOURCE_DRIVER}
+    url: ${DATASOURCE_URL}
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    locations: classpath:db/ migration
+    sql-migration-prefix: V
+    sql-migration-separator: __
+    sql-migration-suffixes: .sql
+    validate-on-migrate: true
 
   # Hibernate settings
   jpa:
@@ -22,9 +32,18 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: none
-
   jackson:
     default-property-inclusion: non_null
+
+  #Redis settings
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
 
 # OpenApi settings
 springdoc:

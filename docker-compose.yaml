@@ -3,10 +3,8 @@ services:
     image: 'postgres:latest'
     restart: unless-stopped
     container_name: lib-db
-    environment:
-      POSTGRES_DB: library
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} --quiet" ]
       interval: 1s
@@ -14,6 +12,8 @@ services:
       retries: 10
     ports:
       - "5432:5432"
+    networks:
+      - app-network
 
   app:
     build:
@@ -24,11 +24,32 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      DATASOURCE_URL: ${DATASOURCE_URL}
-      DATASOURCE_DRIVER: ${DATASOURCE_DRIVER}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
     ports:
       - "8081:8080"
       - "8443:8443"
+    networks:
+      - app-network
+
+  redis:
+    image: 'redis:latest'
+    restart: unless-stopped
+    container_name: lib-redis
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
