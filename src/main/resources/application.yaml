@@ -14,14 +14,6 @@ spring:
   # Flyway settings
   flyway:
     enabled: true
-    driver-class-name: ${DATASOURCE_DRIVER}
-    url: ${DATASOURCE_URL}
-    user: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    locations: classpath:db/ migration
-    sql-migration-prefix: V
-    sql-migration-separator: __
-    sql-migration-suffixes: .sql
     validate-on-migrate: true
 
   # Hibernate settings
@@ -50,6 +42,3 @@ springdoc:
   api-docs:
     enabled: true
     path: /lib-openapi-docs
-
-server:
-  port: 8081

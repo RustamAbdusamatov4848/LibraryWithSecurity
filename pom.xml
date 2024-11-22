@@ -310,17 +310,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>${flyway-version}</version>
-                <configuration>
-                    <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost:5432/library</url>
-                    <user>postgres</user>
-                    <password>postgres</password>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
