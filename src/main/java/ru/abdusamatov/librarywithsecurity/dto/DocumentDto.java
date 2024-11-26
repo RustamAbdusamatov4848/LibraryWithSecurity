@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.abdusamatov.librarywithsecurity.ValidBucketName;
 
 import java.io.Serializable;
 
@@ -17,13 +18,14 @@ public class DocumentDto implements Serializable {
 
     private Long id;
 
+    @NotBlank(message = "The bucketName should not be empty")
+    @Size(min = 3, max = 63, message = "Name should be between 3 and 63 characters long")
+    @ValidBucketName(message = "Invalid bucket name, valid example: example-bucket")
+    private String bucketName;
+
     @NotBlank(message = "The file's title should not be empty")
     @Size(min = 5, max = 150, message = "File name must be between 5 and 150 characters long")
     private String fileName;
-
-    private String fileType;
-
-    private Long fileSize;
 
     private Long userId;
 }

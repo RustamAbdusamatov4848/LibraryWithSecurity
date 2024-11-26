@@ -1,12 +1,11 @@
 CREATE TABLE library.document
 (
-    id        BIGSERIAL PRIMARY KEY,
-    file_name VARCHAR(150) UNIQUE NOT NULL,
-    file_type VARCHAR(50)         NOT NULL,
-    file_size BIGINT              NOT NULL,
-    owner_id  BIGINT              NOT NULL,
+    id          BIGSERIAL PRIMARY KEY,
+    bucket_name VARCHAR(70) UNIQUE  NOT NULL,
+    file_name   VARCHAR(150) UNIQUE NOT NULL,
+    user_id     BIGINT              NOT NULL,
     CONSTRAINT fk_user
-        FOREIGN KEY (owner_id)
+        FOREIGN KEY (user_id)
             REFERENCES library.user (id)
             ON DELETE CASCADE
 );

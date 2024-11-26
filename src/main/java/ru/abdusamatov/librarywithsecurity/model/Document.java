@@ -28,17 +28,14 @@ public class Document {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "bucket_name", unique = true)
+    private String bucketName;
+
     @Column(name = "file_name", unique = true)
     private String fileName;
 
-    @Column(name = "file_type")
-    private String fileType;
-
-    @Column(name = "file_size")
-    private Long fileSize;
-
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 
     @Override
@@ -46,9 +43,8 @@ public class Document {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Document document = (Document) o;
-        return Objects.equals(fileName, document.fileName)
-                && Objects.equals(fileType, document.fileType)
-                && Objects.equals(fileSize, document.fileSize)
-                && Objects.equals(owner.getId(), document.owner.getId());
+        return Objects.equals(bucketName, document.bucketName)
+                && Objects.equals(fileName, document.fileName)
+                && Objects.equals(owner, document.owner);
     }
 }
