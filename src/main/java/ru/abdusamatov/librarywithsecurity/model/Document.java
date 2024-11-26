@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "document", schema = "library")
 @Getter
@@ -38,4 +40,15 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Document document = (Document) o;
+        return Objects.equals(fileName, document.fileName)
+                && Objects.equals(fileType, document.fileType)
+                && Objects.equals(fileSize, document.fileSize)
+                && Objects.equals(owner.getId(), document.owner.getId());
+    }
 }

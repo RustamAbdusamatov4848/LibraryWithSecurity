@@ -24,6 +24,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final DocumentService documentService;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUserList(final Integer page, final Integer size) {
@@ -45,6 +46,7 @@ public class UserService {
     @Transactional
     public UserDto createUser(final UserDto dto) {
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
+        documentService.saveUserDocuments(createdUser.getId(), createdUser.getDocuments());
 
         log.info("Saving new User with ID: {}", createdUser.getId());
         return userMapper.userToDto(createdUser);
@@ -54,8 +56,12 @@ public class UserService {
     @Transactional
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
-                .map(user -> userMapper.updateUserFromDto(dtoToBeUpdated, user))
-                .map(userRepository::save)
+                .map(user -> {
+                    final var updatedUserEntity = userMapper.updateUserFromDto(dtoToBeUpdated, user);
+                    documentService.updateDocumentsIfNeeded(updatedUserEntity);
+
+                    return userRepository.save(updatedUserEntity);
+                })
                 .map(userMapper::userToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId()));
 
@@ -70,6 +76,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
 
         userRepository.delete(user);
+        documentService.deleteUserDocuments(user.getId(), user.getDocuments());
+
         log.info("Deleted user with ID: {}", id);
     }
 }

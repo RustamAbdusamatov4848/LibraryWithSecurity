@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
+    Document findByOwnerId(long userId);
 }
