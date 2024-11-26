@@ -26,7 +26,7 @@ public class Document {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "file_name")
+    @Column(name = "file_name", unique = true)
     private String fileName;
 
     @Column(name = "file_type")

@@ -38,4 +38,6 @@ public class UserDto implements Serializable {
     private LocalDate dateOfBirth;
 
     private List<BookDto> books;
+
+    private List<DocumentDto> documents;
 }
