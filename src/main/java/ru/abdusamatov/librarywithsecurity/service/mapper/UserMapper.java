@@ -16,6 +16,7 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "books", target = "books")
+    @Mapping(source = "documents", target = "documents")
     UserDto userToDto(User user);
 
     @BeanMapping(ignoreByDefault = true)
@@ -24,6 +25,7 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "books", target = "books")
+    @Mapping(source = "documents", target = "documents")
     User dtoToUser(UserDto userDto);
 
 
@@ -32,5 +34,6 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "books", target = "books")
+    @Mapping(source = "documents", target = "documents")
     User updateUserFromDto(UserDto userDto, @MappingTarget User user);
 }
