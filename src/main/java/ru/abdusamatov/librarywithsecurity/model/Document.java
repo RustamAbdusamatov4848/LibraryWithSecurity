@@ -9,46 +9,33 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "book", schema = "library")
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "document", schema = "library")
 @Getter
 @Setter
-@ToString
-@Builder
-public class Book {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Document {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title")
-    private String title;
+    @Column(name = "file_name")
+    private String fileName;
 
-    @Column(name = "author_name")
-    private String authorName;
+    @Column(name = "file_type")
+    private String fileType;
 
-    @Column(name = "author_surname")
-    private String authorSurname;
-
-    @Column(name = "year_of_publication")
-    private int yearOfPublication;
-
-    @Column(name = "taken_at")
-    private LocalDateTime takenAt;
+    @Column(name = "file_size")
+    private Long fileSize;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
-
 }
