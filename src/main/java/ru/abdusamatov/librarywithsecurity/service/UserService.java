@@ -10,9 +10,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final DocumentMapper documentMapper;
     private final DocumentService documentService;
 
     @Transactional(readOnly = true)
@@ -44,8 +47,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto createUser(final UserDto dto) {
-        documentService.saveUserDocuments(dto.getDocuments());
+    public UserDto createUser(final MultipartFile file, final UserDto dto) {
+        documentService.saveUserDocuments(file,dto.getDocuments());
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
@@ -76,7 +79,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
 
         userRepository.delete(user);
-        documentService.deleteUserDocuments(user.getId(), user.getDocuments());
+        documentService.deleteUserDocuments(documentMapper.documentToDto(user.getDocuments()));
 
         log.info("Deleted user with ID: {}", id);
     }

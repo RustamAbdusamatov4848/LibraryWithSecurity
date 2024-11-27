@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
@@ -48,10 +49,11 @@ public class UserController {
     }
 
     @PostMapping
-    public Response<UserDto> createUser(@Valid @RequestBody final UserDto userDto) {
+    public Response<UserDto> createUser(final @RequestParam("file") MultipartFile file,
+                                        @Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "User successfully saved"),
-                userService.createUser(userDto)
+                userService.createUser(file, userDto)
         );
     }
 
