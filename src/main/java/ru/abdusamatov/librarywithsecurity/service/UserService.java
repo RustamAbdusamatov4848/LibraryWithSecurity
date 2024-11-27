@@ -45,8 +45,8 @@ public class UserService {
 
     @Transactional
     public UserDto createUser(final UserDto dto) {
+        documentService.saveUserDocuments(dto.getDocuments());
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
-        documentService.saveUserDocuments(createdUser.getId(), createdUser.getDocuments());
 
         log.info("Saving new User with ID: {}", createdUser.getId());
         return userMapper.userToDto(createdUser);
