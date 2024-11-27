@@ -48,7 +48,7 @@ public class UserService {
 
     @Transactional
     public UserDto createUser(final MultipartFile file, final UserDto dto) {
-        documentService.saveUserDocuments(file,dto.getDocuments());
+        documentService.saveUserDocuments(file, dto.getDocuments().getBucketName());
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
@@ -60,8 +60,8 @@ public class UserService {
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
                 .map(user -> {
+                    documentService.updateDocumentsIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocuments());
                     final var updatedUserEntity = userMapper.updateUserFromDto(dtoToBeUpdated, user);
-                    documentService.updateDocumentsIfNeeded(updatedUserEntity);
 
                     return userRepository.save(updatedUserEntity);
                 })

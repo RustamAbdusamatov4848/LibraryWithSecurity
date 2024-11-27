@@ -44,7 +44,6 @@ public class Document {
         if (o == null || getClass() != o.getClass()) return false;
         Document document = (Document) o;
         return Objects.equals(bucketName, document.bucketName)
-                && Objects.equals(fileName, document.fileName)
-                && Objects.equals(owner, document.owner);
+                && Objects.equals(fileName, document.fileName);
     }
 }
