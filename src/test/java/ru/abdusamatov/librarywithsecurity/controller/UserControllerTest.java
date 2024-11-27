@@ -11,7 +11,7 @@ import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
 
 import java.util.List;
 
@@ -195,7 +195,7 @@ public class UserControllerTest extends TestBase {
                                 .build())
                 .exchange()
                 .expectStatus().isEqualTo(httpStatus)
-                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(UserDto.class))
                 .returnResult()
                 .getResponseBody();
 
@@ -216,7 +216,7 @@ public class UserControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -239,7 +239,7 @@ public class UserControllerTest extends TestBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -262,7 +262,7 @@ public class UserControllerTest extends TestBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -282,7 +282,7 @@ public class UserControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 

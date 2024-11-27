@@ -8,7 +8,7 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import java.util.List;
 
 @UtilityClass
-public class ParameterizedTypeReferenceUtil {
+public class ParameterizedTypeReferenceTestUtil {
 
     public static ParameterizedTypeReference<Response<Void>> getResponseReference() {
         return getResponseReference(Void.class);

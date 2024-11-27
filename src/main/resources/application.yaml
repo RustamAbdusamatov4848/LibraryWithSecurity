@@ -42,3 +42,7 @@ springdoc:
   api-docs:
     enabled: true
     path: /lib-openapi-docs
+
+#Client settings
+top-pdf-converter:
+  base-url: http://localhost:8081/api/v1/file-storage-management
