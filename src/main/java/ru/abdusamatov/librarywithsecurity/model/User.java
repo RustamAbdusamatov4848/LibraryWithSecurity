@@ -47,6 +47,6 @@ public class User {
     private List<Book> books;
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Document documents;
+    private Document document;
 
 }

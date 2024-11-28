@@ -8,7 +8,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
+import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
+import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.repository.DocumentRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
@@ -28,23 +30,13 @@ public class DocumentService {
     }
 
     public MultiValueMap<String, Object> getDocument(final long userId) {
-        final var document = repository.findByOwnerId(userId);
-        final var response =
-                client.getDocument(document.getBucketName(), document.getFileName());
-
-        if (response.getResult().getStatus().equals(ResponseStatus.SUCCESS)) {
-            log.info("Document {} successfully found", document.getFileName());
-        } else {
-            throw new TopPdfConverterException(response.getResult().getDescription());
-        }
-
-        final var body = new LinkedMultiValueMap<String, Object>();
-
-        body.add("bucketName", document.getBucketName());
-        body.add("fileName", document.getFileName());
-        body.add("fileContent", response);
-
-        return body;
+        return repository.findByOwnerId(userId)
+                .map(document -> {
+                    var response = client.getDocument(document.getBucketName(), document.getFileName());
+                    checkResponseStatus(response, document.getFileName());
+                    return createDocumentResponse(document, response);
+                })
+                .orElseThrow(() -> new TopPdfConverterException("Document not found for user ID: " + userId));
     }
 
     public void saveUserDocument(final MultipartFile file, final DocumentDto document) {
@@ -68,18 +60,32 @@ public class DocumentService {
                 String.format("Document %s successfully deleted", document.getFileName()));
     }
 
-    private boolean isDocumentChanged(final long userId, final DocumentDto document) {
-        return repository
-                .findByOwnerId(userId)
-                .equals(mapper.dtoToDocument(document));
+    public boolean isDocumentChanged(final long userId, final DocumentDto document) {
+        return repository.findByOwnerId(userId)
+                .map(existingDocument -> !existingDocument.equals(mapper.dtoToDocument(document)))
+                .orElse(true);
     }
 
-    private void executeWithStatusCheck(RunnableWithResponse action, String successLog) {
+    private void executeWithStatusCheck(final RunnableWithResponse action, final String successLog) {
         final var response = action.execute();
-        if (response.getResult().getStatus().equals(ResponseStatus.SUCCESS)) {
-            log.info(successLog);
-        } else {
+        checkResponseStatus(response, successLog);
+    }
+
+    private void checkResponseStatus(final Response<?> response, final String successLog) {
+        if (!ResponseStatus.SUCCESS.equals(response.getResult().getStatus())) {
             throw new TopPdfConverterException(response.getResult().getDescription());
         }
+        log.info(successLog);
+    }
+
+    private MultiValueMap<String, Object> createDocumentResponse(
+            final Document document,
+            final Response<byte[]> response
+    ) {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("bucketName", document.getBucketName());
+        body.add("fileName", document.getFileName());
+        body.add("fileContent", response);
+        return body;
     }
 }
