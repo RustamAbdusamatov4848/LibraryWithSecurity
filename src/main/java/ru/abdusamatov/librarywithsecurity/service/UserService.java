@@ -10,11 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
-import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.util.List;
@@ -26,8 +24,6 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final DocumentMapper documentMapper;
-    private final DocumentService documentService;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUserList(final Integer page, final Integer size) {
@@ -47,8 +43,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto createUser(final MultipartFile file, final UserDto dto) {
-        documentService.saveUserDocument(file, dto.getDocument());
+    public UserDto createUser(final UserDto dto) {
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
@@ -60,7 +55,6 @@ public class UserService {
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
                 .map(user -> {
-                    documentService.updateDocumentIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocument());
                     final var updatedUserEntity = userMapper.updateUserFromDto(dtoToBeUpdated, user);
 
                     return userRepository.save(updatedUserEntity);
@@ -79,8 +73,6 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
 
         userRepository.delete(user);
-        documentService.deleteUserDocument(documentMapper.documentToDto(user.getDocument()));
-
         log.info("Deleted user with ID: {}", id);
     }
 }

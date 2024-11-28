@@ -16,8 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.service.DocumentService;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 
 import java.util.List;
 
@@ -28,9 +27,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-public class UserController {
-    private final UserService userService;
-    private final DocumentService documentService;
+public class ReaderController {
+    private final ReaderService readerService;
 
     @GetMapping
     public Response<List<UserDto>> getUserList(
@@ -39,7 +37,7 @@ public class UserController {
 
         return Response.buildResponse(
                 Result.success(OK, "List of users"),
-                userService.getUserList(page, size)
+                readerService.getUserList(page, size)
         );
     }
 
@@ -47,7 +45,15 @@ public class UserController {
     public Response<UserDto> getUserById(@PathVariable("id") final Long id) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully found"),
-                userService.getUserById(id)
+                readerService.getUserById(id)
+        );
+    }
+
+    @GetMapping(value = "/{id}/document")
+    public Response<MultiValueMap<String, Object>> getUserDocument(@PathVariable("id") final Long id) {
+        return Response.buildResponse(
+                Result.success(OK, "User document successfully found"),
+                readerService.getDocument(id)
         );
     }
 
@@ -56,7 +62,7 @@ public class UserController {
                                         @Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "User successfully saved"),
-                userService.createUser(file, userDto)
+                readerService.createUser(file, userDto)
         );
     }
 
@@ -64,21 +70,13 @@ public class UserController {
     public Response<UserDto> updateUser(@Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(OK, "User successfully updated"),
-                userService.updateUser(userDto)
+                readerService.updateUser(userDto)
         );
     }
 
     @DeleteMapping(value = "/{id}")
     public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
-        userService.deleteUserById(id);
+        readerService.deleteUserById(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
-    }
-
-    @GetMapping(value = "/{id}/document")
-    public Response<MultiValueMap<String, Object>> getUserDocument(@PathVariable("id") final Long id) {
-        return Response.buildResponse(
-                Result.success(OK, "User document successfully found"),
-                documentService.getDocument(id)
-        );
     }
 }

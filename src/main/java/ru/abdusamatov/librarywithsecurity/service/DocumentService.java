@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.repository.DocumentRepository;
@@ -54,10 +55,17 @@ public class DocumentService {
         }
     }
 
-    public void deleteUserDocument(final DocumentDto document) {
-        executeWithStatusCheck(
-                () -> client.deleteDocument(document.getBucketName()),
-                String.format("Document %s successfully deleted", document.getFileName()));
+    public void deleteUserDocument(final long userId) {
+        repository.findByOwnerId(userId)
+                .ifPresentOrElse(
+                        foundDocument -> executeWithStatusCheck(
+                                () -> client.deleteDocument(foundDocument.getBucketName()),
+                                String.format("Document %s successfully deleted", foundDocument.getFileName())
+                        ),
+                        () -> {
+                            throw new ResourceNotFoundException("Document", "user ID", userId);
+                        }
+                );
     }
 
     public boolean isDocumentChanged(final long userId, final DocumentDto document) {
