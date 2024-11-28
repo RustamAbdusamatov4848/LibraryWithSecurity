@@ -11,11 +11,13 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.exception.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
+import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -63,6 +65,16 @@ public class GlobalExceptionHandler {
         final var errors = Map.of("cause", message);
 
         return exceptionHandler(BAD_REQUEST, "Failed email validation, already exist", errors);
+    }
+
+    @ExceptionHandler(TopPdfConverterException.class)
+    public ResponseEntity<Response<Void>> handleExistEmailException(TopPdfConverterException ex) {
+        log.error("TPDFConverter client error: {}", ex.getMessage(), ex);
+
+        final var message = ex.getMessage();
+        final var errors = Map.of("cause", message);
+
+        return exceptionHandler(INTERNAL_SERVER_ERROR, "Failed email validation, already exist", errors);
     }
 
     public ResponseEntity<Response<Void>> exceptionHandler(
