@@ -48,7 +48,7 @@ public class UserService {
 
     @Transactional
     public UserDto createUser(final MultipartFile file, final UserDto dto) {
-        documentService.saveUserDocuments(file, dto.getDocuments());
+        documentService.saveUserDocument(file, dto.getDocuments());
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
@@ -60,7 +60,7 @@ public class UserService {
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
                 .map(user -> {
-                    documentService.updateDocumentsIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocuments());
+                    documentService.updateDocumentIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocuments());
                     final var updatedUserEntity = userMapper.updateUserFromDto(dtoToBeUpdated, user);
 
                     return userRepository.save(updatedUserEntity);
@@ -79,7 +79,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
 
         userRepository.delete(user);
-        documentService.deleteUserDocuments(documentMapper.documentToDto(user.getDocuments()));
+        documentService.deleteUserDocument(documentMapper.documentToDto(user.getDocuments()));
 
         log.info("Deleted user with ID: {}", id);
     }
