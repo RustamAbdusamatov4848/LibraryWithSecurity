@@ -82,10 +82,11 @@ public class DocumentService {
             final Document document,
             final Response<byte[]> response
     ) {
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        final var body = new LinkedMultiValueMap<String, Object>();
         body.add("bucketName", document.getBucketName());
         body.add("fileName", document.getFileName());
         body.add("fileContent", response);
+
         return body;
     }
 }
