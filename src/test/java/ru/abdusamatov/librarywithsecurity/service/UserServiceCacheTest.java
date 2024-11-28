@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 
-public class UserServiceTest extends TestBase {
+public class UserServiceCacheTest extends TestBase {
 
     private static final String USER_CACHE = "user";
 

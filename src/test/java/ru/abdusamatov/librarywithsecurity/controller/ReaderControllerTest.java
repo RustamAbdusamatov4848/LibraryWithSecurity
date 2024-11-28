@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-public class UserControllerTest extends TestBase {
+public class ReaderControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";
 

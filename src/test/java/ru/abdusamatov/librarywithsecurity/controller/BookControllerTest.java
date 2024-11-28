@@ -187,7 +187,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeUpdateBook(NOT_FOUND, updateBookDto, Void.class);
 
-        UserControllerTest.assertUserNotFound(response);
+        ReaderControllerTest.assertUserNotFound(response);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeAssignBook(BAD_REQUEST, bookId, userDtoToBeAssigned);
 
-        UserControllerTest.assertFieldErrorForUser(response);
+        ReaderControllerTest.assertFieldErrorForUser(response);
     }
 
     @Test
