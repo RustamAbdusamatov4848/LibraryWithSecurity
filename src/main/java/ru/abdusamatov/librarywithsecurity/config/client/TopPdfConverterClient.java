@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,8 +25,22 @@ public class TopPdfConverterClient {
                 .block();
     }
 
+    public Response<byte[]> getDocument(final String bucketName, final String fileName) {
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/download")
+                        .queryParam("bucketName", bucketName)
+                        .queryParam("fileName", fileName)
+                        .build())
+                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .retrieve()
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class))
+                .block();
+    }
+
     public Response<Void> uploadFile(final MultipartFile file, final String bucketName) {
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        final var body = new LinkedMultiValueMap<String, Object>();
         body.add("file", new MultipartBodyBuilder().part("file", file.getResource()));
         body.add("bucketName", bucketName);
 
@@ -41,7 +54,7 @@ public class TopPdfConverterClient {
                 .block();
     }
 
-    public Response<Void> updateDocument(String bucketName, String fileName) {
+    public Response<Void> updateDocument(final String bucketName, final String fileName) {
         return webClient
                 .put()
                 .uri(uriBuilder -> uriBuilder
@@ -54,7 +67,7 @@ public class TopPdfConverterClient {
                 .block();
     }
 
-    public Response<Void> deleteDocument(String bucketName) {
+    public Response<Void> deleteDocument(final String bucketName) {
         return webClient
                 .delete()
                 .uri(uriBuilder -> uriBuilder

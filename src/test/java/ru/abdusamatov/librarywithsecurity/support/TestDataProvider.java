@@ -31,7 +31,7 @@ public class TestDataProvider {
     public static final Random RANDOM = new Random();
 
     public static Book.BookBuilder createBook() {
-        User owner = createUser().build();
+        final var owner = createUser().build();
         return Book.builder()
                 .id(1L)
                 .title("Book Title" + getLimitUUID())
