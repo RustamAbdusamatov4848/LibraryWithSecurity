@@ -3,10 +3,12 @@ package ru.abdusamatov.librarywithsecurity.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
-import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.repository.DocumentRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
@@ -19,37 +21,65 @@ public class DocumentService {
     private final DocumentMapper mapper;
     private final TopPdfConverterClient client;
 
-    //TODO: Добавить обработку ответа
-    private void createBucketForUser(final String bucketName) {
-        final var response = client.addBucket(bucketName);
+    public void createBucket(final String bucketName) {
+        executeWithStatusCheck(
+                () -> client.addBucket(bucketName),
+                String.format("Bucket %s successfully created", bucketName));
+    }
+
+    public MultiValueMap<String, Object> getDocument(final long userId) {
+        final var document = repository.findByOwnerId(userId);
+        final var response =
+                client.getDocument(document.getBucketName(), document.getFileName());
+
         if (response.getResult().getStatus().equals(ResponseStatus.SUCCESS)) {
-            log.info("Bucket {} created", bucketName);
+            log.info("Document {} successfully found", document.getFileName());
         } else {
-
+            throw new TopPdfConverterException(response.getResult().getDescription());
         }
+
+        final var body = new LinkedMultiValueMap<String, Object>();
+
+        body.add("bucketName", document.getBucketName());
+        body.add("fileName", document.getFileName());
+        body.add("fileContent", response);
+
+        return body;
     }
 
-    //TODO: Добавить обработку ответа
-    public void saveUserDocuments(final MultipartFile file, final String bucketName) {
-        createBucketForUser(bucketName);
-        final var response = client.uploadFile(file, bucketName);
+    public void saveUserDocument(final MultipartFile file, final DocumentDto document) {
+        createBucket(document.getBucketName());
+        executeWithStatusCheck(
+                () -> client.uploadFile(file, document.getBucketName()),
+                String.format("Document %s successfully saved", document.getFileName()));
     }
 
-    //TODO: Добавить обработку ответа
-    public void updateDocumentsIfNeeded(final long userId, final DocumentDto document) {
-        final Response<Void> response;
+    public void updateDocumentIfNeeded(final long userId, final DocumentDto document) {
         if (isDocumentChanged(userId, document)) {
-            response = client.updateDocument(document.getBucketName(), document.getFileName());
+            executeWithStatusCheck(
+                    () -> client.updateDocument(document.getBucketName(), document.getFileName()),
+                    String.format("Document %s successfully updated", document.getFileName()));
         }
     }
 
-    //TODO: Добавить обработку ответа
-    public void deleteUserDocuments(final DocumentDto document) {
-        final var response = client.deleteDocument(document.getBucketName());
+    public void deleteUserDocument(final DocumentDto document) {
+        executeWithStatusCheck(
+                () -> client.deleteDocument(document.getBucketName()),
+                String.format("Document %s successfully deleted", document.getFileName()));
     }
 
     private boolean isDocumentChanged(final long userId, final DocumentDto document) {
-        final var foundDoc = repository.findByOwnerId(userId);
-        return foundDoc.equals(mapper.dtoToDocument(document));
+        return repository
+                .findByOwnerId(userId)
+                .equals(mapper.dtoToDocument(document));
+    }
+
+    private void executeWithStatusCheck(RunnableWithResponse action, String successLog) {
+        final var response = action.execute();
+        if (response.getResult().getStatus().equals(ResponseStatus.SUCCESS)) {
+            log.info(successLog);
+        } else {
+            throw new TopPdfConverterException(response.getResult().getDescription());
+        }
     }
 }

@@ -2,6 +2,7 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
+import ru.abdusamatov.librarywithsecurity.service.DocumentService;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 
 import java.util.List;
@@ -28,6 +30,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final DocumentService documentService;
 
     @GetMapping
     public Response<List<UserDto>> getUserList(
@@ -69,5 +72,13 @@ public class UserController {
     public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
         userService.deleteUserById(id);
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
+    }
+
+    @GetMapping(value = "/{id}/document")
+    public Response<MultiValueMap<String, Object>> getUserDocument(@PathVariable("id") final Long id) {
+        return Response.buildResponse(
+                Result.success(OK, "User document successfully found"),
+                documentService.getDocument(id)
+        );
     }
 }
