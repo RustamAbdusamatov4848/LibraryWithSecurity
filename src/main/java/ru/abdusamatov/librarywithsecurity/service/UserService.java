@@ -48,7 +48,7 @@ public class UserService {
 
     @Transactional
     public UserDto createUser(final MultipartFile file, final UserDto dto) {
-        documentService.saveUserDocuments(file, dto.getDocuments().getBucketName());
+        documentService.saveUserDocuments(file, dto.getDocuments());
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
