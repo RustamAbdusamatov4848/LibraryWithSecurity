@@ -2,7 +2,7 @@ package ru.abdusamatov.librarywithsecurity.util.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import ru.abdusamatov.librarywithsecurity.ValidBucketName;
+import ru.abdusamatov.librarywithsecurity.util.annotation.ValidBucketName;
 
 public class BucketNameValidator implements ConstraintValidator<ValidBucketName, String> {
 

@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity;
+package ru.abdusamatov.librarywithsecurity.util.annotation;
 
 import jakarta.validation.Constraint;
 import ru.abdusamatov.librarywithsecurity.util.validators.BucketNameValidator;
