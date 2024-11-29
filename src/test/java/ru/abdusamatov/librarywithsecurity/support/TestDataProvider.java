@@ -1,5 +1,8 @@
 package ru.abdusamatov.librarywithsecurity.support;
 
+import lombok.SneakyThrows;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
@@ -170,6 +173,12 @@ public class TestDataProvider {
         return AuthenticationDto.builder()
                 .email(email)
                 .password(password);
+    }
+
+    @SneakyThrows
+    public static byte[] getImageBytes(final String filePath) {
+        var resource = new ClassPathResource(filePath);
+        return FileCopyUtils.copyToByteArray(resource.getInputStream());
     }
 
     private static String getLimitUUID(final int limit) {
