@@ -29,7 +29,7 @@ public class TopPdfConverterClient {
         return webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/download")
+                        .path("/file/download")
                         .queryParam("bucketName", bucketName)
                         .queryParam("fileName", fileName)
                         .build())
@@ -58,7 +58,7 @@ public class TopPdfConverterClient {
         return webClient
                 .put()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/update")
+                        .path("/file/update")
                         .queryParam("bucketName", bucketName)
                         .queryParam("fileName", fileName)
                         .build())

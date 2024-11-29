@@ -1,0 +1,7 @@
+top-pdf-converter:
+  base-url: http://localhost:${wiremock.server.port}/api/v1/file-storage-management
+
+wiremock:
+  reset-mappings-after-each-test: true
+  server:
+    port: 0

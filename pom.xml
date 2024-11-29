@@ -31,6 +31,7 @@
         <maven-pmd-plugin.version>3.23.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin>4.8.6.4</spotbugs-maven-plugin>
         <spotbugs.version>4.8.6</spotbugs.version>
+        <spring-cloud-contract-wiremock.version>4.1.5</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
@@ -139,6 +140,13 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-contract-wiremock</artifactId>
+            <version>${spring-cloud-contract-wiremock.version}</version>
+        </dependency>
+
 
     </dependencies>
 
