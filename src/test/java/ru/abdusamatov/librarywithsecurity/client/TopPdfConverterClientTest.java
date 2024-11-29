@@ -1,5 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.client;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
-//TODO: изменить description
 public class TopPdfConverterClientTest extends WebClientTestBase {
     public static final String BUCKET_NAME = "bucket-example";
     public static final String FILE_NAME = "passport.jpg";
@@ -31,15 +31,10 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
     void shouldCreateBucket_whenAddBucket() {
         stubFor(
                 post(urlPathEqualTo("/addBucket/" + BUCKET_NAME))
-                        .willReturn(jsonResponse("""
-                                {
-                                    "result": {
-                                      "httpStatusCode": "CREATED",
-                                      "status": "SUCCESS",
-                                      "description": "Bucket successfully created"
-                                    }
-                                }
-                                """, 201)));
+                        .willReturn(getJson(
+                                HttpStatus.CREATED,
+                                "Bucket" + BUCKET_NAME + " successfully created",
+                                201)));
         final var response = client.addBucket(BUCKET_NAME);
 
         AssertTestStatusUtil
@@ -77,15 +72,10 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
 
         stubFor(
                 post(urlPathEqualTo("/upload"))
-                        .willReturn(jsonResponse("""
-                                {
-                                    "result": {
-                                      "httpStatusCode": "OK",
-                                      "status": "SUCCESS",
-                                      "description": "File successfully uploaded"
-                                    }
-                                }
-                                """, 200)));
+                        .willReturn(getJson(
+                                HttpStatus.OK,
+                                "File" + FILE_NAME + " successfully uploaded",
+                                200)));
 
         final var response = client.uploadFile(file, BUCKET_NAME);
 
@@ -100,15 +90,11 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                 put(urlPathEqualTo("/file/update"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
                         .withQueryParam("fileName", equalTo(FILE_NAME))
-                        .willReturn(jsonResponse("""
-                                {
-                                    "result": {
-                                      "httpStatusCode": "OK",
-                                      "status": "SUCCESS",
-                                      "description": "File successfully updated"
-                                    }
-                                }
-                                """, 200)));
+                        .willReturn(getJson(
+                                HttpStatus.OK,
+                                "File" + FILE_NAME + " successfully updated",
+                                200
+                        )));
 
         final var response = client.updateDocument(BUCKET_NAME, FILE_NAME);
 
@@ -122,20 +108,29 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         stubFor(
                 delete(urlPathEqualTo("/bucket/delete"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
-                        .willReturn(jsonResponse("""
-                                {
-                                    "result": {
-                                      "httpStatusCode": "OK",
-                                      "status": "SUCCESS",
-                                      "description": "Bucket deleted"
-                                    }
-                                }
-                                """, 204)));
+                        .willReturn(getJson(
+                                HttpStatus.OK,
+                                "Bucket " + BUCKET_NAME + " deleted",
+                                204
+                        )));
 
         final var response = client.deleteDocument(BUCKET_NAME);
 
         AssertTestStatusUtil
                 .assertSuccess(HttpStatus.NO_CONTENT, "Bucket " + BUCKET_NAME + " deleted", response);
         assertMethodAndPath(RequestMethod.DELETE, "/bucket/delete");
+    }
+
+    private ResponseDefinitionBuilder getJson(HttpStatus httpStatus, String description, int code) {
+        String json = String.format("""
+                {
+                  "result": {
+                    "httpStatusCode": "%s",
+                    "status": "SUCCESS",
+                    "description": "%s"
+                  }
+                }
+                """, httpStatus, description);
+        return jsonResponse(json, code);
     }
 }
