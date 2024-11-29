@@ -124,6 +124,7 @@ public class UserMapperTest {
                 .email(user.getEmail())
                 .dateOfBirth(user.getDateOfBirth())
                 .books(Collections.emptyList())
+                .document(TestDataProvider.createDocumentDto().build())
                 .build();
 
         return Stream.of(Arguments.arguments(user, expected));
@@ -133,6 +134,7 @@ public class UserMapperTest {
         final var dtoToBeMapped = TestDataProvider
                 .createUserDto()
                 .books(Collections.emptyList())
+                .document(TestDataProvider.createDocumentDto().build())
                 .build();
 
         final var expected = TestDataProvider
@@ -142,6 +144,7 @@ public class UserMapperTest {
                 .email(dtoToBeMapped.getEmail())
                 .dateOfBirth(dtoToBeMapped.getDateOfBirth())
                 .books(Collections.emptyList())
+                .document(TestDataProvider.createDocument().build())
                 .build();
 
         return Stream.of(Arguments.arguments(dtoToBeMapped, expected));
@@ -167,6 +170,7 @@ public class UserMapperTest {
                 .email(newDto.getEmail())
                 .dateOfBirth(existingUser.getDateOfBirth())
                 .books(existingUser.getBooks())
+                .document(existingUser.getDocument())
                 .build();
 
         return Stream.of(Arguments.arguments(newDto, existingUser, expected));

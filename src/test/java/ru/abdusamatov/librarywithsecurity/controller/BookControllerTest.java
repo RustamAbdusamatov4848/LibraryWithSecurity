@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
@@ -39,7 +39,7 @@ public class BookControllerTest extends TestBase {
     private BookService bookService;
 
     @Autowired
-    private UserService userService;
+    private ReaderService service;
 
     @Override
     protected void clearDatabase() {
@@ -195,7 +195,6 @@ public class BookControllerTest extends TestBase {
         final var id = bookService
                 .createBook(TestDataProvider.createBookDto().build())
                 .getId();
-
         final var response = executeDeleteBook(OK, id);
 
         AssertTestStatusUtil
@@ -216,9 +215,10 @@ public class BookControllerTest extends TestBase {
         final var bookId = bookService
                 .createBook(TestDataProvider.createBookDto().build())
                 .getId();
-        final var userDtoToBeAssigned = userService
-                .createUser(TestDataProvider.createUserDto().build());
-
+        final var userDtoToBeAssigned = service
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var response = executeAssignBook(OK, bookId, userDtoToBeAssigned);
 
         AssertTestStatusUtil
@@ -241,8 +241,10 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
-        final var userDtoToBeAssigned = userService
-                .createUser(TestDataProvider.createUserDto().build());
+        final var userDtoToBeAssigned = service
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var notExistingBookId = 1000L;
 
         final var response = executeAssignBook(NOT_FOUND, notExistingBookId, userDtoToBeAssigned);

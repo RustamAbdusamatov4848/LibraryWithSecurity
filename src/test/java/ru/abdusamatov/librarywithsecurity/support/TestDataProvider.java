@@ -2,12 +2,16 @@ package ru.abdusamatov.librarywithsecurity.support;
 
 import lombok.SneakyThrows;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
+import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
+import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.Librarian;
 import ru.abdusamatov.librarywithsecurity.model.User;
 
@@ -21,6 +25,7 @@ import java.util.stream.IntStream;
 
 
 public class TestDataProvider {
+    public static final String FILE_NAME = "passport.jpg";
     public static final int MAX_NAME_LENGTH = 30;
     public static final int MAX_TITLE_LENGTH = 200;
     public static final int MAX_PASSWORD_LENGTH = 100;
@@ -96,26 +101,29 @@ public class TestDataProvider {
     }
 
     public static User.UserBuilder createUser() {
-        return User.builder()
-                .id(1L)
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .books(Collections.emptyList());
+        var document = createDocument().build();
+        var user = createUserWithoutDocument();
+
+        document.setOwner(user.build());
+        user.document(document);
+
+        return user;
     }
 
     public static UserDto.UserDtoBuilder createUserDto() {
         return UserDto.builder()
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
-                .dateOfBirth(LocalDate.of(1990, 1, 1));
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                .document(createDocumentDto().build());
     }
 
     public static UserDto.UserDtoBuilder createUserDtoWithInvalidFields() {
         return UserDto.builder()
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
-                .dateOfBirth(INVALID_DATA_OF_BIRTH);
+                .dateOfBirth(INVALID_DATA_OF_BIRTH)
+                .document(createDocumentDto().build());
     }
 
     public static UserDto.UserDtoBuilder updateUserDto(final UserDto userToBeUpdated) {
@@ -124,7 +132,8 @@ public class TestDataProvider {
                 .fullName("Fullname updated")
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(getRandomDate(LocalDate.now()))
-                .books(userToBeUpdated.getBooks());
+                .books(userToBeUpdated.getBooks())
+                .document(userToBeUpdated.getDocument());
     }
 
     public static UserDto.UserDtoBuilder updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
@@ -132,7 +141,8 @@ public class TestDataProvider {
                 .id(userToBeUpdated.getId())
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
-                .dateOfBirth(INVALID_DATA_OF_BIRTH);
+                .dateOfBirth(INVALID_DATA_OF_BIRTH)
+                .document(createDocumentDto().build());
     }
 
     public static List<UserDto> createListUserDto(final int size) {
@@ -175,10 +185,34 @@ public class TestDataProvider {
                 .password(password);
     }
 
+    public static Document.DocumentBuilder createDocument() {
+        return Document.builder()
+                .id(1L)
+                .bucketName("bucket-example")
+                .fileName(FILE_NAME);
+    }
+
+    public static DocumentDto.DocumentDtoBuilder createDocumentDto() {
+        return DocumentDto.builder()
+                .id(1L)
+                .bucketName("bucket-example")
+                .fileName(FILE_NAME)
+                .userId(1L);
+    }
+
     @SneakyThrows
     public static byte[] getImageBytes(final String filePath) {
         var resource = new ClassPathResource(filePath);
         return FileCopyUtils.copyToByteArray(resource.getInputStream());
+    }
+
+    public static MultipartFile getMultipartFile() {
+        return new MockMultipartFile(
+                FILE_NAME,
+                FILE_NAME,
+                "application/octet-stream",
+                TestDataProvider.getImageBytes(FILE_NAME)
+        );
     }
 
     private static String getLimitUUID(final int limit) {
@@ -209,5 +243,15 @@ public class TestDataProvider {
                 .mapToObj(source::charAt)
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
                 .toString();
+    }
+
+    private static User.UserBuilder createUserWithoutDocument() {
+
+        return User.builder()
+                .id(1L)
+                .fullName("Test User" + getLimitUUID(10))
+                .email("testuser" + getLimitUUID(10) + "@example.com")
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                .books(Collections.emptyList());
     }
 }

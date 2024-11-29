@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
@@ -30,7 +30,7 @@ public class ReaderControllerTest extends TestBase {
     private UserRepository repository;
 
     @Autowired
-    private UserService service;
+    private ReaderService service;
 
     @Override
     protected void clearDatabase() {
@@ -41,7 +41,9 @@ public class ReaderControllerTest extends TestBase {
     void shouldGetAllUsers() {
         final var userListSize = 10;
         final var userDtoList = TestDataProvider.createListUserDto(userListSize);
-        userDtoList.forEach(userDto -> service.createUser(userDto));
+
+        userDtoList.forEach(userDto -> service
+                .createUser(TestDataProvider.getMultipartFile(), userDto));
 
         final var response = executeGetAllUsers(OK);
 
@@ -67,7 +69,7 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
         final var id = service
-                .createUser(TestDataProvider.createUserDto().build())
+                .createUser(TestDataProvider.getMultipartFile(), TestDataProvider.createUserDto().build())
                 .getId();
 
         final var response = executeGetUserById(OK, id, UserDto.class);
@@ -122,7 +124,10 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
         final var userToBeUpdated = service
-                .createUser(TestDataProvider.createUserDto().build());
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
+
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
                 .build();
@@ -141,7 +146,9 @@ public class ReaderControllerTest extends TestBase {
     void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
         final var userToBeUpdated = service
-                .createUser(TestDataProvider.createUserDto().build());
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
                 .id(notExistingId)
@@ -155,7 +162,9 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
         final var userToBeUpdated = service
-                .createUser(TestDataProvider.createUserDto().build());
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var updateUserDto = TestDataProvider
                 .updateUserDtoWithInvalidFields(userToBeUpdated)
                 .build();
@@ -168,7 +177,9 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
         final var id = service
-                .createUser(TestDataProvider.createUserDto().build())
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build())
                 .getId();
 
         final var response = executeDeleteUserById(OK, id);
