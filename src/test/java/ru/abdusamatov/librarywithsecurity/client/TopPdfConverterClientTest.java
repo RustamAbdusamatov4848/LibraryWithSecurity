@@ -104,7 +104,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
     }
 
     @Test
-    void testDeleteDocument() {
+    void shouldDeleteDocument_whenDeleteBucket() {
         stubFor(
                 delete(urlPathEqualTo("/bucket/delete"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
