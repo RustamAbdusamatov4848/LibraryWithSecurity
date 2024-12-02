@@ -68,13 +68,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TopPdfConverterException.class)
-    public ResponseEntity<Response<Void>> handleExistEmailException(TopPdfConverterException ex) {
+    public ResponseEntity<Response<Void>> handleTopPdfConverterException(TopPdfConverterException ex) {
         log.error("TPDFConverter client error: {}", ex.getMessage(), ex);
 
         final var message = ex.getMessage();
         final var errors = Map.of("cause", message);
 
-        return exceptionHandler(INTERNAL_SERVER_ERROR, "Failed email validation, already exist", errors);
+        return exceptionHandler(INTERNAL_SERVER_ERROR, "Top pdf converter client error", errors);
     }
 
     public ResponseEntity<Response<Void>> exceptionHandler(
