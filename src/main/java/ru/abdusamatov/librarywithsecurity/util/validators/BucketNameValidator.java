@@ -9,12 +9,12 @@ public class BucketNameValidator implements ConstraintValidator<ValidBucketName,
     private String regexp;
 
     @Override
-    public void initialize(ValidBucketName constraintAnnotation) {
+    public void initialize(final ValidBucketName constraintAnnotation) {
         this.regexp = constraintAnnotation.regexp();
     }
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
+    public boolean isValid(final String value, final ConstraintValidatorContext context) {
         if (value == null) {
             return false;
         }

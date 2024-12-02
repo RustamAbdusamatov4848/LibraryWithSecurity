@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex;
+import ru.abdusamatov.librarywithsecurity.util.annotation.AnnotationConstants;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ public class UserDto implements Serializable {
     private String fullName;
 
     @NotBlank(message = "Email should not be empty")
-    @Email(regexp = ValidationRegex.EMAIL_REGEX, message = "Invalid email address")
+    @Email(regexp = AnnotationConstants.BUCKET_DEFAULT_EMAIL_REGEX, message = "Invalid email address")
     private String email;
 
     @NotNull(message = "Date of birth should not be null")

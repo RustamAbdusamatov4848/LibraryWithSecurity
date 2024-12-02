@@ -8,14 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static ru.abdusamatov.librarywithsecurity.util.validators.ValidationRegex.BUCKET_NAME_REGEX;
-
 @Constraint(validatedBy = BucketNameValidator.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidBucketName {
+    String message() default AnnotationConstants.BUCKET_DEFAULT_NAME;
 
-    String message() default "Invalid bucket name";
-
-    String regexp() default BUCKET_NAME_REGEX;
+    String regexp() default AnnotationConstants.BUCKET_DEFAULT_NAME_REGEX;
 }
