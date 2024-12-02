@@ -46,7 +46,10 @@ public class TopPdfConverterClient {
 
         return webClient
                 .post()
-                .uri("/upload")
+                .uri(uriBuilder -> uriBuilder
+                        .path("/upload")
+                        .queryParam("bucketName",bucketName)
+                        .build())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(body))
                 .retrieve()
