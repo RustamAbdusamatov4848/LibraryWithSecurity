@@ -26,7 +26,4 @@ public class WebClientTestBase {
         wireMockServer.verify(newRequestPattern(method, urlEqualTo(path)));
     }
 
-    protected void assertMethodAndPath(final int count, final RequestMethod method, final String path) {
-        wireMockServer.verify(count, newRequestPattern(method, urlEqualTo(path)));
-    }
 }
