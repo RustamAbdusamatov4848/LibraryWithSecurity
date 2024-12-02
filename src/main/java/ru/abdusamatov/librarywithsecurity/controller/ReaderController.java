@@ -77,6 +77,7 @@ public class ReaderController {
     @DeleteMapping(value = "/{id}")
     public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
         readerService.deleteUserById(id);
+
         return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
     }
 }

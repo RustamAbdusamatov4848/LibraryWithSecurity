@@ -56,6 +56,7 @@ public class TopPdfConverterClientService {
 
     private void executeWithStatusCheck(final RunnableWithResponse action, final String successLog) {
         final var response = action.execute();
+
         checkResponseStatus(response, successLog);
     }
 
@@ -63,6 +64,7 @@ public class TopPdfConverterClientService {
         if (!ResponseStatus.SUCCESS.equals(response.getResult().getStatus())) {
             throw new TopPdfConverterException(response.getResult().getDescription());
         }
+
         log.info(successLog);
     }
 

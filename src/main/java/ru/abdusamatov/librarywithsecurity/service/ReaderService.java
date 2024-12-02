@@ -33,7 +33,6 @@ public class ReaderService {
         return userService.createUser(dto);
     }
 
-
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         documentService.updateDocumentIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocumentId());
         return userService.updateUser(dtoToBeUpdated);
