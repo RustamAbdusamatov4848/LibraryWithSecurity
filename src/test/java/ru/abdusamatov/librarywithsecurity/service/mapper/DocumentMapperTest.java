@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.model.Document;
+import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.stream.Stream;
@@ -73,8 +74,6 @@ public class DocumentMapperTest {
     }
 
     public static Stream<Arguments> shouldMapDocumentDtoToDocument() {
-        final var user = TestDataProvider.createUser().build();
-
         final var dtoToBeMapped = TestDataProvider
                 .createDocumentDto()
                 .build();
@@ -84,7 +83,7 @@ public class DocumentMapperTest {
                 .id(dtoToBeMapped.getId())
                 .bucketName(dtoToBeMapped.getBucketName())
                 .fileName(dtoToBeMapped.getFileName())
-                .owner(user)
+                .owner(User.builder().id(dtoToBeMapped.getId()).build())
                 .build();
 
         return Stream.of(Arguments.arguments(dtoToBeMapped, expected));

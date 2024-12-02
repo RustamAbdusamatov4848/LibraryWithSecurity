@@ -115,7 +115,7 @@ public class TestDataProvider {
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .document(createDocumentDto().build());
+                .documentId(1L);
     }
 
     public static UserDto.UserDtoBuilder createUserDtoWithInvalidFields() {
@@ -123,7 +123,7 @@ public class TestDataProvider {
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
                 .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .document(createDocumentDto().build());
+                .documentId(1L);
     }
 
     public static UserDto.UserDtoBuilder updateUserDto(final UserDto userToBeUpdated) {
@@ -133,7 +133,7 @@ public class TestDataProvider {
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(getRandomDate(LocalDate.now()))
                 .books(userToBeUpdated.getBooks())
-                .document(userToBeUpdated.getDocument());
+                .documentId(userToBeUpdated.getDocumentId());
     }
 
     public static UserDto.UserDtoBuilder updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
@@ -142,7 +142,7 @@ public class TestDataProvider {
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
                 .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .document(createDocumentDto().build());
+                .documentId(userToBeUpdated.getDocumentId());
     }
 
     public static List<UserDto> createListUserDto(final int size) {

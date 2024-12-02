@@ -13,11 +13,13 @@ public interface DocumentMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "bucketName", target = "bucketName")
     @Mapping(source = "fileName", target = "fileName")
+    @Mapping(source = "owner.id", target = "userId")
     DocumentDto documentToDto(Document document);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "id", target = "id")
     @Mapping(source = "bucketName", target = "bucketName")
     @Mapping(source = "fileName", target = "fileName")
+    @Mapping(source = "userId", target = "owner.id")
     Document dtoToDocument(DocumentDto documentDto);
 }

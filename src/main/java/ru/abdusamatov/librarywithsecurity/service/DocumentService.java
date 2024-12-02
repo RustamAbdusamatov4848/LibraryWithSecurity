@@ -40,14 +40,18 @@ public class DocumentService {
                 .orElseThrow(() -> new TopPdfConverterException("Document not found for user ID: " + userId));
     }
 
-    public void saveUserDocument(final MultipartFile file, final DocumentDto document) {
+    public void saveUserDocument(final MultipartFile file, final Long documentId) {
+        final var document = repository.getReferenceById(documentId);
+
         createBucket(document.getBucketName());
         executeWithStatusCheck(
                 () -> client.uploadFile(file, document.getBucketName()),
                 String.format("Document %s successfully saved", document.getFileName()));
     }
 
-    public void updateDocumentIfNeeded(final long userId, final DocumentDto document) {
+    public void updateDocumentIfNeeded(final long userId, final Long documentId) {
+        final var document = mapper.documentToDto(repository.getReferenceById(documentId));
+
         if (isDocumentChanged(userId, document)) {
             executeWithStatusCheck(
                     () -> client.updateDocument(document.getBucketName(), document.getFileName()),

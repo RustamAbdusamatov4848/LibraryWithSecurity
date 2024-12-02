@@ -29,13 +29,13 @@ public class ReaderService {
     }
 
     public UserDto createUser(final MultipartFile file, final UserDto dto) {
-        documentService.saveUserDocument(file, dto.getDocument());
+        documentService.saveUserDocument(file, dto.getDocumentId());
         return userService.createUser(dto);
     }
 
 
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
-        documentService.updateDocumentIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocument());
+        documentService.updateDocumentIfNeeded(dtoToBeUpdated.getId(), dtoToBeUpdated.getDocumentId());
         return userService.updateUser(dtoToBeUpdated);
     }
 

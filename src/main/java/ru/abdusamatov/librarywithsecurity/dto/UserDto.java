@@ -37,7 +37,7 @@ public class UserDto implements Serializable {
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-    private DocumentDto document;
+    private Long documentId;
 
     private List<BookDto> books;
 }
