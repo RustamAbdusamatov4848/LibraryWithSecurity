@@ -20,6 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
+//TODO: написать тесты на ошибки
 public class TopPdfConverterClientTest extends WebClientTestBase {
     public static final String BUCKET_NAME = "bucket-example";
     public static final String FILE_NAME = "passport.jpg";

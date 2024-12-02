@@ -33,6 +33,7 @@ public class DocumentMapperTest {
 
         assertThat(actual)
                 .usingRecursiveComparison()
+                .ignoringFields("owner")
                 .isEqualTo(expected);
     }
 
