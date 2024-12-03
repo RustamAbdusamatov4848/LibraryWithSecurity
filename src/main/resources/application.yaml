@@ -45,4 +45,4 @@ springdoc:
 
 #Client settings
 top-pdf-converter:
-  base-url: ${CLIENT_BASE_URL}http://localhost:8081/api/v1/file-storage-management
+  base-url: { CLIENT_BASE_URL }

@@ -92,7 +92,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         AssertTestStatusUtil
                 .assertSuccess(
                         HttpStatus.OK,
-                        "File " + FILE_NAME + " successfully uploaded",
+                        "File " + FILE_NAME + " successfully loaded",
                         response);
         assertMethodAndPath(RequestMethod.GET, "/file/download");
     }
