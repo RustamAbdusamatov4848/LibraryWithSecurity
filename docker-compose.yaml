@@ -26,6 +26,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      client:
+        condition: service_healthy
     env_file:
       - .env
     ports:
@@ -50,16 +52,32 @@ services:
     networks:
       - app-network
 
-  wiremock:
-    image: 'wiremock/wiremock:latest'
+  client:
+    image: 'client:latest'
     container_name: top-pdf-converter-service
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    env_file:
+      - .env
     ports:
-      - "8081:8080"
-    entrypoint: [ "/docker-entrypoint.sh", "--global-response-templating", "--disable-gzip", "--verbose" ]
-    volumes:
-      - ./wiremock/mappings:/home/wiremock/mappings
+      - "8082:8081"
     networks:
       - app-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    env_file:
+      - .env
+    volumes:
+      - ./data:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    command: server /data --console-address :9001
 
 networks:
   app-network:
