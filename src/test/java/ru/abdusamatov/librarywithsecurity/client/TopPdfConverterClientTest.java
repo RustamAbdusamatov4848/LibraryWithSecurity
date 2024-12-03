@@ -81,7 +81,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                                             "httpStatusCode": "%s",
                                             "status": "SUCCESS",
                                             "description": "%s"
-                                          }
+                                          },
                                           "data": "%s"
                                         }
                                         """, "OK", "File + " + FILE_NAME + " successfully loaded", Base64.getEncoder().encodeToString(document)))

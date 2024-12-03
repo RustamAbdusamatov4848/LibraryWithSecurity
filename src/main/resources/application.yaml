@@ -45,4 +45,4 @@ springdoc:
 
 #Client settings
 top-pdf-converter:
-  base-url: { CLIENT_BASE_URL }
+  base-url: ${CLIENT_BASE_URL}/${CLIENT_BASE_PATH}

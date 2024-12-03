@@ -54,7 +54,7 @@ services:
     image: 'wiremock/wiremock:latest'
     container_name: top-pdf-converter-service
     ports:
-      - "8081:8081"
+      - "8081:8080"
     entrypoint: [ "/docker-entrypoint.sh", "--global-response-templating", "--disable-gzip", "--verbose" ]
     volumes:
       - ./wiremock/mappings:/home/wiremock/mappings
