@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
@@ -87,6 +88,18 @@ public class ReaderControllerTest extends TestBase {
         final var response = executeGetUserById(NOT_FOUND, id, Void.class);
 
         assertUserNotFound(response);
+    }
+
+    @Test
+    void shouldReturnDocument_whenUserExist() {
+        final var id = service
+                .createUser(TestDataProvider.getMultipartFile(), TestDataProvider.createUserDto().build())
+                .getId();
+
+        final var response = executeGetUserDocument(OK, id);
+
+        AssertTestStatusUtil
+                .assertSuccess(OK, "User document successfully found", response);
     }
 
     @Test
@@ -228,6 +241,26 @@ public class ReaderControllerTest extends TestBase {
                 .exchange()
                 .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    private Response<MultiValueMap<String, Object>> executeGetUserDocument(
+            final HttpStatus status,
+            final long id
+    ) {
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id), "document")
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceTestUtil.getMultiValueMapResponseReference())
                 .returnResult()
                 .getResponseBody();
 
