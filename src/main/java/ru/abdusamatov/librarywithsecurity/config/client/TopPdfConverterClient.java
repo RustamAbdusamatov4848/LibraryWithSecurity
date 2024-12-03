@@ -33,7 +33,7 @@ public class TopPdfConverterClient {
                         .queryParam("bucketName", bucketName)
                         .queryParam("fileName", fileName)
                         .build())
-                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class))
                 .block();
@@ -48,7 +48,7 @@ public class TopPdfConverterClient {
                 .post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/upload")
-                        .queryParam("bucketName",bucketName)
+                        .queryParam("bucketName", bucketName)
                         .build())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(body))
@@ -57,11 +57,17 @@ public class TopPdfConverterClient {
                 .block();
     }
 
-    public Response<Void> updateDocument(final String bucketName, final String fileName) {
+    public Response<Void> updateDocument(
+            final String sourceBucketName,
+            final String sourceFileName,
+            final String bucketName,
+            final String fileName) {
         return webClient
                 .put()
                 .uri(uriBuilder -> uriBuilder
                         .path("/file/update")
+                        .queryParam("sourceBucketName", sourceBucketName)
+                        .queryParam("sourceFileName", sourceFileName)
                         .queryParam("bucketName", bucketName)
                         .queryParam("fileName", fileName)
                         .build())
