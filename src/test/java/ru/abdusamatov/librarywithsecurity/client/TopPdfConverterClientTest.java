@@ -12,16 +12,16 @@ import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.WebClientTestBase;
 
+import java.util.Base64;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.jsonResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
-//TODO: добавить тестирование ошибки для getDocument() и updateFile()
 public class TopPdfConverterClientTest extends WebClientTestBase {
     public static final String BUCKET_NAME = "bucket-example";
     public static final String FILE_NAME = "passport.jpg";
@@ -67,7 +67,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
 
     @Test
     void shouldReturnUserDocument_whenGetDocument() {
-        final var mockFileContent = TestDataProvider.getImageBytes(FILE_NAME);
+        final var document = TestDataProvider.getImageBytes(FILE_NAME);
 
         stubFor(
                 get(urlPathEqualTo("/file/download"))
@@ -75,13 +75,55 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .withQueryParam("fileName", equalTo(FILE_NAME))
                         .willReturn(aResponse()
                                 .withStatus(200)
-                                .withHeader("Content-Type", "application/octet-stream")
-                                .withBody(mockFileContent)));
+                                .withBody(String.format("""
+                                        {
+                                          "result": {
+                                            "httpStatusCode": "%s",
+                                            "status": "SUCCESS",
+                                            "description": "%s"
+                                          }
+                                          "data": "%s"
+                                        }
+                                        """, "OK", "File + " + FILE_NAME + " successfully loaded", Base64.getEncoder().encodeToString(document)))
+                        ));
 
         final var response = client.getDocument(BUCKET_NAME, FILE_NAME);
 
         AssertTestStatusUtil
-                .assertError(HttpStatus.OK, "File " + FILE_NAME + " successfully uploaded", response);
+                .assertSuccess(
+                        HttpStatus.OK,
+                        "File " + FILE_NAME + " successfully uploaded",
+                        response);
+        assertMethodAndPath(RequestMethod.GET, "/file/download");
+    }
+
+    @Test
+    void shouldReturnNotFound_whenFileNoExist() {
+        final var response = executeGetDocumentWithError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "The file with name " + FILE_NAME + " inside " + BUCKET_NAME + " already exists",
+                500);
+
+        AssertTestStatusUtil
+                .assertError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "The file with name " + FILE_NAME + " inside " + BUCKET_NAME + " does not exist",
+                        response);
+        assertMethodAndPath(RequestMethod.GET, "/file/download");
+    }
+
+    @Test
+    void shouldReturnError_whenErrorWhileDownloadingFile() {
+        final var response = executeGetDocumentWithError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error during file saving",
+                500);
+
+        AssertTestStatusUtil
+                .assertError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Error during file saving",
+                        response);
         assertMethodAndPath(RequestMethod.GET, "/file/download");
     }
 
@@ -124,25 +166,6 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         AssertTestStatusUtil
                 .assertError(HttpStatus.INTERNAL_SERVER_ERROR, "Error during file saving", response);
         assertMethodAndPath(RequestMethod.POST, "/upload");
-    }
-
-    @Test
-    void shouldUpdateDocument_whenUpdateFile() {
-        stubFor(
-                put(urlPathEqualTo("/file/update"))
-                        .withQueryParam("bucketName", equalTo(BUCKET_NAME))
-                        .withQueryParam("fileName", equalTo(FILE_NAME))
-                        .willReturn(getJsonSuccess(
-                                HttpStatus.OK,
-                                "File" + FILE_NAME + " successfully updated",
-                                200
-                        )));
-
-        final var response = client.updateDocument(BUCKET_NAME, FILE_NAME);
-
-        AssertTestStatusUtil
-                .assertSuccess(HttpStatus.OK, "File " + FILE_NAME + " successfully updated", response);
-        assertMethodAndPath(RequestMethod.PUT, "/file/update");
     }
 
     @Test
@@ -212,6 +235,21 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         )));
 
         return client.addBucket(BUCKET_NAME);
+    }
+
+    private Response<byte[]> executeGetDocumentWithError(final HttpStatus statusCode, String description, int code) {
+        stubFor(
+                get(urlPathEqualTo("/file/download"))
+                        .withQueryParam("bucketName", equalTo(BUCKET_NAME))
+                        .withQueryParam("fileName", equalTo(FILE_NAME))
+                        .willReturn(
+                                getJsonError(
+                                        statusCode,
+                                        description,
+                                        code
+                                )));
+
+        return client.getDocument(BUCKET_NAME, FILE_NAME);
     }
 
     private Response<Void> executeUploadFile(
