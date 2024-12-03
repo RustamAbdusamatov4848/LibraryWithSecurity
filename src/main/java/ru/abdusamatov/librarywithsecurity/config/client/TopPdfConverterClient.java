@@ -57,25 +57,6 @@ public class TopPdfConverterClient {
                 .block();
     }
 
-    public Response<Void> updateDocument(
-            final String sourceBucketName,
-            final String sourceFileName,
-            final String bucketName,
-            final String fileName) {
-        return webClient
-                .put()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/file/update")
-                        .queryParam("sourceBucketName", sourceBucketName)
-                        .queryParam("sourceFileName", sourceFileName)
-                        .queryParam("bucketName", bucketName)
-                        .queryParam("fileName", fileName)
-                        .build())
-                .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
-    }
-
     public Response<Void> deleteDocument(final String bucketName) {
         return webClient
                 .delete()

@@ -7,11 +7,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
-import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
+
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -41,13 +42,6 @@ public class TopPdfConverterClientService {
                 String.format("Document %s successfully saved", document.getFileName()));
     }
 
-    public void updateDocumentIfNeeded(final DocumentDto document) {
-        executeWithStatusCheck(
-                () -> client.updateDocument(document.getBucketName(), document.getFileName()),
-                String.format("Document %s successfully updated", document.getFileName()));
-
-    }
-
     public void deleteUserDocument(final Document document) {
         executeWithStatusCheck(
                 () -> client.deleteDocument(document.getBucketName()),
@@ -73,9 +67,10 @@ public class TopPdfConverterClientService {
             final Response<byte[]> response
     ) {
         final var body = new LinkedMultiValueMap<String, Object>();
+
         body.add("bucketName", document.getBucketName());
         body.add("fileName", document.getFileName());
-        body.add("fileContent", response);
+        body.add("fileContent", Base64.getEncoder().encodeToString(response.getData()));
 
         return body;
     }
