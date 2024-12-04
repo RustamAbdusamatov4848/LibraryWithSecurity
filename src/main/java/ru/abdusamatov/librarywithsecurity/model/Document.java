@@ -48,4 +48,9 @@ public class Document {
         return Objects.equals(bucketName, document.bucketName)
                 && Objects.equals(fileName, document.fileName);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bucketName, fileName);
+    }
 }
