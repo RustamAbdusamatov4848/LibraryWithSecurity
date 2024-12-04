@@ -7,11 +7,18 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.test.context.ContextConfiguration;
+import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
+import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ContextConfiguration(initializers = {
+        PostgreSQLInitializer.class,
+        RedisInitializer.class
+})
 @AutoConfigureWireMock(port = 0)
 public class WebClientTestBase {
 

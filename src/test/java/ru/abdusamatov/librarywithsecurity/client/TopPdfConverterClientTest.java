@@ -227,7 +227,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
 
     private Response<Void> executeCreateBucket(final HttpStatus statusCode, final String description, final int code) {
         stubFor(
-                post(urlPathEqualTo("/addBucket/" + BUCKET_NAME))
+                post(urlPathEqualTo("/api/v1/file-storage-management/addBucket/" + BUCKET_NAME))
                         .willReturn(getJsonSuccess(
                                 statusCode,
                                 description,
@@ -239,7 +239,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
 
     private Response<byte[]> executeGetDocumentWithError(final HttpStatus statusCode, String description, int code) {
         stubFor(
-                get(urlPathEqualTo("/file/download"))
+                get(urlPathEqualTo("/api/v1/file-storage-management/file/download"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
                         .withQueryParam("fileName", equalTo(FILE_NAME))
                         .willReturn(
@@ -258,7 +258,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
             final String description,
             final int code) {
         stubFor(
-                post(urlPathEqualTo("/upload"))
+                post(urlPathEqualTo("/api/v1/file-storage-management/upload"))
                         .willReturn(getJsonSuccess(
                                 statusCode,
                                 description,
@@ -270,7 +270,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
     private Response<Void> executeDeleteBucket(final HttpStatus statusCode, final String description, final int code) {
 
         stubFor(
-                delete(urlPathEqualTo("/bucket/delete"))
+                delete(urlPathEqualTo("/api/v1/file-storage-management/bucket/delete"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
                         .willReturn(getJsonError(
                                 statusCode,
@@ -306,4 +306,5 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                 """, httpStatus, description);
         return jsonResponse(json, code);
     }
+
 }

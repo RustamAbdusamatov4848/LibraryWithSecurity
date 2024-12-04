@@ -18,8 +18,8 @@ public class TopPdfConverterClient {
         return webClient
                 .post()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/addBucket/${bucketName}")
-                        .build(bucketName))
+                        .path("/addBucket/" + bucketName)
+                        .build())
                 .retrieve()
                 .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
                 .block();
