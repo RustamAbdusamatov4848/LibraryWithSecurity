@@ -1,6 +1,5 @@
 package ru.abdusamatov.librarywithsecurity.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +45,7 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
 
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "owner", orphanRemoval = true)
     private Document document;
 
 }

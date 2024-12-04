@@ -15,12 +15,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@AutoConfigureWireMock(port = 0)
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
         RedisInitializer.class
 })
-@AutoConfigureWireMock(port = 0)
-public class WebClientTestBase {
+public abstract class WebClientTestBase {
+
 
     @Autowired
     protected WireMockServer wireMockServer;
