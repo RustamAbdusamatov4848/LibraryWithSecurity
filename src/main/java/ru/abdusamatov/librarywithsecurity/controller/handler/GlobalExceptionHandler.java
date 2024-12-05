@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Response<Void>> handleValidationException(final MethodArgumentNotValidException ex) {
         log.error("Validation failed: {}", ex.getMessage(), ex);
 
         var errors = new HashMap<String, String>();
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Response<Void>> handleEntityNotFoundException(ResourceNotFoundException ex) {
+    public ResponseEntity<Response<Void>> handleEntityNotFoundException(final ResourceNotFoundException ex) {
         log.error("Failed entity search: {}", ex.getMessage(), ex);
 
         final var message = ex.getMessage();
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Response<Void>> handleAuthenticationException(AuthenticationException ex) {
+    public ResponseEntity<Response<Void>> handleAuthenticationException(final AuthenticationException ex) {
         log.error("Failed authorization: {}", ex.getMessage(), ex);
 
         final var message = ex.getMessage();
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ExistEmailException.class)
-    public ResponseEntity<Response<Void>> handleExistEmailException(ExistEmailException ex) {
+    public ResponseEntity<Response<Void>> handleExistEmailException(final ExistEmailException ex) {
         log.error("Failed email validation: {}", ex.getMessage(), ex);
 
         final var message = ex.getMessage();
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TopPdfConverterException.class)
-    public ResponseEntity<Response<Void>> handleTopPdfConverterException(TopPdfConverterException ex) {
+    public ResponseEntity<Response<Void>> handleTopPdfConverterException(final TopPdfConverterException ex) {
         log.error("TPDFConverter client error: {}", ex.getMessage(), ex);
 
         final var message = ex.getMessage();

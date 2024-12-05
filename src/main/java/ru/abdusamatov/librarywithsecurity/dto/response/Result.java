@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
+import ru.abdusamatov.librarywithsecurity.model.enums.ResponseStatus;
 
 import java.io.Serializable;
 import java.util.Map;

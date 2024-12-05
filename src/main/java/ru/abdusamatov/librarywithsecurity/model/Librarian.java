@@ -2,6 +2,9 @@ package ru.abdusamatov.librarywithsecurity.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +27,12 @@ import java.util.List;
 @Getter
 @ToString(exclude = "password")
 @Builder
-public class Librarian extends BaseEntity implements UserDetails {
+public class Librarian implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "full_name")
     private String fullName;

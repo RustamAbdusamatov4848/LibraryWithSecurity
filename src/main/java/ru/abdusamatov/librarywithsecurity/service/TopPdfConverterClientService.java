@@ -10,7 +10,7 @@ import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.model.Document;
-import ru.abdusamatov.librarywithsecurity.util.ResponseStatus;
+import ru.abdusamatov.librarywithsecurity.model.enums.ResponseStatus;
 
 import java.util.Base64;
 

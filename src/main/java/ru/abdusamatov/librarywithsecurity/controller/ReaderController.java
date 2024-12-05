@@ -58,7 +58,7 @@ public class ReaderController {
     }
 
     @PostMapping
-    public Response<UserDto> createUser(final @RequestParam("file") MultipartFile file,
+    public Response<UserDto> createUser(@RequestParam("file") final MultipartFile file,
                                         @Valid @RequestBody final UserDto userDto) {
         return Response.buildResponse(
                 Result.success(CREATED, "User successfully saved"),
