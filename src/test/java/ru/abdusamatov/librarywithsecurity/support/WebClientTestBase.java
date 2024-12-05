@@ -14,7 +14,7 @@ import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 
-//TODO: убрать инициализаторы
+//TODO: убрать инициализаторы в TRAIN-1900
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureWireMock(port = 0)
 @ContextConfiguration(initializers = {
