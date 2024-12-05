@@ -34,7 +34,6 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeCreateBucket(
                 HttpStatus.CREATED.getReasonPhrase().toUpperCase(),
                 "Bucket " + BUCKET_NAME + " successfully created",
-                201,
                 true);
 
         AssertTestStatusUtil
@@ -42,7 +41,9 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         HttpStatus.CREATED,
                         "Bucket " + BUCKET_NAME + " successfully created",
                         response);
-        assertMethodAndPath(RequestMethod.POST, "/api/v1/file-storage-management/addBucket/" + BUCKET_NAME);
+        assertMethodAndPath(
+                RequestMethod.POST,
+                "/api/v1/file-storage-management/addBucket/" + BUCKET_NAME);
     }
 
     @Test
@@ -50,12 +51,15 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeCreateBucket(
                 "INTERNAL_SERVER_ERROR",
                 "Failed to create Bucket",
-                200,
                 false);
 
         AssertTestStatusUtil
-                .assertError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create Bucket", response);
-        assertMethodAndPath(RequestMethod.POST, "/api/v1/file-storage-management/addBucket/" + BUCKET_NAME);
+                .assertError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Failed to create Bucket", response);
+        assertMethodAndPath(
+                RequestMethod.POST,
+                "/api/v1/file-storage-management/addBucket/" + BUCKET_NAME);
     }
 
     @Test
@@ -63,12 +67,15 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeCreateBucket(
                 "INTERNAL_SERVER_ERROR",
                 "Bucket with that name already exists",
-                200,
                 false);
 
         AssertTestStatusUtil
-                .assertError(HttpStatus.INTERNAL_SERVER_ERROR, "Bucket with that name already exists", response);
-        assertMethodAndPath(RequestMethod.POST, "/api/v1/file-storage-management/addBucket/" + BUCKET_NAME);
+                .assertError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Bucket with that name already exists", response);
+        assertMethodAndPath(
+                RequestMethod.POST,
+                "/api/v1/file-storage-management/addBucket/" + BUCKET_NAME);
     }
 
     @Test
@@ -81,6 +88,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .withQueryParam("fileName", equalTo(FILE_NAME))
                         .willReturn(aResponse()
                                 .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
                                 .withBody(String.format("""
                                         {
                                           "result": {
@@ -90,7 +98,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                                           },
                                           "data": "%s"
                                         }
-                                        """, "OK", "File + " + FILE_NAME + " successfully loaded", Base64.getEncoder().encodeToString(document)))
+                                        """, "OK", "File " + FILE_NAME + " successfully loaded", Base64.getEncoder().encodeToString(document)))
                         ));
 
         final var response = client.getDocument(BUCKET_NAME, FILE_NAME);
@@ -100,37 +108,39 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         HttpStatus.OK,
                         "File " + FILE_NAME + " successfully loaded",
                         response);
-        assertMethodAndPath(RequestMethod.GET, "/api/v1/file-storage-management/file/download");
+        assertMethodAndPath(
+                RequestMethod.GET,
+                "/api/v1/file-storage-management/file/download?bucketName="
+                        + BUCKET_NAME + "&fileName=" + FILE_NAME);
     }
 
     @Test
     void shouldReturnNotFound_whenFileNoExist() {
         final var response = executeGetDocumentWithError(
-                "INTERNAL_SERVER_ERROR",
-                "The file with name " + FILE_NAME + " inside " + BUCKET_NAME + " does not exist",
-                200);
+                "The file with name " + FILE_NAME + " inside " + BUCKET_NAME + " does not exist");
 
         AssertTestStatusUtil
                 .assertError(
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "The file with name " + FILE_NAME + " inside " + BUCKET_NAME + " does not exist",
                         response);
-        assertMethodAndPath(RequestMethod.GET, "/api/v1/file-storage-management/file/download");
+        assertMethodAndPath(RequestMethod.GET,
+                "/api/v1/file-storage-management/file/download?bucketName="
+                        + BUCKET_NAME + "&fileName=" + FILE_NAME);
     }
 
     @Test
     void shouldReturnError_whenErrorWhileDownloadingFile() {
-        final var response = executeGetDocumentWithError(
-                "INTERNAL_SERVER_ERROR",
-                "Error during file saving",
-                200);
+        final var response = executeGetDocumentWithError("Error during file saving");
 
         AssertTestStatusUtil
                 .assertError(
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Error during file saving",
                         response);
-        assertMethodAndPath(RequestMethod.GET, "/api/v1/file-storage-management/file/download");
+        assertMethodAndPath(RequestMethod.GET,
+                "/api/v1/file-storage-management/file/download?bucketName=" +
+                        BUCKET_NAME + "&fileName=" + FILE_NAME);
     }
 
     @Test
@@ -144,8 +154,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeUploadFile(
                 file,
                 HttpStatus.OK.getReasonPhrase().toUpperCase(),
-                "File" + FILE_NAME + " successfully uploaded",
-                200,
+                "File " + FILE_NAME + " successfully uploaded",
                 true);
 
         AssertTestStatusUtil
@@ -153,7 +162,9 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         HttpStatus.OK,
                         "File " + file.getOriginalFilename() + " successfully uploaded",
                         response);
-        assertMethodAndPath(RequestMethod.POST, "/api/v1/file-storage-management/upload");
+        assertMethodAndPath(
+                RequestMethod.POST,
+                "/api/v1/file-storage-management/upload?bucketName=" + BUCKET_NAME);
     }
 
     @Test
@@ -168,25 +179,31 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                 file,
                 "INTERNAL_SERVER_ERROR",
                 "Error during file saving",
-                200,
                 false);
 
         AssertTestStatusUtil
-                .assertError(HttpStatus.INTERNAL_SERVER_ERROR, "Error during file saving", response);
-        assertMethodAndPath(RequestMethod.POST, "/api/v1/file-storage-management/upload");
+                .assertError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Error during file saving", response);
+        assertMethodAndPath(
+                RequestMethod.POST,
+                "/api/v1/file-storage-management/upload?bucketName=" + BUCKET_NAME);
     }
 
     @Test
     void shouldDeleteDocument_whenDeleteBucket() {
         final var response = executeDeleteBucket(
-                HttpStatus.NO_CONTENT.getReasonPhrase().toUpperCase(),
+                "NO_CONTENT",
                 "Bucket " + BUCKET_NAME + " deleted",
-                204,
                 true);
 
         AssertTestStatusUtil
-                .assertSuccess(HttpStatus.NO_CONTENT, "Bucket " + BUCKET_NAME + " deleted", response);
-        assertMethodAndPath(RequestMethod.DELETE, "/api/v1/file-storage-management/bucket/delete");
+                .assertSuccess(
+                        HttpStatus.NO_CONTENT,
+                        "Bucket " + BUCKET_NAME + " deleted", response);
+        assertMethodAndPath(
+                RequestMethod.DELETE,
+                "/api/v1/file-storage-management/bucket/delete?bucketName=" + BUCKET_NAME);
     }
 
     @Test
@@ -194,7 +211,6 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeDeleteBucket(
                 "INTERNAL_SERVER_ERROR",
                 "Failed to verify the existence of bucket",
-                200,
                 false);
 
         AssertTestStatusUtil
@@ -202,7 +218,9 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Failed to verify the existence of bucket",
                         response);
-        assertMethodAndPath(RequestMethod.DELETE, "/api/v1/file-storage-management/bucket/delete");
+        assertMethodAndPath(
+                RequestMethod.DELETE,
+                "/api/v1/file-storage-management/bucket/delete?bucketName=" + BUCKET_NAME);
     }
 
     @Test
@@ -210,7 +228,6 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeDeleteBucket(
                 "INTERNAL_SERVER_ERROR",
                 "Bucket with name " + BUCKET_NAME + " not found",
-                200,
                 false);
 
         AssertTestStatusUtil
@@ -218,7 +235,9 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Bucket with name " + BUCKET_NAME + " not found",
                         response);
-        assertMethodAndPath(RequestMethod.DELETE, "/api/v1/file-storage-management/bucket/delete");
+        assertMethodAndPath(
+                RequestMethod.DELETE,
+                "/api/v1/file-storage-management/bucket/delete?bucketName=" + BUCKET_NAME);
     }
 
     @Test
@@ -226,7 +245,6 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
         final var response = executeDeleteBucket(
                 "INTERNAL_SERVER_ERROR",
                 "Failed to delete bucket " + BUCKET_NAME,
-                200,
                 false);
 
         AssertTestStatusUtil
@@ -234,42 +252,33 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Failed to delete bucket " + BUCKET_NAME,
                         response);
-        assertMethodAndPath(RequestMethod.DELETE, "/api/v1/file-storage-management/bucket/delete");
+        assertMethodAndPath(
+                RequestMethod.DELETE,
+                "/api/v1/file-storage-management/bucket/delete?bucketName=" + BUCKET_NAME);
     }
 
     private Response<Void> executeCreateBucket(
             final String statusCode,
             final String description,
-            final int code,
             final boolean isSuccess) {
         stubFor(
                 post(urlPathEqualTo("/api/v1/file-storage-management/addBucket/" + BUCKET_NAME))
-                        .willReturn(isSuccess ? getJsonSuccess(
-                                statusCode,
-                                description,
-                                code
-                        ) : getJsonError(statusCode,
-                                description,
-                                code)));
+                        .willReturn(
+                                isSuccess ? getJsonSuccess(statusCode, description) :
+                                        getJsonError(statusCode, description)));
 
         return client.addBucket(BUCKET_NAME);
     }
 
-    private Response<byte[]> executeGetDocumentWithError(
-            final String statusCode,
-            final String description,
-            final int code
-    ) {
+    private Response<byte[]> executeGetDocumentWithError(final String description) {
         stubFor(
                 get(urlPathEqualTo("/api/v1/file-storage-management/file/download"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
                         .withQueryParam("fileName", equalTo(FILE_NAME))
                         .willReturn(
                                 getJsonError(
-                                        statusCode,
-                                        description,
-                                        code
-                                )));
+                                        "INTERNAL_SERVER_ERROR",
+                                        description)));
 
         return client.getDocument(BUCKET_NAME, FILE_NAME);
     }
@@ -278,18 +287,12 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
             final MockMultipartFile file,
             final String statusCode,
             final String description,
-            final int code,
             final boolean isSuccess) {
         stubFor(
                 post(urlPathEqualTo("/api/v1/file-storage-management/upload"))
-                        .willReturn(isSuccess ? getJsonSuccess(
-                                statusCode,
-                                description,
-                                code) : getJsonError(
-                                statusCode,
-                                description,
-                                code
-                        )));
+                        .willReturn(
+                                isSuccess ? getJsonSuccess(statusCode, description) :
+                                        getJsonError(statusCode, description)));
 
         return client.uploadFile(file, BUCKET_NAME);
     }
@@ -297,28 +300,19 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
     private Response<Void> executeDeleteBucket(
             final String statusCode,
             final String description,
-            final int code,
             final boolean isSuccess
     ) {
         stubFor(
                 delete(urlPathEqualTo("/api/v1/file-storage-management/bucket/delete"))
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
-                        .willReturn(isSuccess ? getJsonSuccess(
-                                statusCode,
-                                description,
-                                code) : getJsonError(
-                                statusCode,
-                                description,
-                                code
-                        )));
+                        .willReturn(
+                                isSuccess ? getJsonSuccess(statusCode, description) :
+                                        getJsonError(statusCode, description)));
 
         return client.deleteDocument(BUCKET_NAME);
     }
 
-    private ResponseDefinitionBuilder getJsonSuccess(
-            final String httpStatus,
-            final String description,
-            final int code) {
+    private ResponseDefinitionBuilder getJsonSuccess(final String httpStatus, final String description) {
         String json = String.format("""
                 {
                   "result": {
@@ -328,13 +322,10 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                   }
                 }
                 """, httpStatus, description);
-        return jsonResponse(json, code);
+        return jsonResponse(json, 200);
     }
 
-    private ResponseDefinitionBuilder getJsonError(
-            final String httpStatus,
-            final String description,
-            final int code) {
+    private ResponseDefinitionBuilder getJsonError(final String httpStatus, final String description) {
         String json = String.format("""
                 {
                   "result": {
@@ -344,7 +335,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                   }
                 }
                 """, httpStatus, description);
-        return jsonResponse(json, code);
+        return jsonResponse(json, 200);
     }
 
 }

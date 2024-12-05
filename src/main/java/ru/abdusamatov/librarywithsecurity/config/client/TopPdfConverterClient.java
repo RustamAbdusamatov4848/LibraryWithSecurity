@@ -3,7 +3,6 @@ package ru.abdusamatov.librarywithsecurity.config.client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -40,9 +39,8 @@ public class TopPdfConverterClient {
     }
 
     public Response<Void> uploadFile(final MultipartFile file, final String bucketName) {
-        final var body = new LinkedMultiValueMap<String, Object>();
-        body.add("file", new MultipartBodyBuilder().part("file", file.getResource()));
-        body.add("bucketName", bucketName);
+        final var builder = new MultipartBodyBuilder();
+        builder.part("file", file.getResource());
 
         return webClient
                 .post()
@@ -51,7 +49,7 @@ public class TopPdfConverterClient {
                         .queryParam("bucketName", bucketName)
                         .build())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(body))
+                .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
                 .block();

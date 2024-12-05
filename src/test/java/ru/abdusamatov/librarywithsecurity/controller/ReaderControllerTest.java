@@ -23,6 +23,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
+//TODO: fix in TRAIN-1900
 public class ReaderControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";

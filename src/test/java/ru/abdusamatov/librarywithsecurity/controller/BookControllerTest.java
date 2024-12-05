@@ -210,6 +210,7 @@ public class BookControllerTest extends TestBase {
         assertBookNotFound(response);
     }
 
+    //TODO: fix in TRAIN-1900
     @Test
     void shouldAssignBook_whenValidDataProvided() {
         final var bookId = bookService
@@ -239,6 +240,7 @@ public class BookControllerTest extends TestBase {
         ReaderControllerTest.assertFieldErrorForUser(response);
     }
 
+    //TODO: fix in TRAIN-1900
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
         final var userDtoToBeAssigned = service
