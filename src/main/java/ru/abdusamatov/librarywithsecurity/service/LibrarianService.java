@@ -46,6 +46,7 @@ public class LibrarianService {
 
     public void validateLibrarian(final AuthenticationDto authenticationDto) {
         final var authentication = authenticate(authenticationDto);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

@@ -42,3 +42,7 @@ springdoc:
   api-docs:
     enabled: true
     path: /lib-openapi-docs
+
+#Client settings
+top-pdf-converter:
+  base-url: ${CLIENT_BASE_URL}/${CLIENT_BASE_PATH}

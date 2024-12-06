@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 
-public class BookServiceTest extends TestBase {
+public class BookServiceCacheTest extends TestBase {
 
     private static final String BOOK_CACHE = "book";
 

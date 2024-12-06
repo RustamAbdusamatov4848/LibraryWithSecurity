@@ -54,8 +54,11 @@ public class UserService {
     @Transactional
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
-                .map(user -> userMapper.updateUserFromDto(dtoToBeUpdated, user))
-                .map(userRepository::save)
+                .map(user -> {
+                    final var updatedUserEntity = userMapper.updateUserFromDto(dtoToBeUpdated, user);
+
+                    return userRepository.save(updatedUserEntity);
+                })
                 .map(userMapper::userToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId()));
 

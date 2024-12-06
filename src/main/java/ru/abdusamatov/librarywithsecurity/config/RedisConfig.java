@@ -19,8 +19,8 @@ public class RedisConfig {
     private long timeToLiveMs;
 
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration
+    public CacheManager cacheManager(final RedisConnectionFactory redisConnectionFactory) {
+        final var defaultCacheConfig = RedisCacheConfiguration
                 .defaultCacheConfig()
                 .entryTtl(Duration.ofMillis(timeToLiveMs));
 

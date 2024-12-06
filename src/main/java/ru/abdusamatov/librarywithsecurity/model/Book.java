@@ -48,7 +48,7 @@ public class Book {
     private LocalDateTime takenAt;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
 }

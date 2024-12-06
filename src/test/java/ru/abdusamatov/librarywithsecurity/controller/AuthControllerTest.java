@@ -12,7 +12,7 @@ import ru.abdusamatov.librarywithsecurity.service.LibrarianService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -121,7 +121,7 @@ public class AuthControllerTest extends TestBase {
                 .bodyValue(dto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(typeResponse))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(typeResponse))
                 .returnResult()
                 .getResponseBody();
 
@@ -143,7 +143,7 @@ public class AuthControllerTest extends TestBase {
                 .bodyValue(authenticationDto)
                 .exchange()
                 .expectStatus().isEqualTo(httpStatus)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 

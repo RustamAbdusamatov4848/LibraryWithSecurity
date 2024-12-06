@@ -4,14 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
 
 import java.util.List;
 
@@ -22,7 +23,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-public class UserControllerTest extends TestBase {
+//TODO: fix in TRAIN-1900
+public class ReaderControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";
 
@@ -30,7 +32,7 @@ public class UserControllerTest extends TestBase {
     private UserRepository repository;
 
     @Autowired
-    private UserService service;
+    private ReaderService service;
 
     @Override
     protected void clearDatabase() {
@@ -41,7 +43,9 @@ public class UserControllerTest extends TestBase {
     void shouldGetAllUsers() {
         final var userListSize = 10;
         final var userDtoList = TestDataProvider.createListUserDto(userListSize);
-        userDtoList.forEach(userDto -> service.createUser(userDto));
+
+        userDtoList.forEach(userDto -> service
+                .createUser(TestDataProvider.getMultipartFile(), userDto));
 
         final var response = executeGetAllUsers(OK);
 
@@ -67,7 +71,7 @@ public class UserControllerTest extends TestBase {
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
         final var id = service
-                .createUser(TestDataProvider.createUserDto().build())
+                .createUser(TestDataProvider.getMultipartFile(), TestDataProvider.createUserDto().build())
                 .getId();
 
         final var response = executeGetUserById(OK, id, UserDto.class);
@@ -85,6 +89,18 @@ public class UserControllerTest extends TestBase {
         final var response = executeGetUserById(NOT_FOUND, id, Void.class);
 
         assertUserNotFound(response);
+    }
+
+    @Test
+    void shouldReturnDocument_whenUserExist() {
+        final var id = service
+                .createUser(TestDataProvider.getMultipartFile(), TestDataProvider.createUserDto().build())
+                .getId();
+
+        final var response = executeGetUserDocument(OK, id);
+
+        AssertTestStatusUtil
+                .assertSuccess(OK, "User document successfully found", response);
     }
 
     @Test
@@ -122,7 +138,10 @@ public class UserControllerTest extends TestBase {
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
         final var userToBeUpdated = service
-                .createUser(TestDataProvider.createUserDto().build());
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
+
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
                 .build();
@@ -141,7 +160,9 @@ public class UserControllerTest extends TestBase {
     void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
         final var userToBeUpdated = service
-                .createUser(TestDataProvider.createUserDto().build());
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
                 .id(notExistingId)
@@ -155,7 +176,9 @@ public class UserControllerTest extends TestBase {
     @Test
     void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
         final var userToBeUpdated = service
-                .createUser(TestDataProvider.createUserDto().build());
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var updateUserDto = TestDataProvider
                 .updateUserDtoWithInvalidFields(userToBeUpdated)
                 .build();
@@ -168,7 +191,9 @@ public class UserControllerTest extends TestBase {
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
         final var id = service
-                .createUser(TestDataProvider.createUserDto().build())
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build())
                 .getId();
 
         final var response = executeDeleteUserById(OK, id);
@@ -195,7 +220,7 @@ public class UserControllerTest extends TestBase {
                                 .build())
                 .exchange()
                 .expectStatus().isEqualTo(httpStatus)
-                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(UserDto.class))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(UserDto.class))
                 .returnResult()
                 .getResponseBody();
 
@@ -216,7 +241,27 @@ public class UserControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(response)
+                .isNotNull();
+
+        return response;
+    }
+
+    private Response<MultiValueMap<String, Object>> executeGetUserDocument(
+            final HttpStatus status,
+            final long id
+    ) {
+        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL, String.valueOf(id), "document")
+                        .build()
+                )
+                .exchange()
+                .expectStatus().isEqualTo(status)
+                .expectBody(ParameterizedTypeReferenceTestUtil.getMultiValueMapResponseReference())
                 .returnResult()
                 .getResponseBody();
 
@@ -239,7 +284,7 @@ public class UserControllerTest extends TestBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -262,7 +307,7 @@ public class UserControllerTest extends TestBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -282,7 +327,7 @@ public class UserControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
@@ -100,6 +101,19 @@ public class UserMapperTest {
                 .isNull();
     }
 
+    @ParameterizedTest
+    @MethodSource("shouldUpdateUserFromDto")
+    void shouldReturnNull_whenUserDtoIsNullInUpdateUserFromDto(
+            UserDto newUserDto,
+            User userToBeUpdated,
+            final User expected
+    ) {
+        final var updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
+
+        assertThat(updatedUser)
+                .isEqualTo(userToBeUpdated);
+    }
+
     @Test
     void shouldReturnNull_whenUserIsNullInUserToUserDto() {
         final var userDto = mapper.userToDto(null);
@@ -124,6 +138,7 @@ public class UserMapperTest {
                 .email(user.getEmail())
                 .dateOfBirth(user.getDateOfBirth())
                 .books(Collections.emptyList())
+                .documentId(user.getId())
                 .build();
 
         return Stream.of(Arguments.arguments(user, expected));
@@ -133,6 +148,7 @@ public class UserMapperTest {
         final var dtoToBeMapped = TestDataProvider
                 .createUserDto()
                 .books(Collections.emptyList())
+                .documentId(1L)
                 .build();
 
         final var expected = TestDataProvider
@@ -142,6 +158,7 @@ public class UserMapperTest {
                 .email(dtoToBeMapped.getEmail())
                 .dateOfBirth(dtoToBeMapped.getDateOfBirth())
                 .books(Collections.emptyList())
+                .document(Document.builder().id(dtoToBeMapped.getDocumentId()).build())
                 .build();
 
         return Stream.of(Arguments.arguments(dtoToBeMapped, expected));
@@ -154,19 +171,22 @@ public class UserMapperTest {
 
         final var newDto = TestDataProvider
                 .createUserDto()
+                .id(existingUser.getId())
                 .fullName("Updated FullName")
                 .email("updated@example.com")
                 .dateOfBirth(existingUser.getDateOfBirth())
                 .books(Collections.emptyList())
+                .documentId(existingUser.getDocument().getId())
                 .build();
 
         final var expected = TestDataProvider
                 .createUser()
-                .id(existingUser.getId())
+                .id(newDto.getId())
                 .fullName(newDto.getFullName())
                 .email(newDto.getEmail())
                 .dateOfBirth(existingUser.getDateOfBirth())
                 .books(existingUser.getBooks())
+                .document(existingUser.getDocument())
                 .build();
 
         return Stream.of(Arguments.arguments(newDto, existingUser, expected));

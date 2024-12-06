@@ -2,13 +2,14 @@ package ru.abdusamatov.librarywithsecurity.util;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.util.MultiValueMap;
 import org.testcontainers.shaded.org.apache.commons.lang3.reflect.TypeUtils;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 
 import java.util.List;
 
 @UtilityClass
-public class ParameterizedTypeReferenceUtil {
+public class ParameterizedTypeReferenceTestUtil {
 
     public static ParameterizedTypeReference<Response<Void>> getResponseReference() {
         return getResponseReference(Void.class);
@@ -20,5 +21,9 @@ public class ParameterizedTypeReferenceUtil {
 
     public static <T> ParameterizedTypeReference<Response<List<T>>> getListResponseReference(final Class<T> type) {
         return ParameterizedTypeReference.forType(TypeUtils.parameterize(Response.class, TypeUtils.parameterize(List.class, type)));
+    }
+
+    public static ParameterizedTypeReference<Response<MultiValueMap<String, Object>>> getMultiValueMapResponseReference() {
+        return ParameterizedTypeReference.forType(TypeUtils.parameterize(Response.class, TypeUtils.parameterize(MultiValueMap.class)));
     }
 }

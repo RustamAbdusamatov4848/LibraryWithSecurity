@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "top-pdf-converter.base-url",
+      "type": "java.lang.String",
+      "description": "Base url for API Top-pdf-converter client."
+    }
+  ]
+}

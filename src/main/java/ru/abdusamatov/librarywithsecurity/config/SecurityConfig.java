@@ -21,7 +21,7 @@ public class SecurityConfig {
     private final LibrarianDetailsService librarianDetailsService;
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
+            final AuthenticationConfiguration configuration) throws Exception {
         return configuration
                 .getAuthenticationManager();
     }

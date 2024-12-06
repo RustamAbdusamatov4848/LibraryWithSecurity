@@ -10,11 +10,11 @@ import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
-import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
+import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class BookControllerTest extends TestBase {
     private BookService bookService;
 
     @Autowired
-    private UserService userService;
+    private ReaderService service;
 
     @Override
     protected void clearDatabase() {
@@ -187,7 +187,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeUpdateBook(NOT_FOUND, updateBookDto, Void.class);
 
-        UserControllerTest.assertUserNotFound(response);
+        ReaderControllerTest.assertUserNotFound(response);
     }
 
     @Test
@@ -195,7 +195,6 @@ public class BookControllerTest extends TestBase {
         final var id = bookService
                 .createBook(TestDataProvider.createBookDto().build())
                 .getId();
-
         final var response = executeDeleteBook(OK, id);
 
         AssertTestStatusUtil
@@ -211,14 +210,16 @@ public class BookControllerTest extends TestBase {
         assertBookNotFound(response);
     }
 
+    //TODO: fix in TRAIN-1900
     @Test
     void shouldAssignBook_whenValidDataProvided() {
         final var bookId = bookService
                 .createBook(TestDataProvider.createBookDto().build())
                 .getId();
-        final var userDtoToBeAssigned = userService
-                .createUser(TestDataProvider.createUserDto().build());
-
+        final var userDtoToBeAssigned = service
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var response = executeAssignBook(OK, bookId, userDtoToBeAssigned);
 
         AssertTestStatusUtil
@@ -236,13 +237,16 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeAssignBook(BAD_REQUEST, bookId, userDtoToBeAssigned);
 
-        UserControllerTest.assertFieldErrorForUser(response);
+        ReaderControllerTest.assertFieldErrorForUser(response);
     }
 
+    //TODO: fix in TRAIN-1900
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
-        final var userDtoToBeAssigned = userService
-                .createUser(TestDataProvider.createUserDto().build());
+        final var userDtoToBeAssigned = service
+                .createUser(
+                        TestDataProvider.getMultipartFile(),
+                        TestDataProvider.createUserDto().build());
         final var notExistingBookId = 1000L;
 
         final var response = executeAssignBook(NOT_FOUND, notExistingBookId, userDtoToBeAssigned);
@@ -311,7 +315,7 @@ public class BookControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(httpStatus)
-                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(BookDto.class))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(BookDto.class))
                 .returnResult()
                 .getResponseBody();
 
@@ -332,7 +336,7 @@ public class BookControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -354,7 +358,7 @@ public class BookControllerTest extends TestBase {
                 .bodyValue(bookDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -376,7 +380,7 @@ public class BookControllerTest extends TestBase {
                 .bodyValue(bookDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference(responseType))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
@@ -396,7 +400,7 @@ public class BookControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
@@ -419,7 +423,7 @@ public class BookControllerTest extends TestBase {
                 .bodyValue(userDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
@@ -438,7 +442,7 @@ public class BookControllerTest extends TestBase {
                         .build())
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceUtil.getResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
                 .returnResult()
                 .getResponseBody();
 
@@ -458,7 +462,7 @@ public class BookControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ParameterizedTypeReferenceUtil.getListResponseReference(BookDto.class))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(BookDto.class))
                 .returnResult()
                 .getResponseBody();
 

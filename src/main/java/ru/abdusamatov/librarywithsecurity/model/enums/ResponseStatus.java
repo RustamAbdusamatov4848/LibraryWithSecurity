@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.util;
+package ru.abdusamatov.librarywithsecurity.model.enums;
 
 public enum ResponseStatus {
     SUCCESS,
