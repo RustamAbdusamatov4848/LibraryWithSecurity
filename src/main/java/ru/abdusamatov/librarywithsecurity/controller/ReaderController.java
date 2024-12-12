@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
@@ -42,19 +43,20 @@ public class ReaderController {
     }
 
     @GetMapping(value = "/{id}")
-    public Response<UserDto> getUserById(@PathVariable("id") final Long id) {
-        return Response.buildResponse(
-                Result.success(OK, "User successfully found"),
-                readerService.getUserById(id)
-        );
+    public Mono<Response<UserDto>> getUserById(@PathVariable("id") final Long id) {
+        return readerService.getUserById(id)
+                .map(user -> Response.buildResponse(
+                        Result.success(OK, "User successfully found"),
+                        user));
     }
 
     @GetMapping(value = "/{id}/document")
-    public Response<MultiValueMap<String, Object>> getUserDocument(@PathVariable("id") final Long id) {
-        return Response.buildResponse(
-                Result.success(OK, "User document successfully found"),
-                readerService.getDocument(id)
-        );
+    public Mono<Response<MultiValueMap<String, Object>>> getUserDocument(@PathVariable("id") final Long id) {
+        return readerService
+                .getDocument(id)
+                .map(document -> Response.buildResponse(
+                        Result.success(OK, "User document successfully found"),
+                        document));
     }
 
     @PostMapping

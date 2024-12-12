@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
@@ -26,12 +27,11 @@ public class TopPdfConverterClientService {
                 String.format("Bucket %s successfully created", bucketName));
     }
 
-    public MultiValueMap<String, Object> getDocument(final Document document) {
-        var response = client.getDocument(document.getBucketName(), document.getFileName());
-
-        checkResponseStatus(response, document.getFileName());
-
-        return createDocumentResponse(document, response);
+    public Mono<MultiValueMap<String, Object>> getDocument(final Document document) {
+        return client
+                .getDocument(document.getBucketName(), document.getFileName())
+                .filter(response -> checkResponseStatus(response, document.getFileName()))
+                .map(response -> createDocumentResponse(document, response));
     }
 
     public void saveUserDocument(final MultipartFile file, final Document document) {
@@ -54,12 +54,12 @@ public class TopPdfConverterClientService {
         checkResponseStatus(response, successLog);
     }
 
-    private void checkResponseStatus(final Response<?> response, final String successLog) {
-        if (!ResponseStatus.SUCCESS.equals(response.getResult().getStatus())) {
-            throw new TopPdfConverterException(response.getResult().getDescription());
+    private boolean checkResponseStatus(final Response<?> response, final String successLog) {
+        if (ResponseStatus.SUCCESS.equals(response.getResult().getStatus())) {
+            log.info(successLog);
+            return true;
         }
-
-        log.info(successLog);
+        throw new TopPdfConverterException(response.getResult().getDescription());
     }
 
     private MultiValueMap<String, Object> createDocumentResponse(

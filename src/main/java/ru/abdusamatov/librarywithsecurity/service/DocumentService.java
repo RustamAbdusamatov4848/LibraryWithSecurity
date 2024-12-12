@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.repository.DocumentRepository;
@@ -20,10 +22,13 @@ public class DocumentService {
         clientService.saveUserDocument(file, repository.getReferenceById(documentId));
     }
 
-    public MultiValueMap<String, Object> getDocument(final long userId) {
-        return repository.findByOwnerId(userId)
-                .map(clientService::getDocument)
-                .orElseThrow(() -> new TopPdfConverterException("Document not found for user ID: " + userId));
+    public Mono<MultiValueMap<String, Object>> getDocument(final long userId) {
+        return Mono.fromCallable(() -> repository.findByOwnerId(userId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(document -> document
+                        .map(clientService::getDocument)
+                        .orElseGet(() -> Mono.error(new TopPdfConverterException("Document not found for user ID: " + userId)))
+                );
     }
 
     public void deleteUserDocument(final long userId) {

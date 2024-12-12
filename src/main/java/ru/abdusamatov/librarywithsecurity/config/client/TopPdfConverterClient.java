@@ -6,6 +6,7 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
@@ -24,7 +25,7 @@ public class TopPdfConverterClient {
                 .block();
     }
 
-    public Response<byte[]> getDocument(final String bucketName, final String fileName) {
+    public Mono<Response<byte[]>> getDocument(final String bucketName, final String fileName) {
         return webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -34,8 +35,7 @@ public class TopPdfConverterClient {
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class))
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class));
     }
 
     public Response<Void> uploadFile(final MultipartFile file, final String bucketName) {

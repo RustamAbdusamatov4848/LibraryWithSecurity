@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
@@ -23,31 +25,33 @@ import java.util.List;
 @CacheConfig(cacheNames = "user")
 public class UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final UserMapper mapper;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUserList(final Integer page, final Integer size) {
         return userRepository
                 .findAll(PageRequest.of(page, size, Sort.by("id").ascending()))
-                .map(userMapper::userToDto)
+                .map(mapper::userToDto)
                 .getContent();
     }
 
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
-    public UserDto getUserById(final Long id) {
-        return userRepository
-                .findById(id)
-                .map(userMapper::userToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+    public Mono<UserDto> getUserById(final Long id) {
+        return Mono
+                .fromCallable(() ->
+                        userRepository.findById(id)
+                                .map(mapper::userToDto)
+                                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id)))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @Transactional
     public UserDto createUser(final UserDto dto) {
-        final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
+        final var createdUser = userRepository.save(mapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
-        return userMapper.userToDto(createdUser);
+        return mapper.userToDto(createdUser);
     }
 
     @CachePut(key = "#dtoToBeUpdated.id")
@@ -55,11 +59,11 @@ public class UserService {
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
         final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
                 .map(user -> {
-                    final var updatedUserEntity = userMapper.updateUserFromDto(dtoToBeUpdated, user);
+                    final var updatedUserEntity = mapper.updateUserFromDto(dtoToBeUpdated, user);
 
                     return userRepository.save(updatedUserEntity);
                 })
-                .map(userMapper::userToDto)
+                .map(mapper::userToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId()));
 
         log.info("Updated user with ID: {}", dtoToBeUpdated.getId());

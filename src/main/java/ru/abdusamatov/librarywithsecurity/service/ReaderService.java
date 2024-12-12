@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 
 import java.util.List;
@@ -20,11 +21,11 @@ public class ReaderService {
         return userService.getUserList(page, size);
     }
 
-    public UserDto getUserById(final Long id) {
+    public Mono<UserDto> getUserById(final Long id) {
         return userService.getUserById(id);
     }
 
-    public MultiValueMap<String, Object> getDocument(final long userId) {
+    public Mono<MultiValueMap<String, Object>> getDocument(final long userId) {
         return documentService.getDocument(userId);
     }
 
