@@ -30,7 +30,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Mono<List<UserDto>> getUserList(final Integer page, final Integer size) {
-        return Mono.fromCallable(() -> userRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending())))
+        return Mono.fromCallable(() ->
+                        userRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending())))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(pageResult -> {
                     if (pageResult.hasContent()) {
@@ -57,7 +58,8 @@ public class UserService {
 
     @Transactional
     public Mono<UserDto> createUser(final UserDto dto) {
-        return Mono.fromCallable(() -> userRepository.save(mapper.dtoToUser(dto)))
+        return Mono.fromCallable(() ->
+                        userRepository.save(mapper.dtoToUser(dto)))
                 .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()))
                 .subscribeOn(Schedulers.boundedElastic())
                 .map(mapper::userToDto);
@@ -67,9 +69,10 @@ public class UserService {
     @CachePut(key = "#dtoToBeUpdated.id")
     @Transactional
     public Mono<UserDto> updateUser(final UserDto dtoToBeUpdated) {
-        return Mono.fromCallable(() -> userRepository
-                        .findById(dtoToBeUpdated.getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId())))
+        return Mono.fromCallable(() ->
+                        userRepository
+                                .findById(dtoToBeUpdated.getId())
+                                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId())))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(user -> {
                     final var updatedUserEntity = mapper.updateUserFromDto(dtoToBeUpdated, user);
@@ -83,7 +86,8 @@ public class UserService {
     @CacheEvict(key = "#id")
     @Transactional
     public Mono<Void> deleteUserById(final Long id) {
-        return Mono.fromCallable(() -> userRepository.findById(id))
+        return Mono.fromCallable(() ->
+                        userRepository.findById(id))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(optionalUser -> optionalUser
                         .map(user -> Mono.fromRunnable(() -> userRepository.delete(user))

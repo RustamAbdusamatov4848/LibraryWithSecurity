@@ -41,7 +41,8 @@ public class BookService {
     public Mono<List<BookDto>> getBookList(final Integer page, final Integer size, final boolean isSorted) {
         final var sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
 
-        return Mono.fromCallable(() -> bookRepository.findAll(PageRequest.of(page, size, sort)))
+        return Mono.fromCallable(() ->
+                        bookRepository.findAll(PageRequest.of(page, size, sort)))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(pageResult -> {
                     if (pageResult.hasContent()) {
@@ -58,21 +59,24 @@ public class BookService {
 
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
-    public BookDto getBookById(final Long id) {
-        return bookRepository.findById(id)
-                .map(bookMapper::bookToBookDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
+    public Mono<BookDto> getBookById(final Long id) {
+        return Mono.fromCallable(() ->
+                        bookRepository.findById(id)
+                                .map(bookMapper::bookToBookDto)
+                                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id)))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @Transactional
-    public BookDto createBook(final BookDto dto) {
+    public Mono<BookDto> createBook(final BookDto dto) {
         var book = bookMapper.bookDtoToBook(dto);
         book.setOwner(null);
 
-        final var savedBook = bookRepository.save(book);
-        log.info("Save book with ID: {}", savedBook.getId());
-
-        return bookMapper.bookToBookDto(savedBook);
+        return Mono.fromCallable(() -> bookRepository.save(book))
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(savedBook ->
+                        log.info("Save book with ID: {}", savedBook.getId()))
+                .map(bookMapper::bookToBookDto);
     }
 
     @CachePut(key = "#dto.id")

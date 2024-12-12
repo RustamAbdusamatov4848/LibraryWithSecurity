@@ -45,19 +45,21 @@ public class BookController {
     }
 
     @GetMapping(value = "/{id}")
-    public Response<BookDto> showBookById(@PathVariable("id") final Long id) {
-        return Response.buildResponse(
-                Result.success(OK, "Book successfully found"),
-                bookService.getBookById(id)
-        );
+    public Mono<Response<BookDto>> showBookById(@PathVariable("id") final Long id) {
+        return bookService
+                .getBookById(id)
+                .map(bookDto -> Response.buildResponse(
+                        Result.success(OK, "Book successfully found"),
+                        bookDto));
     }
 
     @PostMapping
-    public Response<BookDto> createBook(@Valid @RequestBody final BookDto bookDto) {
-        return Response.buildResponse(
-                Result.success(CREATED, "Book successfully created"),
-                bookService.createBook(bookDto)
-        );
+    public Mono<Response<BookDto>> createBook(@Valid @RequestBody final BookDto bookDto) {
+        return bookService
+                .createBook(bookDto)
+                .map(savedBook -> Response.buildResponse(
+                        Result.success(CREATED, "Book successfully created"),
+                        savedBook));
     }
 
     @PutMapping
