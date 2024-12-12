@@ -71,9 +71,12 @@ public class BookController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public Response<Void> deleteBook(@PathVariable("id") final Long id) {
-        bookService.deleteBook(id);
-        return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
+    public Mono<Response<Void>> deleteBook(@PathVariable("id") final Long id) {
+        return bookService
+                .deleteBook(id)
+                .then(Mono.just(Response.buildResponse(
+                        Result.success(NO_CONTENT, "Successfully deleted"),
+                        null)));
     }
 
     @PatchMapping(value = "/{id}/assign")

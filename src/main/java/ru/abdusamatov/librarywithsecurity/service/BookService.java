@@ -103,12 +103,16 @@ public class BookService {
 
     @CacheEvict(key = "#id")
     @Transactional
-    public void deleteBook(final Long id) {
-        final var book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
-
-        bookRepository.delete(book);
-        log.info("Deleted book with ID: {}", id);
+    public Mono<Void> deleteBook(final Long id) {
+        return Mono.fromCallable(() ->
+                        bookRepository.findById(id))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(foundBook -> foundBook
+                        .map(book -> Mono.fromRunnable(() -> bookRepository.delete(book))
+                                .subscribeOn(Schedulers.boundedElastic()))
+                        .orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
+                .doOnSuccess(aVoid -> log.info("Deleted book with ID: {}", id))
+                .then();
     }
 
     @CachePut(key = "#id")

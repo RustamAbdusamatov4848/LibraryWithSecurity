@@ -93,6 +93,7 @@ public class UserService {
                         .map(user -> Mono.fromRunnable(() -> userRepository.delete(user))
                                 .subscribeOn(Schedulers.boundedElastic()))
                         .orElseGet(() -> Mono.error(new ResourceNotFoundException("User", "ID", id))))
+                .doOnSuccess(aVoid -> log.info("Deleted user with ID: {}", id))
                 .then();
     }
 }
