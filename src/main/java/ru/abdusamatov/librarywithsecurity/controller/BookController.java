@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
@@ -31,15 +32,16 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public Response<List<BookDto>> getBookList(
+    public Mono<Response<List<BookDto>>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") final boolean isSorted) {
 
-        return Response.buildResponse(
-                Result.success(OK, "List of books"),
-                bookService.getBookList(page, size, isSorted)
-        );
+        return bookService
+                .getBookList(page, size, isSorted)
+                .map(list -> Response.buildResponse(
+                        Result.success(OK, "List of books"),
+                        list));
     }
 
     @GetMapping(value = "/{id}")

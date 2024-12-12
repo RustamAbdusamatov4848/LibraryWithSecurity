@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
@@ -22,6 +24,7 @@ import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -35,14 +38,23 @@ public class BookService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public List<BookDto> getBookList(final Integer page, final Integer size, final boolean isSorted) {
+    public Mono<List<BookDto>> getBookList(final Integer page, final Integer size, final boolean isSorted) {
         final var sort = isSorted ? Sort.by("title").ascending() : Sort.unsorted();
 
-        return bookRepository
-                .findAll(PageRequest.of(page, size, sort))
-                .map(bookMapper::bookToBookDto)
-                .getContent();
+        return Mono.fromCallable(() -> bookRepository.findAll(PageRequest.of(page, size, sort)))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(pageResult -> {
+                    if (pageResult.hasContent()) {
+                        return Mono.just(pageResult.getContent()
+                                .stream()
+                                .map(bookMapper::bookToBookDto)
+                                .collect(Collectors.toList()));
+                    } else {
+                        return Mono.empty();
+                    }
+                });
     }
+
 
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
