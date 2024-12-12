@@ -18,6 +18,7 @@ import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,12 +29,21 @@ public class UserService {
     private final UserMapper mapper;
 
     @Transactional(readOnly = true)
-    public List<UserDto> getUserList(final Integer page, final Integer size) {
-        return userRepository
-                .findAll(PageRequest.of(page, size, Sort.by("id").ascending()))
-                .map(mapper::userToDto)
-                .getContent();
+    public Mono<List<UserDto>> getUserList(final Integer page, final Integer size) {
+        return Mono.fromCallable(() -> userRepository.findAll(PageRequest.of(page, size, Sort.by("id").ascending())))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(pageResult -> {
+                    if (pageResult.hasContent()) {
+                        return Mono.just(pageResult.getContent()
+                                .stream()
+                                .map(mapper::userToDto)
+                                .collect(Collectors.toList()));
+                    } else {
+                        return Mono.empty();
+                    }
+                });
     }
+
 
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)

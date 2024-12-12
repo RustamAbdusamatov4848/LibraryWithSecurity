@@ -32,14 +32,15 @@ public class ReaderController {
     private final ReaderService readerService;
 
     @GetMapping
-    public Response<List<UserDto>> getUserList(
+    public Mono<Response<List<UserDto>>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
 
-        return Response.buildResponse(
-                Result.success(OK, "List of users"),
-                readerService.getUserList(page, size)
-        );
+        return readerService
+                .getUserList(page, size)
+                .map(users -> Response.buildResponse(
+                        Result.success(OK, "List of users"),
+                        users));
     }
 
     @GetMapping(value = "/{id}")

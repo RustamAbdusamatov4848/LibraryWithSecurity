@@ -17,7 +17,7 @@ public class ReaderService {
     private final UserService userService;
     private final DocumentService documentService;
 
-    public List<UserDto> getUserList(final Integer page, final Integer size) {
+    public Mono<List<UserDto>> getUserList(final Integer page, final Integer size) {
         return userService.getUserList(page, size);
     }
 
