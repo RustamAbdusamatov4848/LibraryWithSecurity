@@ -39,8 +39,9 @@ public class ReaderService {
         return userService.updateUser(dtoToBeUpdated);
     }
 
-    public void deleteUserById(final Long userId) {
-        documentService.deleteUserDocument(userId);
-        userService.deleteUserById(userId);
+    public Mono<Void> deleteUserById(final Long userId) {
+        return documentService
+                .deleteUserDocument(userId)
+                .then(userService.deleteUserById(userId));
     }
 }

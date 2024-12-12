@@ -33,13 +33,14 @@ public class DocumentService {
                 );
     }
 
-    public void deleteUserDocument(final long userId) {
-        repository.findByOwnerId(userId)
-                .ifPresentOrElse(
-                        clientService::deleteUserDocument,
-                        () -> {
-                            throw new ResourceNotFoundException("Document", "user ID", userId);
-                        }
-                );
+    public Mono<Void> deleteUserDocument(final long userId) {
+        return Mono.fromCallable(() -> repository.findByOwnerId(userId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(optionalDocument -> optionalDocument
+                        .map(document -> clientService.deleteUserDocument(document)
+                                .then(Mono.empty())).orElseGet(() -> Mono.error(new ResourceNotFoundException("Document", "user ID", userId))))
+                .doOnSuccess(result -> log.info("Deleted document for user ID: {}", userId))
+                .then();
     }
+
 }

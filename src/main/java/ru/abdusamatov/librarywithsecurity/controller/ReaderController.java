@@ -73,16 +73,19 @@ public class ReaderController {
 
     @PutMapping
     public Mono<Response<UserDto>> updateUser(@Valid @RequestBody final UserDto userDto) {
-        return readerService.updateUser(userDto)
+        return readerService
+                .updateUser(userDto)
                 .map(updatedUser -> Response.buildResponse(
                         Result.success(OK, "User successfully updated"),
                         updatedUser));
     }
 
     @DeleteMapping(value = "/{id}")
-    public Response<Void> deleteUserByID(@PathVariable("id") final Long id) {
-        readerService.deleteUserById(id);
-
-        return Response.buildResponse(Result.success(NO_CONTENT, "Successfully deleted"), null);
+    public Mono<Response<Void>> deleteUserByID(@PathVariable("id") final Long id) {
+        return readerService
+                .deleteUserById(id)
+                .then(Mono.just(Response.buildResponse(
+                        Result.success(NO_CONTENT, "Successfully deleted"),
+                        null)));
     }
 }

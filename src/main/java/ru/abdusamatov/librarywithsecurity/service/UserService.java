@@ -56,13 +56,13 @@ public class UserService {
 
     @CachePut(key = "#dtoToBeUpdated.id")
     @Transactional
-    public Mono<UserDto> updateUser(UserDto dtoToBeUpdated) {
+    public Mono<UserDto> updateUser(final UserDto dtoToBeUpdated) {
         return Mono.fromCallable(() -> userRepository
                         .findById(dtoToBeUpdated.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId())))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(user -> {
-                    var updatedUserEntity = mapper.updateUserFromDto(dtoToBeUpdated, user);
+                    final var updatedUserEntity = mapper.updateUserFromDto(dtoToBeUpdated, user);
                     return Mono.fromCallable(() -> userRepository.save(updatedUserEntity))
                             .subscribeOn(Schedulers.boundedElastic());
                 })
@@ -72,11 +72,13 @@ public class UserService {
 
     @CacheEvict(key = "#id")
     @Transactional
-    public void deleteUserById(final Long id) {
-        final var user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
-
-        userRepository.delete(user);
-        log.info("Deleted user with ID: {}", id);
+    public Mono<Void> deleteUserById(final Long id) {
+        return Mono.fromCallable(() -> userRepository.findById(id))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(optionalUser -> optionalUser
+                        .map(user -> Mono.fromRunnable(() -> userRepository.delete(user))
+                                .subscribeOn(Schedulers.boundedElastic()))
+                        .orElseGet(() -> Mono.error(new ResourceNotFoundException("User", "ID", id))))
+                .then();
     }
 }
