@@ -44,7 +44,8 @@ public class ReaderController {
 
     @GetMapping(value = "/{id}")
     public Mono<Response<UserDto>> getUserById(@PathVariable("id") final Long id) {
-        return readerService.getUserById(id)
+        return readerService
+                .getUserById(id)
                 .map(user -> Response.buildResponse(
                         Result.success(OK, "User successfully found"),
                         user));
@@ -60,13 +61,15 @@ public class ReaderController {
     }
 
     @PostMapping
-    public Response<UserDto> createUser(@RequestParam("file") final MultipartFile file,
-                                        @Valid @RequestBody final UserDto userDto) {
-        return Response.buildResponse(
-                Result.success(CREATED, "User successfully saved"),
-                readerService.createUser(file, userDto)
-        );
+    public Mono<Response<UserDto>> createUser(@RequestParam("file") final MultipartFile file,
+                                              @Valid @RequestBody final UserDto userDto) {
+        return readerService
+                .createUser(file, userDto)
+                .map(user -> Response.buildResponse(
+                        Result.success(CREATED, "User successfully saved"),
+                        user));
     }
+
 
     @PutMapping
     public Response<UserDto> updateUser(@Valid @RequestBody final UserDto userDto) {

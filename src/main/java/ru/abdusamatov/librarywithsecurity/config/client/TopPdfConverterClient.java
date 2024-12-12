@@ -14,15 +14,14 @@ import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 public class TopPdfConverterClient {
     private final WebClient webClient;
 
-    public Response<Void> addBucket(final String bucketName) {
+    public Mono<Response<Void>> addBucket(final String bucketName) {
         return webClient
                 .post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/addBucket/" + bucketName)
                         .build())
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference());
     }
 
     public Mono<Response<byte[]>> getDocument(final String bucketName, final String fileName) {
@@ -38,7 +37,7 @@ public class TopPdfConverterClient {
                 .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class));
     }
 
-    public Response<Void> uploadFile(final MultipartFile file, final String bucketName) {
+    public Mono<Response<Void>> uploadFile(MultipartFile file, String bucketName) {
         final var builder = new MultipartBodyBuilder();
         builder.part("file", file.getResource());
 
@@ -51,11 +50,11 @@ public class TopPdfConverterClient {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference());
     }
 
-    public Response<Void> deleteDocument(final String bucketName) {
+
+    public Mono<Response<Void>> deleteDocument(final String bucketName) {
         return webClient
                 .delete()
                 .uri(uriBuilder -> uriBuilder
@@ -63,7 +62,6 @@ public class TopPdfConverterClient {
                         .queryParam("bucketName", bucketName)
                         .build(bucketName))
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference());
     }
 }

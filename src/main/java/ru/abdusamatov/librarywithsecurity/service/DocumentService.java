@@ -18,8 +18,10 @@ public class DocumentService {
     private final DocumentRepository repository;
     private final TopPdfConverterClientService clientService;
 
-    public void saveUserDocument(final MultipartFile file, final Long documentId) {
-        clientService.saveUserDocument(file, repository.getReferenceById(documentId));
+    public Mono<Void> saveUserDocument(final MultipartFile file, final Long documentId) {
+        return Mono.fromCallable(() -> repository.getReferenceById(documentId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(document -> clientService.saveUserDocument(file, document));
     }
 
     public Mono<MultiValueMap<String, Object>> getDocument(final long userId) {

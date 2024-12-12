@@ -38,8 +38,7 @@ public class UserService {
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
     public Mono<UserDto> getUserById(final Long id) {
-        return Mono
-                .fromCallable(() ->
+        return Mono.fromCallable(() ->
                         userRepository.findById(id)
                                 .map(mapper::userToDto)
                                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id)))
@@ -47,12 +46,13 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto createUser(final UserDto dto) {
-        final var createdUser = userRepository.save(mapper.dtoToUser(dto));
-
-        log.info("Saving new User with ID: {}", createdUser.getId());
-        return mapper.userToDto(createdUser);
+    public Mono<UserDto> createUser(final UserDto dto) {
+        return Mono.fromCallable(() -> userRepository.save(mapper.dtoToUser(dto)))
+                .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()))
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(mapper::userToDto);
     }
+
 
     @CachePut(key = "#dtoToBeUpdated.id")
     @Transactional

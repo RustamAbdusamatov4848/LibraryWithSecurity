@@ -21,45 +21,41 @@ import java.util.Base64;
 public class TopPdfConverterClientService {
     private final TopPdfConverterClient client;
 
-    public void createBucket(final String bucketName) {
-        executeWithStatusCheck(
-                () -> client.addBucket(bucketName),
-                String.format("Bucket %s successfully created", bucketName));
+    public Mono<Void> createBucket(final String bucketName) {
+        return client.addBucket(bucketName)
+                .flatMap(response -> checkResponseStatus(response,
+                        String.format("Bucket %s successfully created", bucketName)))
+                .then();
     }
 
     public Mono<MultiValueMap<String, Object>> getDocument(final Document document) {
-        return client
-                .getDocument(document.getBucketName(), document.getFileName())
-                .filter(response -> checkResponseStatus(response, document.getFileName()))
+        return client.getDocument(document.getBucketName(), document.getFileName())
+                .flatMap(response -> checkResponseStatus(response,
+                        String.format("Document %s successfully downloaded", document.getFileName())))
                 .map(response -> createDocumentResponse(document, response));
     }
 
-    public void saveUserDocument(final MultipartFile file, final Document document) {
-        createBucket(document.getBucketName());
-
-        executeWithStatusCheck(
-                () -> client.uploadFile(file, document.getBucketName()),
-                String.format("Document %s successfully saved", document.getFileName()));
+    public Mono<Void> saveUserDocument(final MultipartFile file, final Document document) {
+        return createBucket(document.getBucketName())
+                .then(client.uploadFile(file, document.getBucketName())
+                        .flatMap(response -> checkResponseStatus(response,
+                                String.format("Document %s successfully saved", document.getFileName()))))
+                .then();
     }
 
-    public void deleteUserDocument(final Document document) {
-        executeWithStatusCheck(
-                () -> client.deleteDocument(document.getBucketName()),
-                String.format("Document %s successfully deleted", document.getFileName()));
+    public Mono<Void> deleteUserDocument(final Document document) {
+        return client.deleteDocument(document.getBucketName())
+                .flatMap(response -> checkResponseStatus(response,
+                        String.format("Document %s successfully deleted", document.getFileName())))
+                .then();
     }
 
-    private void executeWithStatusCheck(final RunnableWithResponse action, final String successLog) {
-        final var response = action.execute();
-
-        checkResponseStatus(response, successLog);
-    }
-
-    private boolean checkResponseStatus(final Response<?> response, final String successLog) {
+    private <T> Mono<Response<T>> checkResponseStatus(final Response<T> response, final String successLog) {
         if (ResponseStatus.SUCCESS.equals(response.getResult().getStatus())) {
             log.info(successLog);
-            return true;
+            return Mono.just(response);
         }
-        throw new TopPdfConverterException(response.getResult().getDescription());
+        return Mono.error(new TopPdfConverterException(response.getResult().getDescription()));
     }
 
     private MultiValueMap<String, Object> createDocumentResponse(

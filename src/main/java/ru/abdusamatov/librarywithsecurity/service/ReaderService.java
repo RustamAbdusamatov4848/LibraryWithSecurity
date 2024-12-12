@@ -29,9 +29,10 @@ public class ReaderService {
         return documentService.getDocument(userId);
     }
 
-    public UserDto createUser(final MultipartFile file, final UserDto dto) {
-        documentService.saveUserDocument(file, dto.getDocumentId());
-        return userService.createUser(dto);
+    public Mono<UserDto> createUser(final MultipartFile file, final UserDto dto) {
+        return documentService
+                .saveUserDocument(file, dto.getDocumentId())
+                .then(userService.createUser(dto));
     }
 
     public UserDto updateUser(final UserDto dtoToBeUpdated) {
