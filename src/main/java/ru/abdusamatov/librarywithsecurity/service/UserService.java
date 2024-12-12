@@ -56,18 +56,18 @@ public class UserService {
 
     @CachePut(key = "#dtoToBeUpdated.id")
     @Transactional
-    public UserDto updateUser(final UserDto dtoToBeUpdated) {
-        final var updatedUser = userRepository.findById(dtoToBeUpdated.getId())
-                .map(user -> {
-                    final var updatedUserEntity = mapper.updateUserFromDto(dtoToBeUpdated, user);
-
-                    return userRepository.save(updatedUserEntity);
+    public Mono<UserDto> updateUser(UserDto dtoToBeUpdated) {
+        return Mono.fromCallable(() -> userRepository
+                        .findById(dtoToBeUpdated.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId())))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(user -> {
+                    var updatedUserEntity = mapper.updateUserFromDto(dtoToBeUpdated, user);
+                    return Mono.fromCallable(() -> userRepository.save(updatedUserEntity))
+                            .subscribeOn(Schedulers.boundedElastic());
                 })
                 .map(mapper::userToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dtoToBeUpdated.getId()));
-
-        log.info("Updated user with ID: {}", dtoToBeUpdated.getId());
-        return updatedUser;
+                .doOnSuccess(userDto -> log.info("Updated user with ID: {}", userDto.getId()));
     }
 
     @CacheEvict(key = "#id")

@@ -35,7 +35,7 @@ public class ReaderService {
                 .then(userService.createUser(dto));
     }
 
-    public UserDto updateUser(final UserDto dtoToBeUpdated) {
+    public Mono<UserDto> updateUser(final UserDto dtoToBeUpdated) {
         return userService.updateUser(dtoToBeUpdated);
     }
 

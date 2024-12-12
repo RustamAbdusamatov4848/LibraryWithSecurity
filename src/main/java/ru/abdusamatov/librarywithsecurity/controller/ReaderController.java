@@ -72,11 +72,11 @@ public class ReaderController {
 
 
     @PutMapping
-    public Response<UserDto> updateUser(@Valid @RequestBody final UserDto userDto) {
-        return Response.buildResponse(
-                Result.success(OK, "User successfully updated"),
-                readerService.updateUser(userDto)
-        );
+    public Mono<Response<UserDto>> updateUser(@Valid @RequestBody final UserDto userDto) {
+        return readerService.updateUser(userDto)
+                .map(updatedUser -> Response.buildResponse(
+                        Result.success(OK, "User successfully updated"),
+                        updatedUser));
     }
 
     @DeleteMapping(value = "/{id}")
