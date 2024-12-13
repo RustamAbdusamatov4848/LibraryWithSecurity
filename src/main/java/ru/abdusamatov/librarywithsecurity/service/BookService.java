@@ -16,7 +16,6 @@ import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
-import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
@@ -56,7 +55,6 @@ public class BookService {
                 });
     }
 
-
     @Cacheable(key = "#id")
     @Transactional(readOnly = true)
     public Mono<BookDto> getBookById(final Long id) {
@@ -81,24 +79,31 @@ public class BookService {
 
     @CachePut(key = "#dto.id")
     @Transactional
-    public BookDto updateBook(final BookDto dto) {
-        final var updatedBook = bookRepository.findById(dto.getId())
-                .map(book -> {
-                    bookMapper.updateBookFromDto(dto, book);
-                    if (dto.getUserId() != null) {
-                        User owner = userRepository.findById(dto.getUserId())
-                                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dto.getUserId()));
-                        book.setOwner(owner);
-                    } else {
-                        book.setOwner(null);
-                    }
-                    return book;
-                })
-                .map(bookRepository::save)
-                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", dto.getId()));
-
-        log.info("Updated book with ID: {}", updatedBook.getId());
-        return bookMapper.bookToBookDto(updatedBook);
+    public Mono<BookDto> updateBook(final BookDto dto) {
+        return Mono.fromCallable(() -> bookRepository.findById(dto.getId()))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(optionalBook -> optionalBook
+                        .map(book -> {
+                            bookMapper.updateBookFromDto(dto, book);
+                            if (dto.getUserId() != null) {
+                                return Mono.fromCallable(() -> userRepository.findById(dto.getUserId()))
+                                        .subscribeOn(Schedulers.boundedElastic())
+                                        .flatMap(optionalUser -> optionalUser
+                                                .map(owner -> {
+                                                    book.setOwner(owner);
+                                                    return Mono.just(book);
+                                                })
+                                                .orElseGet(() -> Mono.error(new ResourceNotFoundException("User", "ID", dto.getUserId()))));
+                            } else {
+                                book.setOwner(null);
+                                return Mono.just(book);
+                            }
+                        })
+                        .orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", dto.getId()))))
+                .flatMap(updatedBook -> Mono.fromCallable(() -> bookRepository.save(updatedBook))
+                        .subscribeOn(Schedulers.boundedElastic()))
+                .doOnSuccess(savedBook -> log.info("Updated book with ID: {}", savedBook.getId()))
+                .map(bookMapper::bookToBookDto);
     }
 
     @CacheEvict(key = "#id")

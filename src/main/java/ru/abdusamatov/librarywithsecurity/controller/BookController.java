@@ -63,11 +63,11 @@ public class BookController {
     }
 
     @PutMapping
-    public Response<BookDto> updateBook(@Valid @RequestBody final BookDto bookDto) {
-        return Response.buildResponse(
-                Result.success(OK, "Book successfully updated"),
-                bookService.updateBook(bookDto)
-        );
+    public Mono<Response<BookDto>> updateBook(@Valid @RequestBody final BookDto bookDto) {
+        return bookService.updateBook(bookDto)
+                .map(updatedBook -> Response.buildResponse(
+                        Result.success(OK, "Book successfully updated"),
+                        updatedBook));
     }
 
     @DeleteMapping(value = "/{id}")
@@ -99,8 +99,8 @@ public class BookController {
     @GetMapping(value = "/search")
     public Mono<Response<List<BookDto>>> searchBooks(@RequestParam(value = "query") final String query) {
         return bookService.searchByTitle(query)
-                .flatMap(boolList -> Mono.just(Response.buildResponse(
+                .map(boolList -> Response.buildResponse(
                         Result.success(OK, String.format("Found books with title %s", query)),
-                        boolList)));
+                        boolList));
     }
 }
