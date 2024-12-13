@@ -149,11 +149,12 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookDto> searchByTitle(final String query) {
-        return bookRepository
-                .findByTitleStartingWith(query)
-                .stream()
-                .map(bookMapper::bookToBookDto)
-                .toList();
+    public Mono<List<BookDto>> searchByTitle(final String query) {
+        return Mono.fromCallable(() -> bookRepository.findByTitleStartingWith(query))
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(bookList -> bookList
+                        .stream()
+                        .map(bookMapper::bookToBookDto)
+                        .toList());
     }
 }

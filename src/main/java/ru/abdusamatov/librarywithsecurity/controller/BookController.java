@@ -97,10 +97,10 @@ public class BookController {
     }
 
     @GetMapping(value = "/search")
-    public Response<List<BookDto>> searchBooks(@RequestParam(value = "query") final String query) {
-        return Response.buildResponse(
-                Result.success(OK, String.format("Found books with title %s", query)),
-                bookService.searchByTitle(query)
-        );
+    public Mono<Response<List<BookDto>>> searchBooks(@RequestParam(value = "query") final String query) {
+        return bookService.searchByTitle(query)
+                .flatMap(boolList -> Mono.just(Response.buildResponse(
+                        Result.success(OK, String.format("Found books with title %s", query)),
+                        boolList)));
     }
 }
