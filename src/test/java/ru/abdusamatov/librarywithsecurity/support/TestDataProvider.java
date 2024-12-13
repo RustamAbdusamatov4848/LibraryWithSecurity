@@ -5,14 +5,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
-import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.Document;
-import ru.abdusamatov.librarywithsecurity.model.Librarian;
 import ru.abdusamatov.librarywithsecurity.model.User;
 
 import java.time.LocalDate;
@@ -28,11 +25,9 @@ public class TestDataProvider {
     public static final String FILE_NAME = "passport.jpg";
     public static final int MAX_NAME_LENGTH = 30;
     public static final int MAX_TITLE_LENGTH = 200;
-    public static final int MAX_PASSWORD_LENGTH = 100;
     public static final int MIN_YEAR_OF_PUBLICATION = 1500;
     public static final String LONG_NAME = "a".repeat(MAX_NAME_LENGTH + 1);
     public static final String LONG_TITLE_NAME = "a".repeat(MAX_TITLE_LENGTH + 1);
-    public static final String LONG_PASSWORD = "a".repeat(MAX_PASSWORD_LENGTH + 1);
     public static final int INVALID_YEAR_OF_PUBLICATION = 1499;
     public static final String INVALID_EMAIL = "invalid-email";
     public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
@@ -151,40 +146,6 @@ public class TestDataProvider {
                 .toList();
     }
 
-    public static Librarian.LibrarianBuilder createLibrarian() {
-        return Librarian.builder()
-                .id(1L)
-                .fullName("Test librarian" + getLimitUUID(10))
-                .email("testlibrarian" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword());
-    }
-
-    public static LibrarianDto.LibrarianDtoBuilder createLibrarianDto() {
-        return LibrarianDto.builder()
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword());
-    }
-
-    public static LibrarianDto.LibrarianDtoBuilder createLibrarianDtoWithInvalidFields() {
-        return LibrarianDto.builder()
-                .fullName(LONG_NAME)
-                .email(INVALID_EMAIL)
-                .password(LONG_PASSWORD);
-    }
-
-    public static AuthenticationDto.AuthenticationDtoBuilder createAuthenticationDto() {
-        return AuthenticationDto.builder()
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword());
-    }
-
-    public static AuthenticationDto.AuthenticationDtoBuilder createAuthenticationDto(final String email, final String password) {
-        return AuthenticationDto.builder()
-                .email(email)
-                .password(password);
-    }
-
     public static Document.DocumentBuilder createDocument() {
         return Document.builder()
                 .id(1L)
@@ -232,17 +193,6 @@ public class TestDataProvider {
 
     private static int getRandomInvalidYearOfPublication() {
         return RANDOM.nextInt(MIN_YEAR_OF_PUBLICATION);
-    }
-
-    private static String getRandomPassword() {
-        final var source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        final var random = new Random();
-        final var passwordLength = random.nextInt(5, MAX_PASSWORD_LENGTH);
-
-        return random.ints(passwordLength, 0, source.length())
-                .mapToObj(source::charAt)
-                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
-                .toString();
     }
 
     private static User.UserBuilder createUserWithoutDocument() {

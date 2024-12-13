@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
@@ -18,12 +19,14 @@ public class DocumentService {
     private final DocumentRepository repository;
     private final TopPdfConverterClientService clientService;
 
+    @Transactional(readOnly = true)
     public Mono<Void> saveUserDocument(final MultipartFile file, final Long documentId) {
         return Mono.fromCallable(() -> repository.getReferenceById(documentId))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(document -> clientService.saveUserDocument(file, document));
     }
 
+    @Transactional
     public Mono<MultiValueMap<String, Object>> getDocument(final long userId) {
         return Mono.fromCallable(() -> repository.findByOwnerId(userId))
                 .subscribeOn(Schedulers.boundedElastic())
@@ -33,6 +36,7 @@ public class DocumentService {
                 );
     }
 
+    @Transactional
     public Mono<Void> deleteUserDocument(final long userId) {
         return Mono.fromCallable(() -> repository.findByOwnerId(userId))
                 .subscribeOn(Schedulers.boundedElastic())
