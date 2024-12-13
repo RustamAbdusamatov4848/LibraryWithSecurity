@@ -111,7 +111,7 @@ public class BookService {
                         .map(book -> Mono.fromRunnable(() -> bookRepository.delete(book))
                                 .subscribeOn(Schedulers.boundedElastic()))
                         .orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
-                .doOnSuccess(aVoid -> log.info("Deleted book with ID: {}", id))
+                .doOnSuccess(voidResponse -> log.info("Deleted book with ID: {}", id))
                 .then();
     }
 
@@ -127,22 +127,25 @@ public class BookService {
                             book.setTakenAt(LocalDateTime.now());
                             return Mono.fromCallable(() -> bookRepository.save(book))
                                     .subscribeOn(Schedulers.boundedElastic())
-                                    .doOnSuccess(savedBook -> log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId()));
+                                    .doOnSuccess(savedBook -> log.info("Book with id {},has new owner with id {}", savedBook.getId(), userDto.getId()));
                         }).orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
                 .then();
     }
 
     @CachePut(key = "#id")
     @Transactional
-    public void releaseBook(final Long id) {
-        final var book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
-
-        book.setOwner(null);
-        book.setTakenAt(null);
-        bookRepository.save(book);
-
-        log.info("Book with id {}, has been successfully released", id);
+    public Mono<Void> releaseBook(final Long id) {
+        return Mono.fromCallable(() -> bookRepository.findById(id))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(optionalBook -> optionalBook
+                        .map(book -> {
+                            book.setOwner(null);
+                            book.setTakenAt(null);
+                            return Mono.fromCallable(() -> bookRepository.save(book))
+                                    .subscribeOn(Schedulers.boundedElastic())
+                                    .doOnSuccess(savedBook -> log.info("Book with id {}, has been successfully released", id));
+                        }).orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
+                .then();
     }
 
     @Transactional(readOnly = true)

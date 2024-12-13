@@ -89,9 +89,11 @@ public class BookController {
     }
 
     @PatchMapping(value = "/{id}/release")
-    public Response<Void> releaseBook(@PathVariable("id") final Long id) {
-        bookService.releaseBook(id);
-        return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully released"), null);
+    public Mono<Response<Void>> releaseBook(@PathVariable("id") final Long id) {
+        return bookService.releaseBook(id)
+                .then(Mono.just(Response.buildResponse(
+                        Result.success(NO_CONTENT, "Book successfully released"),
+                        null)));
     }
 
     @GetMapping(value = "/search")
