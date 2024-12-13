@@ -117,15 +117,19 @@ public class BookService {
 
     @CachePut(key = "#id")
     @Transactional
-    public void assignBook(final Long id, final UserDto userDto) {
-        final var book = bookRepository
-                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
-
-        book.setOwner(userMapper.dtoToUser(userDto));
-        book.setTakenAt(LocalDateTime.now());
-        bookRepository.save(book);
-
-        log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
+    public Mono<Void> assignBook(final Long id, final UserDto userDto) {
+        return Mono.fromCallable(() ->
+                        bookRepository.findById(id))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(optionalBook -> optionalBook
+                        .map(book -> {
+                            book.setOwner(userMapper.dtoToUser(userDto));
+                            book.setTakenAt(LocalDateTime.now());
+                            return Mono.fromCallable(() -> bookRepository.save(book))
+                                    .subscribeOn(Schedulers.boundedElastic())
+                                    .doOnSuccess(savedBook -> log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId()));
+                        }).orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
+                .then();
     }
 
     @CachePut(key = "#id")

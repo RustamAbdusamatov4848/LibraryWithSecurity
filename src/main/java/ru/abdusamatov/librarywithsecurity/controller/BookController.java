@@ -80,9 +80,12 @@ public class BookController {
     }
 
     @PatchMapping(value = "/{id}/assign")
-    public Response<Void> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
-        bookService.assignBook(id, newUser);
-        return Response.buildResponse(Result.success(NO_CONTENT, "Book successfully assigned"), null);
+    public Mono<Response<Void>> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
+        return bookService
+                .assignBook(id, newUser)
+                .then(Mono.just(Response.buildResponse(
+                        Result.success(NO_CONTENT, "Book successfully assigned"),
+                        null)));
     }
 
     @PatchMapping(value = "/{id}/release")
