@@ -17,6 +17,7 @@ import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

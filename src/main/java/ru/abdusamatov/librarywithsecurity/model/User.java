@@ -1,7 +1,9 @@
 package ru.abdusamatov.librarywithsecurity.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,7 +47,11 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
 
-    @OneToOne(mappedBy = "owner", orphanRemoval = true)
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Document document;
 
+    public void setDocument(Document document) {
+        this.document = document;
+        document.setOwner(this);
+    }
 }
