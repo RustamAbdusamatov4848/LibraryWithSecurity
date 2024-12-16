@@ -23,7 +23,8 @@ public class DocumentService {
     public Mono<Void> saveUserDocument(final MultipartFile file, final Long documentId) {
         return Mono.fromCallable(() -> repository.getReferenceById(documentId))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(document -> clientService.saveUserDocument(file, document));
+                .flatMap(document -> clientService.saveUserDocument(file, document))
+                .doOnSuccess(document -> log.info("Successfully saved document with ID {}", documentId));
     }
 
     @Transactional
@@ -43,7 +44,7 @@ public class DocumentService {
                 .flatMap(optionalDocument -> optionalDocument
                         .map(document -> clientService.deleteUserDocument(document)
                                 .then(Mono.empty())).orElseGet(() -> Mono.error(new ResourceNotFoundException("Document", "user ID", userId))))
-                .doOnSuccess(result -> log.info("Deleted document for user ID: {}", userId))
+                .doOnSuccess(result -> log.info("Successfully deleted document for user ID: {}", userId))
                 .then();
     }
 

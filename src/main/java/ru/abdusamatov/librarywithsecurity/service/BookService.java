@@ -132,7 +132,7 @@ public class BookService {
                             book.setTakenAt(LocalDateTime.now());
                             return Mono.fromCallable(() -> bookRepository.save(book))
                                     .subscribeOn(Schedulers.boundedElastic())
-                                    .doOnSuccess(savedBook -> log.info("Book with id {},has new owner with id {}", savedBook.getId(), userDto.getId()));
+                                    .doOnNext(savedBook -> log.info("Book with id {},has new owner with id {}", savedBook.getId(), userDto.getId()));
                         }).orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
                 .then();
     }
@@ -148,7 +148,7 @@ public class BookService {
                             book.setTakenAt(null);
                             return Mono.fromCallable(() -> bookRepository.save(book))
                                     .subscribeOn(Schedulers.boundedElastic())
-                                    .doOnSuccess(savedBook -> log.info("Book with id {}, has been successfully released", id));
+                                    .doOnNext(savedBook -> log.info("Book with id {}, has been successfully released", id));
                         }).orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", id))))
                 .then();
     }
