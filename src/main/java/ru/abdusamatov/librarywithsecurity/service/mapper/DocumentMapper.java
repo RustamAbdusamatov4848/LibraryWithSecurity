@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface DocumentMapper {
 
     @BeanMapping(ignoreByDefault = true)
