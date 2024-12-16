@@ -40,7 +40,7 @@ public class UserService {
                                 .map(mapper::userToDto)
                                 .collect(Collectors.toList()));
                     } else {
-                        return Mono.empty();
+                        return Mono.just(Collections.emptyList());
                     }
                 });
     }
@@ -60,8 +60,8 @@ public class UserService {
     public Mono<UserDto> createUser(final UserDto dto) {
         return Mono.fromCallable(() ->
                         userRepository.save(mapper.dtoToUser(dto)))
-                .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()))
                 .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()))
                 .map(mapper::userToDto);
     }
 

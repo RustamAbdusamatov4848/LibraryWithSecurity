@@ -22,6 +22,7 @@ import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class BookService {
                                 .map(bookMapper::bookToBookDto)
                                 .collect(Collectors.toList()));
                     } else {
-                        return Mono.empty();
+                        return Mono.just(Collections.emptyList());
                     }
                 });
     }

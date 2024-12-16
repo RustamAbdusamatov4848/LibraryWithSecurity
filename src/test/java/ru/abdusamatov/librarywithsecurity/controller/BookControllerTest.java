@@ -51,7 +51,9 @@ public class BookControllerTest extends TestBase {
     void shouldGetAllBooks() {
         final var bookListSize = 10;
         final var bookDtoList = TestDataProvider.createListBookDto(bookListSize);
-        bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
+        bookDtoList.forEach(bookDto -> bookService
+                .createBook(bookDto)
+                .block());
 
         final var response = executeGetAllBook(OK);
 
@@ -74,8 +76,11 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnBook_whenExistingBookIdProvided() {
-        final var id = bookService.createBook(TestDataProvider.createBookDto()
+        final var id = bookService
+                .createBook(TestDataProvider
+                        .createBookDto()
                         .build())
+                .block()
                 .getId();
 
         final var response = executeGetBookById(OK, id, BookDto.class);
@@ -131,7 +136,11 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldUpdateBook_whenValidBookDtoProvided() {
         final var bookToBeUpdated = bookService
-                .createBook(TestDataProvider.createBookDto().build());
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block();
+
         final var updateBookDto = TestDataProvider
                 .updateBookDto(bookToBeUpdated)
                 .build();
@@ -150,7 +159,11 @@ public class BookControllerTest extends TestBase {
     void shouldReturnNotFound_whenBookToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
         final var bookToBeUpdated = bookService
-                .createBook(TestDataProvider.createBookDto().build());
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block();
+
         final var updateBookDto = TestDataProvider
                 .updateBookDto(bookToBeUpdated)
                 .id(notExistingId)
@@ -165,7 +178,11 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReturnBadRequest_whenUpdateBookWithInvalidFields() {
         final var bookToBeUpdated = bookService
-                .createBook(TestDataProvider.createBookDto().build());
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block();
+
         final var invalidBookDto = TestDataProvider
                 .updateBookDtoWithInvalidFields(bookToBeUpdated)
                 .build();
@@ -179,7 +196,11 @@ public class BookControllerTest extends TestBase {
     void shouldReturnNotFound_whenBookToUpdateWithUserIdDoesNotExist() {
         final var notExistingUserId = 10000L;
         final var bookToBeUpdated = bookService
-                .createBook(TestDataProvider.createBookDto().build());
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block();
+
         final var updateBookDto = TestDataProvider
                 .updateBookDto(bookToBeUpdated)
                 .userId(notExistingUserId)
@@ -193,8 +214,12 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReturnNoContent_whenBookDeletedSuccessfully() {
         final var id = bookService
-                .createBook(TestDataProvider.createBookDto().build())
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block()
                 .getId();
+
         final var response = executeDeleteBook(OK, id);
 
         AssertTestStatusUtil
@@ -229,8 +254,12 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReturnBadRequest_whenAssignUserWithInvalidFields() {
         final var bookId = bookService
-                .createBook(TestDataProvider.createBookDto().build())
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block()
                 .getId();
+
         final var userDtoToBeAssigned = TestDataProvider
                 .createUserDtoWithInvalidFields()
                 .build();
@@ -257,7 +286,10 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReleaseBook_whenValidDataProvided() {
         final var bookId = bookService
-                .createBook(TestDataProvider.createBookDto().build())
+                .createBook(TestDataProvider
+                        .createBookDto()
+                        .build())
+                .block()
                 .getId();
 
         final var response = executeReleaseBook(OK, bookId);
@@ -279,7 +311,9 @@ public class BookControllerTest extends TestBase {
     void shouldReturnBooks_whenValidQueryProvided() {
         final var bookListSize = 10;
         final var bookDtoList = TestDataProvider.createListBookDto(bookListSize);
-        bookDtoList.forEach(bookDto -> bookService.createBook(bookDto));
+        bookDtoList.forEach(bookDto -> bookService
+                .createBook(bookDto)
+                .block());
 
         final var query = bookDtoList
                 .getFirst()
