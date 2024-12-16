@@ -88,10 +88,9 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .withQueryParam("fileName", equalTo(FILE_NAME))
                         .willReturn(ok()));
 
-        //TODO: проверить тело
         StepVerifier
                 .create(client.getDocument(BUCKET_NAME, FILE_NAME))
-                .expectNextCount(1)
+                .assertNext(bytes -> assertThat(bytes.getData()).isEqualTo(document))
                 .verifyComplete();
 
         assertMethodAndPath(
