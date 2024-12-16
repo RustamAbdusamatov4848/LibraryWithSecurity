@@ -73,9 +73,9 @@ public class BookService {
 
         return Mono.fromCallable(() -> bookRepository.save(book))
                 .subscribeOn(Schedulers.boundedElastic())
+                .map(bookMapper::bookToBookDto)
                 .doOnNext(savedBook ->
-                        log.info("Save book with ID: {}", savedBook.getId()))
-                .map(bookMapper::bookToBookDto);
+                        log.info("Save book with ID: {}", savedBook.getId()));
     }
 
     @CachePut(key = "#dto.id")
@@ -103,8 +103,8 @@ public class BookService {
                         .orElseGet(() -> Mono.error(new ResourceNotFoundException("Book", "ID", dto.getId()))))
                 .flatMap(updatedBook -> Mono.fromCallable(() -> bookRepository.save(updatedBook))
                         .subscribeOn(Schedulers.boundedElastic()))
-                .doOnSuccess(savedBook -> log.info("Updated book with ID: {}", savedBook.getId()))
-                .map(bookMapper::bookToBookDto);
+                .map(bookMapper::bookToBookDto)
+                .doOnSuccess(savedBook -> log.info("Updated book with ID: {}", savedBook.getId()));
     }
 
     @CacheEvict(key = "#id")
