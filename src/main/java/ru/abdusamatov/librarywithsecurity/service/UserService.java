@@ -15,6 +15,7 @@ import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.util.Collections;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
+    private final DocumentMapper documentMapper;
 
     @Transactional(readOnly = true)
     public Mono<List<UserDto>> getUserList(final Integer page, final Integer size) {
@@ -59,13 +61,15 @@ public class UserService {
 
     @Transactional
     public Mono<UserDto> createUser(final UserDto dto) {
-        return Mono.fromCallable(() ->
-                        userRepository.save(mapper.dtoToUser(dto)))
-                .subscribeOn(Schedulers.boundedElastic())
-                .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()))
-                .map(mapper::userToDto);
-    }
+        final var document = documentMapper.dtoToDocument(dto.getDocumentDto());
+        final var user = mapper.dtoToUser(dto);
+        user.setDocument(document);
 
+        return Mono.fromCallable(() -> userRepository.save(user))
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(mapper::userToDto)
+                .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()));
+    }
 
     @CachePut(key = "#dtoToBeUpdated.id")
     @Transactional
