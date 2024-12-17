@@ -1,16 +1,11 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
-import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
-import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
-import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
@@ -28,18 +23,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class BookControllerTest extends TestBase {
 
     private static final String BASE_URL = "books";
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BookService bookService;
-
-    @Autowired
-    private ReaderService service;
 
     @Override
     protected void clearDatabase() {
@@ -244,7 +227,7 @@ public class BookControllerTest extends TestBase {
                 .block()
                 .getId();
 
-        final var userDtoToBeAssigned = service
+        final var userDtoToBeAssigned = readerService
                 .createUser(
                         TestDataProvider
                                 .getMultipartFile(),
@@ -261,7 +244,7 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
-        final var userDtoToBeAssigned = service
+        final var userDtoToBeAssigned = readerService
                 .createUser(
                         TestDataProvider
                                 .getMultipartFile(),

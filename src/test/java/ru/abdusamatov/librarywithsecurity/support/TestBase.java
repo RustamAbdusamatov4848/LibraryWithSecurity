@@ -8,6 +8,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
 import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
+import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
+import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.service.BookService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
@@ -19,6 +23,18 @@ public abstract class TestBase {
 
     @Autowired
     protected WebTestClient webTestClient;
+
+    @Autowired
+    protected BookRepository bookRepository;
+
+    @Autowired
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected BookService bookService;
+
+    @Autowired
+    protected ReaderService readerService;
 
     @AfterEach
     public void tearDown() {
