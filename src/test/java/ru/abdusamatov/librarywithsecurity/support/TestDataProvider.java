@@ -96,8 +96,8 @@ public class TestDataProvider {
     }
 
     public static User.UserBuilder createUser() {
-        var document = createDocument().build();
-        var user = createUserWithoutDocument();
+        final var document = createDocument().build();
+        final var user = createUserWithoutDocument();
 
         document.setOwner(user.build());
         user.document(document);
@@ -148,7 +148,6 @@ public class TestDataProvider {
 
     public static Document.DocumentBuilder createDocument() {
         return Document.builder()
-                .id(1L)
                 .bucketName("bucket-example")
                 .fileName(FILE_NAME);
     }
@@ -156,13 +155,13 @@ public class TestDataProvider {
     public static DocumentDto.DocumentDtoBuilder createDocumentDto() {
         return DocumentDto.builder()
                 .bucketName("bucket-example")
-                .fileName(FILE_NAME)
-                .userId(1L);
+                .fileName(FILE_NAME);
     }
 
     @SneakyThrows
     public static byte[] getImageBytes(final String filePath) {
-        var resource = new ClassPathResource(filePath);
+        final var resource = new ClassPathResource(filePath);
+
         return FileCopyUtils.copyToByteArray(resource.getInputStream());
     }
 
@@ -177,6 +176,7 @@ public class TestDataProvider {
 
     private static String getLimitUUID(final int limit) {
         final var uuid = UUID.randomUUID();
+
         return uuid.toString()
                 .replace("-", "")
                 .substring(0, limit + 1);
@@ -197,7 +197,6 @@ public class TestDataProvider {
     private static User.UserBuilder createUserWithoutDocument() {
 
         return User.builder()
-                .id(1L)
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(LocalDate.of(1990, 1, 1))
