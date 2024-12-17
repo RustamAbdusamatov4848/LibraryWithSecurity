@@ -24,11 +24,6 @@ public class ReaderControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";
 
-    @Override
-    protected void clearDatabase() {
-        userRepository.deleteAll();
-    }
-
     @Test
     void shouldGetAllUsers() {
         final var userListSize = 10;
@@ -365,6 +360,11 @@ public class ReaderControllerTest extends TestBase {
 
     static void assertFieldErrorForUser(final Response<Void> response) {
         AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
+    }
+
+    @Override
+    protected void clearDatabase() {
+        userRepository.deleteAll();
     }
 
 }

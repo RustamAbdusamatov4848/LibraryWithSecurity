@@ -24,12 +24,6 @@ public class BookControllerTest extends TestBase {
 
     private static final String BASE_URL = "books";
 
-    @Override
-    protected void clearDatabase() {
-        bookRepository.deleteAll();
-        userRepository.deleteAll();
-    }
-
     @Test
     void shouldGetAllBooks() {
         final var bookListSize = 10;
@@ -489,5 +483,11 @@ public class BookControllerTest extends TestBase {
 
     private static void assertFieldErrorForBook(final Response<Void> response) {
         AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
+    }
+
+    @Override
+    protected void clearDatabase() {
+        bookRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }
