@@ -22,6 +22,12 @@ import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 public abstract class TestBase {
 
     @Autowired
+    protected BookMapperImpl bookMapper;
+
+    @Autowired
+    protected UserMapperImpl userMapper;
+
+    @Autowired
     protected WebTestClient webTestClient;
 
     @Autowired

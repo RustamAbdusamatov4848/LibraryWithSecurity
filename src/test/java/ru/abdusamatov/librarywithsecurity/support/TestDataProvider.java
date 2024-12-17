@@ -34,15 +34,13 @@ public class TestDataProvider {
     public static final Random RANDOM = new Random();
 
     public static Book.BookBuilder createBook() {
-        final var owner = createUser().build();
         return Book.builder()
-                .id(1L)
                 .title("Book Title" + getLimitUUID())
                 .authorName("AuthorName")
                 .authorSurname("AuthorSurname")
                 .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
                 .takenAt(LocalDateTime.now())
-                .owner(owner);
+                .owner(null);
     }
 
     public static BookDto.BookDtoBuilder createBookDto() {
