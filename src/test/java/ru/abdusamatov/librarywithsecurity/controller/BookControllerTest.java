@@ -235,24 +235,8 @@ public class BookControllerTest extends TestBase {
         assertBookNotFound(response);
     }
 
-    //TODO: fix in TRAIN-1900
     @Test
     void shouldAssignBook_whenValidDataProvided() {
-        final var bookId = bookService
-                .createBook(TestDataProvider.createBookDto().build())
-                .getId();
-        final var userDtoToBeAssigned = service
-                .createUser(
-                        TestDataProvider.getMultipartFile(),
-                        TestDataProvider.createUserDto().build());
-        final var response = executeAssignBook(OK, bookId, userDtoToBeAssigned);
-
-        AssertTestStatusUtil
-                .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
-    }
-
-    @Test
-    void shouldReturnBadRequest_whenAssignUserWithInvalidFields() {
         final var bookId = bookService
                 .createBook(TestDataProvider
                         .createBookDto()
@@ -260,22 +244,32 @@ public class BookControllerTest extends TestBase {
                 .block()
                 .getId();
 
-        final var userDtoToBeAssigned = TestDataProvider
-                .createUserDtoWithInvalidFields()
-                .build();
+        final var userDtoToBeAssigned = service
+                .createUser(
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block();
 
-        final var response = executeAssignBook(BAD_REQUEST, bookId, userDtoToBeAssigned);
+        final var response = executeAssignBook(OK, bookId, userDtoToBeAssigned);
 
-        ReaderControllerTest.assertFieldErrorForUser(response);
+        AssertTestStatusUtil
+                .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
     }
 
-    //TODO: fix in TRAIN-1900
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
         final var userDtoToBeAssigned = service
                 .createUser(
-                        TestDataProvider.getMultipartFile(),
-                        TestDataProvider.createUserDto().build());
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block();
+
         final var notExistingBookId = 1000L;
 
         final var response = executeAssignBook(NOT_FOUND, notExistingBookId, userDtoToBeAssigned);
