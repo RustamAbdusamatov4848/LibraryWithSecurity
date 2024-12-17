@@ -23,7 +23,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-//TODO: fix in TRAIN-1900
 public class ReaderControllerTest extends TestBase {
 
     public static final String BASE_URL = "users";
@@ -45,7 +44,8 @@ public class ReaderControllerTest extends TestBase {
         final var userDtoList = TestDataProvider.createListUserDto(userListSize);
 
         userDtoList.forEach(userDto -> service
-                .createUser(TestDataProvider.getMultipartFile(), userDto));
+                .createUser(TestDataProvider.getMultipartFile(), userDto)
+                .block());
 
         final var response = executeGetAllUsers(OK);
 
@@ -71,7 +71,13 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
         final var id = service
-                .createUser(TestDataProvider.getMultipartFile(), TestDataProvider.createUserDto().build())
+                .createUser(
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block()
                 .getId();
 
         final var response = executeGetUserById(OK, id, UserDto.class);
@@ -93,8 +99,15 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnDocument_whenUserExist() {
+
         final var id = service
-                .createUser(TestDataProvider.getMultipartFile(), TestDataProvider.createUserDto().build())
+                .createUser(
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block()
                 .getId();
 
         final var response = executeGetUserDocument(OK, id);
@@ -139,8 +152,12 @@ public class ReaderControllerTest extends TestBase {
     void shouldUpdateUser_whenValidUserDtoProvided() {
         final var userToBeUpdated = service
                 .createUser(
-                        TestDataProvider.getMultipartFile(),
-                        TestDataProvider.createUserDto().build());
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block();
 
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
@@ -161,8 +178,13 @@ public class ReaderControllerTest extends TestBase {
         final var notExistingId = 10000L;
         final var userToBeUpdated = service
                 .createUser(
-                        TestDataProvider.getMultipartFile(),
-                        TestDataProvider.createUserDto().build());
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block();
+
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
                 .id(notExistingId)
@@ -177,8 +199,13 @@ public class ReaderControllerTest extends TestBase {
     void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
         final var userToBeUpdated = service
                 .createUser(
-                        TestDataProvider.getMultipartFile(),
-                        TestDataProvider.createUserDto().build());
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block();
+
         final var updateUserDto = TestDataProvider
                 .updateUserDtoWithInvalidFields(userToBeUpdated)
                 .build();
@@ -192,8 +219,12 @@ public class ReaderControllerTest extends TestBase {
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
         final var id = service
                 .createUser(
-                        TestDataProvider.getMultipartFile(),
-                        TestDataProvider.createUserDto().build())
+                        TestDataProvider
+                                .getMultipartFile(),
+                        TestDataProvider
+                                .createUserDto()
+                                .build())
+                .block()
                 .getId();
 
         final var response = executeDeleteUserById(OK, id);

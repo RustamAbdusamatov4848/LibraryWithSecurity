@@ -154,8 +154,8 @@ public class TestDataProvider {
 
     public static DocumentDto.DocumentDtoBuilder createDocumentDto() {
         return DocumentDto.builder()
-                .bucketName("bucket-example")
-                .fileName(FILE_NAME);
+                .bucketName("bucket-example" + "-" + getLimitUUID(8))
+                .fileName(FILE_NAME + "-" + getLimitUUID(8));
     }
 
     @SneakyThrows
