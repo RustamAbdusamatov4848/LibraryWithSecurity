@@ -44,10 +44,10 @@ public class User {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Book> books;
 
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Document document;
 
     public void setDocument(Document document) {

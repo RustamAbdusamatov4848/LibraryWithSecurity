@@ -47,7 +47,9 @@ public class BookServiceCacheTest extends TestBase {
         assertNotNull(savedBook);
         assertBookNotInCache(savedBook.getId());
 
-        final var retrievedBook = service.getBookById(savedBook.getId()).block();
+        final var retrievedBook = service
+                .getBookById(savedBook.getId())
+                .block();
 
         assertNotNull(retrievedBook);
         assertBookInCache(savedBook.getId(), retrievedBook);

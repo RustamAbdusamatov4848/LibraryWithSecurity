@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
@@ -39,18 +40,27 @@ public class UserServiceCacheTest extends TestBase {
     @ParameterizedTest
     @MethodSource("createUser")
     void shouldCallRepositoryOnce_whenGetUserById(final UserDto dtoToSaved) {
-        final var savedUser = service.createUser(dtoToSaved);
-        final var id = savedUser.getId();
+        final var savedUser = service
+                .createUser(dtoToSaved)
+                .block();
 
-        service.getUserById(id);
-        final var cache = cacheManager.getCache(USER_CACHE);
-        assertThat(cache)
-                .isNotNull();
-        service.getUserById(id);
+        assertNotNull(savedUser);
+        assertUserNotInCache(savedUser.getId());
 
-        assertUserInCache(savedUser);
+        final var retrieveUser = service
+                .getUserById(savedUser.getId())
+                .block();
+
+        assertNotNull(retrieveUser);
+        assertUserInCache(retrieveUser);
+
+        final var cachedUser = service
+                .getUserById(savedUser.getId())
+                .block();
+
+        assertNotNull(cachedUser);
         verify(repository, atMostOnce())
-                .findById(id);
+                .findById(savedUser.getId());
     }
 
     @ParameterizedTest
@@ -58,12 +68,13 @@ public class UserServiceCacheTest extends TestBase {
     void shouldUpdateCacheUser_whenUpdateUser(final UserDto dtoToSaved) {
         final var savedUser = addSavedEntityToCache(dtoToSaved);
 
-        final var updatedUser = TestDataProvider
-                .updateUserDto(savedUser)
-                .build();
+        final var updatedUser = service
+                .updateUser(TestDataProvider
+                        .updateUserDto(savedUser)
+                        .build())
+                .block();
 
-        service.updateUser(updatedUser);
-
+        assertNotNull(updatedUser);
         assertUserInCache(updatedUser);
     }
 
@@ -72,30 +83,33 @@ public class UserServiceCacheTest extends TestBase {
     void shouldDeleteUserFromCache_whenDeleteUser(final UserDto dtoToSaved) {
         final var savedUser = addSavedEntityToCache(dtoToSaved);
 
-        service.deleteUserById(savedUser.getId());
+        service.deleteUserById(savedUser.getId()).block();
 
+        assertUserNotInCache(savedUser.getId());
+    }
+
+    private Cache assertCacheNotNull() {
         final var cache = cacheManager.getCache(USER_CACHE);
 
         assertNotNull(cache);
-        assertThat(cache.get(savedUser.getId()))
-                .isNull();
-    }
 
-    private UserDto addSavedEntityToCache(final UserDto dtoToSaved) {
-        final var savedUser = service.createUser(dtoToSaved);
-        cacheManager.getCache(USER_CACHE).put(savedUser.getId(), savedUser);
-
-        return savedUser;
+        return cache;
     }
 
     private void assertUserInCache(final UserDto expectedUser) {
-        final var cache = cacheManager.getCache(USER_CACHE);
+        final var cache = assertCacheNotNull();
 
-        assertNotNull(cache);
         assertThat(cache.get(expectedUser.getId(), UserDto.class))
                 .isNotNull()
                 .extracting(UserDto::getId)
                 .isEqualTo(expectedUser.getId());
+    }
+
+    private void assertUserNotInCache(final Long id) {
+        final var cache = assertCacheNotNull();
+
+        assertThat(cache.get(id))
+                .isNull();
     }
 
     private static Stream<Arguments> createUser() {
@@ -104,5 +118,15 @@ public class UserServiceCacheTest extends TestBase {
                 .build();
 
         return Stream.of(Arguments.arguments(user));
+    }
+
+    private UserDto addSavedEntityToCache(final UserDto dtoToSaved) {
+        final var savedUser = service
+                .createUser(dtoToSaved)
+                .block();
+
+        cacheManager.getCache(USER_CACHE).put(savedUser.getId(), savedUser);
+
+        return savedUser;
     }
 }
