@@ -87,6 +87,12 @@ public class TestDataProvider {
                 .toList();
     }
 
+    public static List<BookDto> createListBookDto(final int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> createBookDto().build())
+                .toList();
+    }
+
     public static User createUser() {
         final var user = TestDataProvider.createUserWithoutDocument().build();
         final var document = TestDataProvider.createDocument().owner(user).build();

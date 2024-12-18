@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
@@ -16,7 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserMapperTest {
 
-    private final UserMapper mapper = new UserMapperImpl();
+    private static final BookMapper bookMapper = new BookMapperImpl();
+    private static final DocumentMapper documentMapper = new DocumentMapperImpl();
+    private final UserMapper mapper = new UserMapperImpl(documentMapper, bookMapper);
 
     @ParameterizedTest
     @MethodSource("shouldMapUserToDto")
@@ -127,9 +128,7 @@ public class UserMapperTest {
     }
 
     public static Stream<Arguments> shouldMapUserToDto() {
-        final var user = TestDataProvider
-                .createUser()
-                .build();
+        final var user = TestDataProvider.createUser();
 
         final var expected = TestDataProvider
                 .createUserDto()
@@ -138,7 +137,7 @@ public class UserMapperTest {
                 .email(user.getEmail())
                 .dateOfBirth(user.getDateOfBirth())
                 .books(Collections.emptyList())
-                .documentId(user.getId())
+                .documentDto(documentMapper.documentToDto(user.getDocument()))
                 .build();
 
         return Stream.of(Arguments.arguments(user, expected));
@@ -148,26 +147,22 @@ public class UserMapperTest {
         final var dtoToBeMapped = TestDataProvider
                 .createUserDto()
                 .books(Collections.emptyList())
-                .documentId(1L)
                 .build();
 
-        final var expected = TestDataProvider
-                .createUser()
+        final var expected = User.builder()
                 .id(dtoToBeMapped.getId())
                 .fullName(dtoToBeMapped.getFullName())
                 .email(dtoToBeMapped.getEmail())
                 .dateOfBirth(dtoToBeMapped.getDateOfBirth())
                 .books(Collections.emptyList())
-                .document(Document.builder().id(dtoToBeMapped.getDocumentId()).build())
+                .document(documentMapper.dtoToDocument(dtoToBeMapped.getDocumentDto()))
                 .build();
 
         return Stream.of(Arguments.arguments(dtoToBeMapped, expected));
     }
 
     public static Stream<Arguments> shouldUpdateUserFromDto() {
-        final var existingUser = TestDataProvider
-                .createUser()
-                .build();
+        final var existingUser = TestDataProvider.createUser();
 
         final var newDto = TestDataProvider
                 .createUserDto()
@@ -176,17 +171,25 @@ public class UserMapperTest {
                 .email("updated@example.com")
                 .dateOfBirth(existingUser.getDateOfBirth())
                 .books(Collections.emptyList())
-                .documentId(existingUser.getDocument().getId())
+                .documentDto(documentMapper.documentToDto(existingUser.getDocument()))
                 .build();
 
-        final var expected = TestDataProvider
-                .createUser()
+        final var expected = User.builder()
                 .id(newDto.getId())
                 .fullName(newDto.getFullName())
                 .email(newDto.getEmail())
                 .dateOfBirth(existingUser.getDateOfBirth())
-                .books(existingUser.getBooks())
-                .document(existingUser.getDocument())
+                .books(newDto
+                        .getBooks()
+                        .stream()
+                        .map(bookMapper::bookDtoToBook)
+                        .toList())
+                .document(TestDataProvider
+                        .createDocument()
+                        .fileName(existingUser.getDocument().getFileName())
+                        .bucketName(existingUser.getDocument().getBucketName())
+                        .owner(existingUser)
+                        .build())
                 .build();
 
         return Stream.of(Arguments.arguments(newDto, existingUser, expected));

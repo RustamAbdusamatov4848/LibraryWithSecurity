@@ -64,7 +64,7 @@ public class ReaderController {
 
     @PostMapping
     public Mono<Response<UserDto>> createUser(@RequestPart("file") final MultipartFile file,
-                                              @Valid @RequestBody final UserDto userDto) {
+                                              @RequestPart("userDto") @Valid final UserDto userDto) {
         return readerService
                 .createUser(file, userDto)
                 .map(user -> Response.buildResponse(
