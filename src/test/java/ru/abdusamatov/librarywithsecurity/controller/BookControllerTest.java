@@ -167,11 +167,7 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReturnNotFound_whenBookToUpdateWithUserIdDoesNotExist() {
         final var notExistingUserId = 10000L;
-        final var bookToBeUpdated = bookRepository
-                .save(TestDataProvider
-                        .createBook()
-                        .build());
-
+        final var bookToBeUpdated = bookRepository.save(TestDataProvider.createBook().build());
         final var updateBookDto = TestDataProvider
                 .updateBookDto(bookMapper.bookToBookDto(bookToBeUpdated))
                 .userId(notExistingUserId)
@@ -292,7 +288,9 @@ public class BookControllerTest extends TestBase {
 
     private Response<List<BookDto>> executeGetAllBook(final HttpStatus httpStatus) {
 
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
                         .queryParam("page", 0)
                         .queryParam("size", 20)
@@ -315,7 +313,9 @@ public class BookControllerTest extends TestBase {
             final Long id,
             final Class<T> responseType
     ) {
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
                         .build()
                 )
@@ -336,8 +336,11 @@ public class BookControllerTest extends TestBase {
             final BookDto bookDto,
             final Class<T> responseType
     ) {
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL).build()
+        final var response = webTestClient
+                .post()
+                .uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(bookDto)
@@ -358,8 +361,11 @@ public class BookControllerTest extends TestBase {
             final BookDto bookDto,
             final Class<T> responseType
     ) {
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
-                        .pathSegment(BASE_URL).build()
+        final var response = webTestClient
+                .put()
+                .uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .build()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(bookDto)
@@ -379,7 +385,9 @@ public class BookControllerTest extends TestBase {
             final HttpStatus status,
             final Long id
     ) {
-        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .delete()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
                         .build()
                 )
@@ -400,7 +408,9 @@ public class BookControllerTest extends TestBase {
             final Long bookId,
             final UserDto userDto
     ) {
-        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .patch()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(bookId), "assign")
                         .build()
                 )
@@ -422,7 +432,9 @@ public class BookControllerTest extends TestBase {
             final HttpStatus status,
             final Long id
     ) {
-        final var response = webTestClient.patch().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .patch()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id), "release")
                         .build())
                 .exchange()
@@ -437,10 +449,10 @@ public class BookControllerTest extends TestBase {
         return response;
     }
 
-    private Response<List<BookDto>> executeSearchByTitle(
-            final String query
-    ) {
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+    private Response<List<BookDto>> executeSearchByTitle(final String query) {
+        final var response = webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, "search")
                         .queryParam("query", query)
                         .build()

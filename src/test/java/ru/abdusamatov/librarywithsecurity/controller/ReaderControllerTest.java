@@ -1,9 +1,12 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
@@ -81,21 +84,18 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnDocument_whenUserExist() {
+        final var savedUser = userRepository.save(TestDataProvider.createUser());
+        final var userDocument = savedUser.getDocument();
 
-        final var id = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block()
-                .getId();
+        when(client.getDocument(userDocument.getBucketName(), userDocument.getFileName()))
+                .thenReturn(getMonoResponseByteArray(userDocument.getFileName()));
 
-        final var response = executeGetUserDocument(OK, id);
+        final var response = executeGetUserDocument(OK, savedUser.getId());
 
         AssertTestStatusUtil
                 .assertSuccess(OK, "User document successfully found", response);
+        verify(client, times(1))
+                .getDocument(userDocument.getBucketName(), userDocument.getFileName());
     }
 
     @Test
@@ -104,7 +104,17 @@ public class ReaderControllerTest extends TestBase {
                 .createUserDto()
                 .build();
 
-        final var response = executeCreateUser(OK, validUserDto, UserDto.class);
+        when(client.uploadFile(
+                TestDataProvider.getMultipartFile(),
+                validUserDto.getDocumentDto().getBucketName()))
+                .thenReturn(getMonoResponseVoid(
+                        "File " + validUserDto.getDocumentDto().getFileName() + " successfully uploaded"));
+
+        final var response = executeCreateUser(
+                OK,
+                validUserDto,
+                UserDto.class,
+                TestDataProvider.getMultipartFile());
 
         AssertTestStatusUtil
                 .assertSuccess(CREATED, "User successfully saved", response);
@@ -125,14 +135,19 @@ public class ReaderControllerTest extends TestBase {
                 .createUserDtoWithInvalidFields()
                 .build();
 
-        final var response = executeCreateUser(BAD_REQUEST, invalidUserDto, Void.class);
+        final var response = executeCreateUser(
+                BAD_REQUEST,
+                invalidUserDto,
+                Void.class,
+                TestDataProvider.getMultipartFile());
 
         assertFieldErrorForUser(response);
     }
 
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
-        final var userToBeUpdated = userMapper.userToDto(userRepository.save(TestDataProvider.createUser()));
+        final var userToBeUpdated = userMapper
+                .userToDto(userRepository.save(TestDataProvider.createUser()));
 
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
@@ -174,9 +189,8 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
-        final var savedUser = userRepository
-                .save(TestDataProvider.createUser());
-        String bucketName = savedUser.getDocument().getBucketName();
+        final var savedUser = userRepository.save(TestDataProvider.createUser());
+        final var bucketName = savedUser.getDocument().getBucketName();
 
         when(client.deleteDocument(bucketName))
                 .thenReturn(getMonoResponseVoid("Bucket " + bucketName + " deleted"));
@@ -199,12 +213,13 @@ public class ReaderControllerTest extends TestBase {
     }
 
     private Response<List<UserDto>> executeGetAllUsers(final HttpStatus httpStatus) {
-        final var response = webTestClient.get().uri(uriBuilder ->
-                        uriBuilder
-                                .pathSegment(BASE_URL)
-                                .queryParam("page", 0)
-                                .queryParam("size", 20)
-                                .build())
+        final var response = webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .pathSegment(BASE_URL)
+                        .queryParam("page", 0)
+                        .queryParam("size", 20)
+                        .build())
                 .exchange()
                 .expectStatus().isEqualTo(httpStatus)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(UserDto.class))
@@ -222,7 +237,9 @@ public class ReaderControllerTest extends TestBase {
             final long id,
             final Class<T> responseType
     ) {
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
                         .build()
                 )
@@ -242,7 +259,9 @@ public class ReaderControllerTest extends TestBase {
             final HttpStatus status,
             final long id
     ) {
-        final var response = webTestClient.get().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id), "document")
                         .build()
                 )
@@ -258,17 +277,25 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
+    @SneakyThrows
     private <T> Response<T> executeCreateUser(
             final HttpStatus status,
             final UserDto userDto,
-            final Class<T> responseType
+            final Class<T> responseType,
+            final MultipartFile file
     ) {
-        final var response = webTestClient.post().uri(uriBuilder -> uriBuilder
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part("userDto", userDto);
+        builder.part("file", file);
+
+        final var response = webTestClient
+                .post()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
                         .build()
                 )
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userDto)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .bodyValue(builder.build())
                 .exchange()
                 .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
@@ -286,7 +313,9 @@ public class ReaderControllerTest extends TestBase {
             final UserDto userDto,
             final Class<T> responseType
     ) {
-        final var response = webTestClient.put().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .put()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL)
                         .build()
                 )
@@ -308,7 +337,9 @@ public class ReaderControllerTest extends TestBase {
             final HttpStatus status,
             final long id
     ) {
-        final var response = webTestClient.delete().uri(uriBuilder -> uriBuilder
+        final var response = webTestClient
+                .delete()
+                .uri(uriBuilder -> uriBuilder
                         .pathSegment(BASE_URL, String.valueOf(id))
                         .build()
                 )
