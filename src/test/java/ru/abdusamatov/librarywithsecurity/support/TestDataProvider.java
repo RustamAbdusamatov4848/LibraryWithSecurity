@@ -87,20 +87,21 @@ public class TestDataProvider {
                 .toList();
     }
 
-    public static List<BookDto> createListBookDto(final int size) {
-        return IntStream.range(0, size)
-                .mapToObj(i -> createBookDto().build())
-                .toList();
-    }
+    public static User createUser() {
+        final var user = TestDataProvider.createUserWithoutDocument().build();
+        final var document = TestDataProvider.createDocument().owner(user).build();
 
-    public static User.UserBuilder createUser() {
-        final var document = createDocument().build();
-        final var user = createUserWithoutDocument();
-
-        document.setOwner(user.build());
-        user.document(document);
+        user.setDocument(document);
 
         return user;
+    }
+
+    public static User.UserBuilder createUserWithoutDocument() {
+        return User.builder()
+                .fullName("Test User" + getLimitUUID(10))
+                .email("testuser" + getLimitUUID(10) + "@example.com")
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                .books(Collections.emptyList());
     }
 
     public static UserDto.UserDtoBuilder createUserDto() {
@@ -190,14 +191,5 @@ public class TestDataProvider {
 
     private static int getRandomInvalidYearOfPublication() {
         return RANDOM.nextInt(MIN_YEAR_OF_PUBLICATION);
-    }
-
-    private static User.UserBuilder createUserWithoutDocument() {
-
-        return User.builder()
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .books(Collections.emptyList());
     }
 }

@@ -36,7 +36,9 @@ public class BookControllerTest extends TestBase {
         AssertTestStatusUtil
                 .assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
+                .asList()
                 .isNotNull()
+                .isNotEmpty()
                 .hasSize(bookListSize);
     }
 
@@ -205,23 +207,16 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldAssignBook_whenValidDataProvided() {
-        final var bookId = bookService
-                .createBook(TestDataProvider
-                        .createBookDto()
+        final var id = bookRepository
+                .save(TestDataProvider
+                        .createBook()
                         .build())
-                .block()
                 .getId();
 
-        final var userDtoToBeAssigned = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block();
+        final var userDtoToBeAssigned = userMapper
+                .userToDto(userRepository.save(TestDataProvider.createUser()));
 
-        final var response = executeAssignBook(OK, bookId, userDtoToBeAssigned);
+        final var response = executeAssignBook(OK, id, userDtoToBeAssigned);
 
         AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
@@ -230,10 +225,7 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
         final var userDtoToBeAssigned = userMapper
-                .userToDto(userRepository
-                        .save(TestDataProvider
-                                .createUser()
-                                .build()));
+                .userToDto(userRepository.save(TestDataProvider.createUser()));
 
         final var notExistingBookId = 1000L;
 
