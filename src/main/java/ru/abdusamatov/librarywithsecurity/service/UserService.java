@@ -68,7 +68,7 @@ public class UserService {
         return Mono.fromCallable(() -> userRepository.save(user))
                 .subscribeOn(Schedulers.boundedElastic())
                 .map(mapper::userToDto)
-                .doOnNext(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()));
+                .doOnSuccess(savedUser -> log.info("Saving new User with ID: {}", savedUser.getId()));
     }
 
     @CachePut(key = "#dtoToBeUpdated.id")

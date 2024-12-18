@@ -30,12 +30,10 @@ public class ReaderService {
     }
 
     public Mono<UserDto> createUser(final MultipartFile file, final UserDto dto) {
-        return userService
-                .createUser(dto)
-                .map(userDto -> {
-                    documentService.saveUserDocument(file, userDto.getDocumentDto().getId());
-                    return userDto;
-                });
+        return userService.createUser(dto)
+                .flatMap(userDto -> documentService
+                        .saveUserDocument(file, userDto.getDocumentDto().getId())
+                        .thenReturn(userDto));
     }
 
     public Mono<UserDto> updateUser(final UserDto dtoToBeUpdated) {
