@@ -132,13 +132,12 @@ public class BookControllerTest extends TestBase {
     @Test
     void shouldReturnNotFound_whenBookToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
-        final var bookToBeUpdated = bookRepository
-                .save(TestDataProvider
-                        .createBook()
-                        .build());
+        final var bookToBeUpdated = TestDataProvider
+                .createBookDto()
+                .build();
 
         final var updateBookDto = TestDataProvider
-                .updateBookDto(bookMapper.bookToBookDto(bookToBeUpdated))
+                .updateBookDto(bookToBeUpdated)
                 .id(notExistingId)
                 .build();
 
@@ -150,13 +149,12 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnBadRequest_whenUpdateBookWithInvalidFields() {
-        final var bookToBeUpdated = bookRepository
-                .save(TestDataProvider
-                        .createBook()
-                        .build());
+        final var bookToBeUpdated = TestDataProvider
+                .createBookDto()
+                .build();
 
         final var invalidBookDto = TestDataProvider
-                .updateBookDtoWithInvalidFields(bookMapper.bookToBookDto(bookToBeUpdated))
+                .updateBookDtoWithInvalidFields(bookToBeUpdated)
                 .build();
 
         final var response = executeUpdateBook(BAD_REQUEST, invalidBookDto, Void.class);
@@ -246,10 +244,8 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReleaseBook_whenValidDataProvided() {
-        final var bookId = bookService
-                .createBook(TestDataProvider
-                        .createBookDto()
         final var id = bookRepository
+                .save(TestDataProvider
                         .createBook()
                         .build())
                 .getId();

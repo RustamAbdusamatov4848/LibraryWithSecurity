@@ -12,6 +12,8 @@ import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
 import ru.abdusamatov.librarywithsecurity.service.ReaderService;
+import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapperImpl;
+import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapperImpl;
 
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
