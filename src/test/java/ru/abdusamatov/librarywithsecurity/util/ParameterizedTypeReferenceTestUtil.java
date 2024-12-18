@@ -20,10 +20,17 @@ public class ParameterizedTypeReferenceTestUtil {
     }
 
     public static <T> ParameterizedTypeReference<Response<List<T>>> getListResponseReference(final Class<T> type) {
-        return ParameterizedTypeReference.forType(TypeUtils.parameterize(Response.class, TypeUtils.parameterize(List.class, type)));
+        return ParameterizedTypeReference.forType(
+                TypeUtils.parameterize(Response.class,
+                        TypeUtils.parameterize(List.class, type)));
     }
 
     public static ParameterizedTypeReference<Response<MultiValueMap<String, Object>>> getMultiValueMapResponseReference() {
-        return ParameterizedTypeReference.forType(TypeUtils.parameterize(Response.class, TypeUtils.parameterize(MultiValueMap.class)));
+        return ParameterizedTypeReference.forType(
+                TypeUtils.parameterize(Response.class,
+                        TypeUtils.parameterize(MultiValueMap.class, String.class, Object.class)
+                )
+        );
     }
+
 }

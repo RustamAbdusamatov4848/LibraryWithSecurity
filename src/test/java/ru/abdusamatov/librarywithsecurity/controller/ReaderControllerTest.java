@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
@@ -14,6 +16,9 @@ import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUti
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -27,11 +32,8 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldGetAllUsers() {
         final var userListSize = 10;
-        final var userDtoList = TestDataProvider.createListUserDto(userListSize);
-
-        userDtoList.forEach(userDto -> readerService
-                .createUser(TestDataProvider.getMultipartFile(), userDto)
-                .block());
+        final var userList = TestDataProvider.createListUser(userListSize);
+        userRepository.saveAll(userList);
 
         final var response = executeGetAllUsers(OK);
 
@@ -56,14 +58,8 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnUser_whenExistingUserIdProvided() {
-        final var id = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block()
+        final var id = userRepository
+                .save(TestDataProvider.createUser())
                 .getId();
 
         final var response = executeGetUserById(OK, id, UserDto.class);
@@ -136,14 +132,7 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldUpdateUser_whenValidUserDtoProvided() {
-        final var userToBeUpdated = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block();
+        final var userToBeUpdated = userMapper.userToDto(userRepository.save(TestDataProvider.createUser()));
 
         final var updateUserDto = TestDataProvider
                 .updateUserDto(userToBeUpdated)
@@ -162,17 +151,8 @@ public class ReaderControllerTest extends TestBase {
     @Test
     void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
-        final var userToBeUpdated = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block();
-
         final var updateUserDto = TestDataProvider
-                .updateUserDto(userToBeUpdated)
+                .updateUserDto(TestDataProvider.createUserDto().build())
                 .id(notExistingId)
                 .build();
 
@@ -183,17 +163,8 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
-        final var userToBeUpdated = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block();
-
         final var updateUserDto = TestDataProvider
-                .updateUserDtoWithInvalidFields(userToBeUpdated)
+                .updateUserDtoWithInvalidFields(TestDataProvider.createUserDto().build())
                 .build();
 
         final var response = executeUpdateUser(BAD_REQUEST, updateUserDto, Void.class);
@@ -203,20 +174,19 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnNoContent_whenUserDeletedSuccessfully() {
-        final var id = readerService
-                .createUser(
-                        TestDataProvider
-                                .getMultipartFile(),
-                        TestDataProvider
-                                .createUserDto()
-                                .build())
-                .block()
-                .getId();
+        final var savedUser = userRepository
+                .save(TestDataProvider.createUser());
+        String bucketName = savedUser.getDocument().getBucketName();
 
-        final var response = executeDeleteUserById(OK, id);
+        when(client.deleteDocument(bucketName))
+                .thenReturn(getMonoResponseVoid("Bucket " + bucketName + " deleted"));
+
+        final var response = executeDeleteUserById(OK, savedUser.getId());
 
         AssertTestStatusUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
+        verify(client, times(1))
+                .deleteDocument(bucketName);
     }
 
     @Test
@@ -352,6 +322,17 @@ public class ReaderControllerTest extends TestBase {
                 .isNotNull();
 
         return response;
+    }
+
+    private Mono<Response<Void>> getMonoResponseVoid(String description) {
+        return Mono.just(Response.buildResponse(
+                Result.success(NO_CONTENT, description)));
+    }
+
+    private Mono<Response<byte[]>> getMonoResponseByteArray(String fileName) {
+        return Mono.just(Response.buildResponse(
+                Result.success(OK, "File " + fileName + " successfully loaded"),
+                TestDataProvider.getImageBytes("passport.jpg")));
     }
 
     static void assertUserNotFound(final Response<Void> response) {

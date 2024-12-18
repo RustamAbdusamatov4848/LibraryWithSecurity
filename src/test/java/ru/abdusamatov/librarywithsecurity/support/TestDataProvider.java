@@ -22,16 +22,16 @@ import java.util.stream.IntStream;
 
 
 public class TestDataProvider {
-    public static final String FILE_NAME = "passport.jpg";
-    public static final int MAX_NAME_LENGTH = 30;
-    public static final int MAX_TITLE_LENGTH = 200;
-    public static final int MIN_YEAR_OF_PUBLICATION = 1500;
-    public static final String LONG_NAME = "a".repeat(MAX_NAME_LENGTH + 1);
-    public static final String LONG_TITLE_NAME = "a".repeat(MAX_TITLE_LENGTH + 1);
-    public static final int INVALID_YEAR_OF_PUBLICATION = 1499;
-    public static final String INVALID_EMAIL = "invalid-email";
-    public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
-    public static final Random RANDOM = new Random();
+    private static final String FILE_NAME = "passport.jpg";
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final int MAX_TITLE_LENGTH = 200;
+    private static final int MIN_YEAR_OF_PUBLICATION = 1500;
+    private static final String LONG_NAME = "a".repeat(MAX_NAME_LENGTH + 1);
+    private static final String LONG_TITLE_NAME = "a".repeat(MAX_TITLE_LENGTH + 1);
+    private static final int INVALID_YEAR_OF_PUBLICATION = 1499;
+    private static final String INVALID_EMAIL = "invalid-email";
+    private static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
+    private static final Random RANDOM = new Random();
 
     public static Book.BookBuilder createBook() {
         return Book.builder()
@@ -139,16 +139,16 @@ public class TestDataProvider {
                 .documentDto(userToBeUpdated.getDocumentDto());
     }
 
-    public static List<UserDto> createListUserDto(final int size) {
+    public static List<User> createListUser(final int size) {
         return IntStream.range(0, size)
-                .mapToObj(i -> createUserDto().build())
+                .mapToObj(i -> createUser())
                 .toList();
     }
 
     public static Document.DocumentBuilder createDocument() {
         return Document.builder()
-                .bucketName("bucket-example")
-                .fileName(FILE_NAME);
+                .bucketName("bucket-example" + "-" + getLimitUUID(8))
+                .fileName(FILE_NAME + "-" + getLimitUUID(8));
     }
 
     public static DocumentDto.DocumentDtoBuilder createDocumentDto() {
