@@ -2,7 +2,6 @@ package ru.abdusamatov.librarywithsecurity.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,9 +10,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
@@ -53,7 +54,7 @@ public class ReaderController {
     }
 
     @GetMapping(value = "/{id}/document")
-    public Mono<Response<MultiValueMap<String, Object>>> getUserDocument(@PathVariable("id") final Long id) {
+    public Mono<Response<FileDto>> getUserDocument(@PathVariable("id") final Long id) {
         return readerService
                 .getDocument(id)
                 .map(document -> Response.buildResponse(
@@ -62,7 +63,7 @@ public class ReaderController {
     }
 
     @PostMapping
-    public Mono<Response<UserDto>> createUser(@RequestParam("file") final MultipartFile file,
+    public Mono<Response<UserDto>> createUser(@RequestPart("file") final MultipartFile file,
                                               @Valid @RequestBody final UserDto userDto) {
         return readerService
                 .createUser(file, userDto)

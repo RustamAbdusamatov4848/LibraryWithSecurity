@@ -3,11 +3,10 @@ package ru.abdusamatov.librarywithsecurity.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
+import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.model.Document;
@@ -28,7 +27,7 @@ public class TopPdfConverterClientService {
                 .then();
     }
 
-    public Mono<MultiValueMap<String, Object>> getDocument(final Document document) {
+    public Mono<FileDto> getDocument(final Document document) {
         return client.getDocument(document.getBucketName(), document.getFileName())
                 .flatMap(response -> checkResponseStatus(response,
                         String.format("Document %s successfully downloaded", document.getFileName())))
@@ -58,16 +57,14 @@ public class TopPdfConverterClientService {
         return Mono.error(new TopPdfConverterException(response.getResult().getDescription()));
     }
 
-    private MultiValueMap<String, Object> createDocumentResponse(
+    private FileDto createDocumentResponse(
             final Document document,
             final Response<byte[]> response
     ) {
-        final var body = new LinkedMultiValueMap<String, Object>();
-
-        body.add("bucketName", document.getBucketName());
-        body.add("fileName", document.getFileName());
-        body.add("fileContent", Base64.getEncoder().encodeToString(response.getData()));
-
-        return body;
+        return FileDto.builder()
+                .fileName(document.getFileName())
+                .bucketName(document.getBucketName())
+                .fileContent(Base64.getEncoder().encodeToString(response.getData()))
+                .build();
     }
 }

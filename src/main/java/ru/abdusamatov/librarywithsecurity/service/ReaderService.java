@@ -3,9 +3,9 @@ package ru.abdusamatov.librarywithsecurity.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class ReaderService {
         return userService.getUserById(id);
     }
 
-    public Mono<MultiValueMap<String, Object>> getDocument(final long userId) {
+    public Mono<FileDto> getDocument(final long userId) {
         return documentService.getDocument(userId);
     }
 

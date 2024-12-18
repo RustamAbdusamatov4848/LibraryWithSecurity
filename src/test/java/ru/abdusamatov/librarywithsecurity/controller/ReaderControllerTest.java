@@ -8,6 +8,7 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
@@ -90,7 +91,7 @@ public class ReaderControllerTest extends TestBase {
         when(client.getDocument(userDocument.getBucketName(), userDocument.getFileName()))
                 .thenReturn(getMonoResponseByteArray(userDocument.getFileName()));
 
-        final var response = executeGetUserDocument(OK, savedUser.getId());
+        final var response = executeGetUserDocument(OK, savedUser.getId(), FileDto.class);
 
         AssertTestStatusUtil
                 .assertSuccess(OK, "User document successfully found", response);
@@ -255,9 +256,10 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
-    private Response<MultiValueMap<String, Object>> executeGetUserDocument(
+    private <T> Response<T> executeGetUserDocument(
             final HttpStatus status,
-            final long id
+            final long id,
+            final Class<T> responseType
     ) {
         final var response = webTestClient
                 .get()
@@ -267,7 +269,7 @@ public class ReaderControllerTest extends TestBase {
                 )
                 .exchange()
                 .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceTestUtil.getMultiValueMapResponseReference())
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
                 .returnResult()
                 .getResponseBody();
 
