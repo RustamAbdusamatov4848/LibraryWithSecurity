@@ -36,7 +36,11 @@ public class Document {
     private String fileName;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(
+            name = "user_id",
+            nullable = false,
+            unique = true,
+            referencedColumnName = "id")
     private User owner;
 
 }

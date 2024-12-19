@@ -37,7 +37,7 @@ public class TopPdfConverterClient {
                 .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class));
     }
 
-    public Mono<Response<Void>> uploadFile(MultipartFile file, String bucketName) {
+    public Mono<Response<Void>> uploadFile(final MultipartFile file, final String bucketName) {
         final var builder = new MultipartBodyBuilder();
         builder.part("file", file.getResource());
 
