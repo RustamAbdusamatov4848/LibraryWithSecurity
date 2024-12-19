@@ -21,11 +21,15 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public Mono<Void> saveUserDocument(final MultipartFile file, final Long documentId) {
-        return Mono.fromCallable(() -> repository.getReferenceById(documentId))
+        return Mono.fromCallable(() -> repository.findById(documentId))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(document -> clientService.saveUserDocument(file, document))
-                .doOnSuccess(document -> log.info("Successfully saved document with ID {}", documentId));
+                .flatMap(documentOptional -> documentOptional
+                        .map(document -> clientService.saveUserDocument(file, document))
+                        .orElse(Mono.error(new RuntimeException("Document not found with ID " + documentId))))
+                .doOnSuccess(document -> log.info("Successfully saved document with ID {}", documentId))
+                .then();
     }
+
 
     @Transactional
     public Mono<FileDto> getDocument(final long userId) {

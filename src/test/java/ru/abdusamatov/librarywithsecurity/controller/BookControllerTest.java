@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
-import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
+import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
@@ -31,9 +31,9 @@ public class BookControllerTest extends TestBase {
         bookRepository.saveAll(bookList);
 
 
-        final var response = executeGetAllBook(OK);
+        final var response = executeGetAllBook();
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
                 .asList()
@@ -44,9 +44,9 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnEmptyList_whenBooksAreAbsent() {
-        final var response = executeGetAllBook(OK);
+        final var response = executeGetAllBook();
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "List of books", response);
         assertThat(response.getData())
                 .isEmpty();
@@ -62,7 +62,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeGetBookById(OK, id, BookDto.class);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "Book successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
@@ -74,7 +74,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeGetBookById(NOT_FOUND, id, Void.class);
 
-        assertBookNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeCreateBook(OK, validBookDto, BookDto.class);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(CREATED, "Book successfully created", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -107,7 +107,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeCreateBook(BAD_REQUEST, invalidBookDto, Void.class);
 
-        assertFieldErrorForBook(response);
+        TestAssertUtil.assertFieldErrorForEntity(response);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeUpdateBook(OK, updateBookDto, BookDto.class);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "Book successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -145,7 +145,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeUpdateBook(NOT_FOUND, updateBookDto, Void.class);
 
-        assertBookNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
 
@@ -161,7 +161,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeUpdateBook(BAD_REQUEST, invalidBookDto, Void.class);
 
-        assertFieldErrorForBook(response);
+        TestAssertUtil.assertFieldErrorForEntity(response);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeUpdateBook(NOT_FOUND, updateBookDto, Void.class);
 
-        ReaderControllerTest.assertUserNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -188,7 +188,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeDeleteBook(OK, id);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
     }
 
@@ -198,7 +198,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeDeleteBook(NOT_FOUND, notExistingId);
 
-        assertBookNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -214,7 +214,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeAssignBook(OK, id, userDtoToBeAssigned);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
     }
 
@@ -227,7 +227,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeAssignBook(NOT_FOUND, notExistingBookId, userDtoToBeAssigned);
 
-        assertBookNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -240,7 +240,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeReleaseBook(OK, id);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Book successfully released", response);
     }
 
@@ -250,7 +250,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeReleaseBook(NOT_FOUND, notExistingBookId);
 
-        assertBookNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -268,7 +268,7 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeSearchByTitle(query);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData())
                 .hasSize(1);
@@ -280,13 +280,13 @@ public class BookControllerTest extends TestBase {
 
         final var response = executeSearchByTitle(query);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "Found books with title " + query, response);
         assertThat(response.getData())
                 .isEmpty();
     }
 
-    private Response<List<BookDto>> executeGetAllBook(final HttpStatus httpStatus) {
+    private Response<List<BookDto>> executeGetAllBook() {
 
         final var response = webTestClient
                 .get()
@@ -297,7 +297,7 @@ public class BookControllerTest extends TestBase {
                         .build()
                 )
                 .exchange()
-                .expectStatus().isEqualTo(httpStatus)
+                .expectStatus().isEqualTo(OK)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(BookDto.class))
                 .returnResult()
                 .getResponseBody();
@@ -467,14 +467,6 @@ public class BookControllerTest extends TestBase {
                 .isNotNull();
 
         return response;
-    }
-
-    private static void assertBookNotFound(final Response<Void> response) {
-        AssertTestStatusUtil.assertError(NOT_FOUND, "Failed entity search", response);
-    }
-
-    private static void assertFieldErrorForBook(final Response<Void> response) {
-        AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
     }
 
     @Override

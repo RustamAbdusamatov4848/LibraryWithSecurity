@@ -1,18 +1,21 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.support.AssertTestStatusUtil;
+import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
@@ -20,6 +23,8 @@ import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUti
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,9 +44,9 @@ public class ReaderControllerTest extends TestBase {
         final var userList = TestDataProvider.createListUser(userListSize);
         userRepository.saveAll(userList);
 
-        final var response = executeGetAllUsers(OK);
+        final var response = executeGetAllUsers();
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
                 .asList()
@@ -52,9 +57,9 @@ public class ReaderControllerTest extends TestBase {
 
     @Test
     void shouldReturnEmptyList_whenUserAreAbsent() {
-        final var response = executeGetAllUsers(OK);
+        final var response = executeGetAllUsers();
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "List of users", response);
         assertThat(response.getData())
                 .isEmpty();
@@ -68,7 +73,7 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeGetUserById(OK, id, UserDto.class);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "User successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
@@ -80,7 +85,7 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeGetUserById(NOT_FOUND, id, Void.class);
 
-        assertUserNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -91,9 +96,9 @@ public class ReaderControllerTest extends TestBase {
         when(client.getDocument(userDocument.getBucketName(), userDocument.getFileName()))
                 .thenReturn(getMonoResponseByteArray(userDocument.getFileName()));
 
-        final var response = executeGetUserDocument(OK, savedUser.getId(), FileDto.class);
+        final var response = executeGetUserDocument(savedUser.getId());
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "User document successfully found", response);
         verify(client, times(1))
                 .getDocument(userDocument.getBucketName(), userDocument.getFileName());
@@ -105,9 +110,12 @@ public class ReaderControllerTest extends TestBase {
                 .createUserDto()
                 .build();
 
+        when(client.addBucket(validUserDto.getDocumentDto().getBucketName()))
+                .thenReturn(getMonoResponseVoid(
+                        "Bucket " + validUserDto.getDocumentDto().getBucketName() + " successfully created"));
         when(client.uploadFile(
-                TestDataProvider.getMultipartFile(),
-                validUserDto.getDocumentDto().getBucketName()))
+                any(MultipartFile.class),
+                anyString()))
                 .thenReturn(getMonoResponseVoid(
                         "File " + validUserDto.getDocumentDto().getFileName() + " successfully uploaded"));
 
@@ -117,17 +125,21 @@ public class ReaderControllerTest extends TestBase {
                 UserDto.class,
                 TestDataProvider.getMultipartFile());
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(CREATED, "User successfully saved", response);
-        assertThat(response.getData())
-                .isNotNull()
-                .usingRecursiveComparison()
-                .ignoringFields("id", "books")
-                .isEqualTo(validUserDto);
         assertThat(response.getData().getId())
                 .isNotNull();
         assertThat(response.getData().getBooks())
                 .isNull();
+        assertThat(response.getData())
+                .isNotNull()
+                .usingRecursiveComparison()
+                .ignoringFields(
+                        "id",
+                        "books",
+                        "documentDto.id",
+                        "documentDto.userId")
+                .isEqualTo(validUserDto);
     }
 
     @Test
@@ -142,7 +154,7 @@ public class ReaderControllerTest extends TestBase {
                 Void.class,
                 TestDataProvider.getMultipartFile());
 
-        assertFieldErrorForUser(response);
+        TestAssertUtil.assertFieldErrorForEntity(response);
     }
 
     @Test
@@ -156,7 +168,7 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeUpdateUser(OK, updateUserDto, UserDto.class);
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(OK, "User successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
@@ -174,7 +186,7 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeUpdateUser(NOT_FOUND, updateUserDto, Void.class);
 
-        assertUserNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
@@ -185,7 +197,7 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeUpdateUser(BAD_REQUEST, updateUserDto, Void.class);
 
-        assertFieldErrorForUser(response);
+        TestAssertUtil.assertFieldErrorForEntity(response);
     }
 
     @Test
@@ -198,7 +210,7 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeDeleteUserById(OK, savedUser.getId());
 
-        AssertTestStatusUtil
+        TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
         verify(client, times(1))
                 .deleteDocument(bucketName);
@@ -210,10 +222,10 @@ public class ReaderControllerTest extends TestBase {
 
         final var response = executeDeleteUserById(NOT_FOUND, notExistingId);
 
-        assertUserNotFound(response);
+        TestAssertUtil.assertEntityNotFound(response);
     }
 
-    private Response<List<UserDto>> executeGetAllUsers(final HttpStatus httpStatus) {
+    private Response<List<UserDto>> executeGetAllUsers() {
         final var response = webTestClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -222,7 +234,7 @@ public class ReaderControllerTest extends TestBase {
                         .queryParam("size", 20)
                         .build())
                 .exchange()
-                .expectStatus().isEqualTo(httpStatus)
+                .expectStatus().isEqualTo(OK)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(UserDto.class))
                 .returnResult()
                 .getResponseBody();
@@ -256,11 +268,7 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
-    private <T> Response<T> executeGetUserDocument(
-            final HttpStatus status,
-            final long id,
-            final Class<T> responseType
-    ) {
+    private Response<FileDto> executeGetUserDocument(final long id) {
         final var response = webTestClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -268,8 +276,8 @@ public class ReaderControllerTest extends TestBase {
                         .build()
                 )
                 .exchange()
-                .expectStatus().isEqualTo(status)
-                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
+                .expectStatus().isEqualTo(OK)
+                .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(FileDto.class))
                 .returnResult()
                 .getResponseBody();
 
@@ -286,9 +294,11 @@ public class ReaderControllerTest extends TestBase {
             final Class<T> responseType,
             final MultipartFile file
     ) {
-        MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("userDto", userDto);
-        builder.part("file", file);
+        final var multipartBodyBuilder = new MultipartBodyBuilder();
+        multipartBodyBuilder.part("file", file.getResource())
+                .contentType(MediaType.IMAGE_JPEG);
+        multipartBodyBuilder.part("userDto", toJson(userDto))
+                .contentType(MediaType.APPLICATION_JSON);
 
         final var response = webTestClient
                 .post()
@@ -297,7 +307,7 @@ public class ReaderControllerTest extends TestBase {
                         .build()
                 )
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .bodyValue(builder.build())
+                .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
                 .exchange()
                 .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
@@ -368,12 +378,14 @@ public class ReaderControllerTest extends TestBase {
                 TestDataProvider.getImageBytes("passport.jpg")));
     }
 
-    static void assertUserNotFound(final Response<Void> response) {
-        AssertTestStatusUtil.assertError(NOT_FOUND, "Failed entity search", response);
-    }
-
-    static void assertFieldErrorForUser(final Response<Void> response) {
-        AssertTestStatusUtil.assertError(BAD_REQUEST, "Validation field failed", response);
+    private String toJson(Object object) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize object to JSON", e);
+        }
     }
 
     @Override
