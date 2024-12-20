@@ -3,12 +3,8 @@ package ru.abdusamatov.librarywithsecurity.service;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
@@ -16,50 +12,40 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 
 public class UserServiceCacheTest extends TestBase {
 
     private static final String USER_CACHE = "user";
 
-    @Autowired
-    private UserService service;
-
-    @Autowired
-    private CacheManager cacheManager;
-
-    @SpyBean
-    private UserRepository repository;
-
     @Override
     protected void clearDatabase() {
-        repository.deleteAll();
+        spyUserRepository.deleteAll();
     }
 
     @ParameterizedTest
     @MethodSource("createUser")
     void shouldCallRepositoryOnce_whenGetUserById(final UserDto dtoToSaved) {
-        final var savedUser = service
+        final var savedUser = userService
                 .createUser(dtoToSaved)
                 .block();
 
         assertNotNull(savedUser);
         assertUserNotInCache(savedUser.getId());
 
-        final var retrieveUser = service
+        final var retrieveUser = userService
                 .getUserById(savedUser.getId())
                 .block();
 
         assertNotNull(retrieveUser);
         assertUserInCache(retrieveUser);
 
-        final var cachedUser = service
+        final var cachedUser = userService
                 .getUserById(savedUser.getId())
                 .block();
 
         assertNotNull(cachedUser);
-        verify(repository, atMostOnce())
+        verify(spyUserRepository)
                 .findById(savedUser.getId());
     }
 
@@ -68,7 +54,7 @@ public class UserServiceCacheTest extends TestBase {
     void shouldUpdateCacheUser_whenUpdateUser(final UserDto dtoToSaved) {
         final var savedUser = addSavedEntityToCache(dtoToSaved);
 
-        final var updatedUser = service
+        final var updatedUser = userService
                 .updateUser(TestDataProvider
                         .updateUserDto(savedUser)
                         .build())
@@ -83,7 +69,7 @@ public class UserServiceCacheTest extends TestBase {
     void shouldDeleteUserFromCache_whenDeleteUser(final UserDto dtoToSaved) {
         final var savedUser = addSavedEntityToCache(dtoToSaved);
 
-        service.deleteUserById(savedUser.getId()).block();
+        userService.deleteUserById(savedUser.getId()).block();
 
         assertUserNotInCache(savedUser.getId());
     }
@@ -121,7 +107,7 @@ public class UserServiceCacheTest extends TestBase {
     }
 
     private UserDto addSavedEntityToCache(final UserDto dtoToSaved) {
-        final var savedUser = service
+        final var savedUser = userService
                 .createUser(dtoToSaved)
                 .block();
 

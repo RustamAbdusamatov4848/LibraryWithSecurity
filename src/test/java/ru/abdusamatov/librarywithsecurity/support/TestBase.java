@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
@@ -14,6 +16,7 @@ import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
 import ru.abdusamatov.librarywithsecurity.service.ReaderService;
+import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapperImpl;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapperImpl;
 
@@ -44,11 +47,23 @@ public abstract class TestBase {
     protected BookService bookService;
 
     @Autowired
+    protected UserService userService;
+
+    @Autowired
     protected ReaderService readerService;
+
+    @Autowired
+    protected CacheManager cacheManager;
 
     @MockBean
     protected TopPdfConverterClient client;
 
+    @SpyBean
+    protected BookRepository spyBookRepository;
+
+    @SpyBean
+    protected UserRepository spyUserRepository;
+    
     @AfterEach
     public void tearDown() {
         clearDatabase();
