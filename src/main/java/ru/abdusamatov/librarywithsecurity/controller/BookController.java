@@ -1,5 +1,7 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,9 +30,14 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
+@Tag(
+        name = "Book Management",
+        description = "APIs for managing library books"
+)
 public class BookController {
     private final BookService bookService;
 
+    @Operation(summary = "Method for getting all registered books")
     @GetMapping
     public Mono<Response<List<BookDto>>> getBookList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
@@ -44,6 +51,7 @@ public class BookController {
                         list));
     }
 
+    @Operation(summary = "Method for retrieving a book by its ID")
     @GetMapping(value = "/{id}")
     public Mono<Response<BookDto>> showBookById(@PathVariable("id") final Long id) {
         return bookService
@@ -53,6 +61,7 @@ public class BookController {
                         bookDto));
     }
 
+    @Operation(summary = "Method for creating a new book")
     @PostMapping
     public Mono<Response<BookDto>> createBook(@Valid @RequestBody final BookDto bookDto) {
         return bookService
@@ -62,6 +71,7 @@ public class BookController {
                         savedBook));
     }
 
+    @Operation(summary = "Method for updating an existing book")
     @PutMapping
     public Mono<Response<BookDto>> updateBook(@Valid @RequestBody final BookDto bookDto) {
         return bookService.updateBook(bookDto)
@@ -70,6 +80,7 @@ public class BookController {
                         updatedBook));
     }
 
+    @Operation(summary = "Method for deleting a book by its ID")
     @DeleteMapping(value = "/{id}")
     public Mono<Response<Void>> deleteBook(@PathVariable("id") final Long id) {
         return bookService
@@ -79,6 +90,7 @@ public class BookController {
                         null)));
     }
 
+    @Operation(summary = "Method for assigning a book to a user")
     @PatchMapping(value = "/{id}/assign")
     public Mono<Response<Void>> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
         return bookService
@@ -88,6 +100,7 @@ public class BookController {
                         null)));
     }
 
+    @Operation(summary = "Method for releasing a book from a user")
     @PatchMapping(value = "/{id}/release")
     public Mono<Response<Void>> releaseBook(@PathVariable("id") final Long id) {
         return bookService.releaseBook(id)
@@ -96,6 +109,7 @@ public class BookController {
                         null)));
     }
 
+    @Operation(summary = "Method for searching books by their title")
     @GetMapping(value = "/search")
     public Mono<Response<List<BookDto>>> searchBooks(@RequestParam(value = "query") final String query) {
         return bookService.searchByTitle(query)

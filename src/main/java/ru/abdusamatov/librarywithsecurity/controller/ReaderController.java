@@ -1,5 +1,7 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,9 +31,14 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
+@Tag(
+        name = "Reader Management",
+        description = "APIs for managing library readers"
+)
 public class ReaderController {
     private final ReaderService readerService;
 
+    @Operation(summary = "Method for getting all registered readers")
     @GetMapping
     public Mono<Response<List<UserDto>>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
@@ -44,6 +51,7 @@ public class ReaderController {
                         users));
     }
 
+    @Operation(summary = "Method for retrieving a reader by reader's ID")
     @GetMapping(value = "/{id}")
     public Mono<Response<UserDto>> getUserById(@PathVariable("id") final Long id) {
         return readerService
@@ -53,6 +61,7 @@ public class ReaderController {
                         user));
     }
 
+    @Operation(summary = "Method for retrieving a reader's document by reader's ID")
     @GetMapping(value = "/{id}/document")
     public Mono<Response<FileDto>> getUserDocument(@PathVariable("id") final Long id) {
         return readerService
@@ -62,6 +71,7 @@ public class ReaderController {
                         document));
     }
 
+    @Operation(summary = "Method for creating a new reader")
     @PostMapping
     public Mono<Response<UserDto>> createUser(@RequestPart("file") final MultipartFile file,
                                               @RequestPart("userDto") @Valid final UserDto userDto) {
@@ -72,7 +82,7 @@ public class ReaderController {
                         user));
     }
 
-
+    @Operation(summary = "Method for updating an existing reader")
     @PutMapping
     public Mono<Response<UserDto>> updateUser(@Valid @RequestBody final UserDto userDto) {
         return readerService
@@ -82,6 +92,7 @@ public class ReaderController {
                         updatedUser));
     }
 
+    @Operation(summary = "Method for deleting a reader by reader's ID")
     @DeleteMapping(value = "/{id}")
     public Mono<Response<Void>> deleteUserByID(@PathVariable("id") final Long id) {
         return readerService
