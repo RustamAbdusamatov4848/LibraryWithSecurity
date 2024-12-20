@@ -1,6 +1,7 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
+//TODO: изменить везде user -> reader
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -41,8 +43,11 @@ public class ReaderController {
     @Operation(summary = "Method for getting all registered readers")
     @GetMapping
     public Mono<Response<List<UserDto>>> getUserList(
-            @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
+            @RequestParam(value = "page", required = false, defaultValue = "0")
+            @Parameter(description = "Page number", example = "0") final Integer page,
+
+            @RequestParam(value = "size", required = false, defaultValue = "20")
+            @Parameter(description = " The size of the page to be returned", example = "20") final Integer size) {
 
         return readerService
                 .getUserList(page, size)
@@ -53,7 +58,8 @@ public class ReaderController {
 
     @Operation(summary = "Method for retrieving a reader by reader's ID")
     @GetMapping(value = "/{id}")
-    public Mono<Response<UserDto>> getUserById(@PathVariable("id") final Long id) {
+    public Mono<Response<UserDto>> getUserById(
+            @PathVariable("id") @Parameter(description = "Reader ID", example = "448") final Long id) {
         return readerService
                 .getUserById(id)
                 .map(user -> Response.buildResponse(
@@ -63,7 +69,8 @@ public class ReaderController {
 
     @Operation(summary = "Method for retrieving a reader's document by reader's ID")
     @GetMapping(value = "/{id}/document")
-    public Mono<Response<FileDto>> getUserDocument(@PathVariable("id") final Long id) {
+    public Mono<Response<FileDto>> getUserDocument(
+            @PathVariable("id") @Parameter(description = "Reader ID", example = "448") final Long id) {
         return readerService
                 .getDocument(id)
                 .map(document -> Response.buildResponse(
@@ -73,8 +80,9 @@ public class ReaderController {
 
     @Operation(summary = "Method for creating a new reader")
     @PostMapping
-    public Mono<Response<UserDto>> createUser(@RequestPart("file") final MultipartFile file,
-                                              @RequestPart("userDto") @Valid final UserDto userDto) {
+    public Mono<Response<UserDto>> createUser(
+            @RequestPart("file") @Parameter(description = "Reader document file") final MultipartFile file,
+            @RequestPart("userDto") @Parameter(description = "Reader info") @Valid final UserDto userDto) {
         return readerService
                 .createUser(file, userDto)
                 .map(user -> Response.buildResponse(
@@ -84,7 +92,10 @@ public class ReaderController {
 
     @Operation(summary = "Method for updating an existing reader")
     @PutMapping
-    public Mono<Response<UserDto>> updateUser(@Valid @RequestBody final UserDto userDto) {
+    public Mono<Response<UserDto>> updateUser(
+            @Parameter(description = "Reader info")
+            @Valid
+            @RequestBody final UserDto userDto) {
         return readerService
                 .updateUser(userDto)
                 .map(updatedUser -> Response.buildResponse(
@@ -94,7 +105,8 @@ public class ReaderController {
 
     @Operation(summary = "Method for deleting a reader by reader's ID")
     @DeleteMapping(value = "/{id}")
-    public Mono<Response<Void>> deleteUserByID(@PathVariable("id") final Long id) {
+    public Mono<Response<Void>> deleteUserByID(
+            @PathVariable("id") @Parameter(description = "Reader ID", example = "448") final Long id) {
         return readerService
                 .deleteUserById(id)
                 .then(Mono.just(Response.buildResponse(
