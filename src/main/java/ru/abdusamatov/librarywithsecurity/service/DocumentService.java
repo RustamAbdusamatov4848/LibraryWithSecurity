@@ -32,13 +32,10 @@ public class DocumentService {
 
 
     @Transactional
-    public Mono<FileDto> getDocument(final long userId) {
-        return Mono.fromCallable(() -> repository.findByOwnerId(userId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(document -> document
-                        .map(clientService::getDocument)
-                        .orElseGet(() -> Mono.error(new TopPdfConverterException("Document not found for user ID: " + userId)))
-                );
+    public FileDto getDocument(final long userId) {
+        return repository.findByOwnerId(userId)
+                .map(clientService::getDocument)
+                .orElseThrow(() -> new TopPdfConverterException("Document not found for user ID: " + userId));
     }
 
     @Transactional
