@@ -19,13 +19,7 @@ public class BookHandler {
     public Mono<List<BookDto>> getBookList(final Integer page, final Integer size, final boolean isSorted) {
         return Mono.fromCallable(() -> bookService.getBookList(page, size, isSorted))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(list -> {
-                    if (!list.isEmpty()) {
-                        return Mono.just(list);
-                    } else {
-                        return Mono.just(Collections.emptyList());
-                    }
-                });
+                .map(bookDtoList -> bookDtoList.isEmpty() ? Collections.emptyList() : bookDtoList);
     }
 
     public Mono<BookDto> getBookById(final Long id) {
@@ -64,12 +58,6 @@ public class BookHandler {
     public Mono<List<BookDto>> searchByTitle(final String query) {
         return Mono.fromCallable(() -> bookService.searchByTitle(query))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(list -> {
-                    if (!list.isEmpty()) {
-                        return Mono.just(list);
-                    } else {
-                        return Mono.just(Collections.emptyList());
-                    }
-                });
+                .map(bookDtoList -> bookDtoList.isEmpty() ? Collections.emptyList() : bookDtoList);
     }
 }

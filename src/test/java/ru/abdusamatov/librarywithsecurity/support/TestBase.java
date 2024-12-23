@@ -15,7 +15,7 @@ import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.service.ReaderHandler;
+import ru.abdusamatov.librarywithsecurity.service.handler.ReaderHandler;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;

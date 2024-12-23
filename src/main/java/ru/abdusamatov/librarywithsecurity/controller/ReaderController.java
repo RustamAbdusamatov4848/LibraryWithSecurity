@@ -18,7 +18,7 @@ import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.service.ReaderHandler;
+import ru.abdusamatov.librarywithsecurity.service.handler.ReaderHandler;
 
 import java.util.List;
 
