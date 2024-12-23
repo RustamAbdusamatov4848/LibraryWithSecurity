@@ -33,7 +33,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
     public static final String FILE_NAME = "passport.jpg";
 
     @Autowired
-    private TopPdfConverterClient client;
+    private TopPdfConverterClient converterClient;
 
     @Test
     void shouldCreateBucket_whenAddBucket() {
@@ -42,7 +42,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .willReturn(ok()));
 
         StepVerifier
-                .create(client.addBucket(BUCKET_NAME))
+                .create(converterClient.addBucket(BUCKET_NAME))
                 .verifyComplete();
 
         assertMethodAndPath(
@@ -56,7 +56,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                 post(BASE_PATH + "/addBucket/" + BUCKET_NAME)
                         .willReturn(serverError()));
 
-        verifyError(client.addBucket(BUCKET_NAME));
+        verifyError(converterClient.addBucket(BUCKET_NAME));
 
         assertMethodAndPath(
                 RequestMethod.POST,
@@ -77,7 +77,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                                 .withBody(getDocumentMockResponse(document))));
 
         StepVerifier
-                .create(client.getDocument(BUCKET_NAME, FILE_NAME))
+                .create(converterClient.getDocument(BUCKET_NAME, FILE_NAME))
                 .assertNext(bytes -> assertThat(bytes.getData())
                         .isEqualTo(document))
                 .verifyComplete();
@@ -95,7 +95,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .withQueryParam("fileName", equalTo(FILE_NAME))
                         .willReturn(serverError()));
 
-        verifyError(client.getDocument(BUCKET_NAME, FILE_NAME));
+        verifyError(converterClient.getDocument(BUCKET_NAME, FILE_NAME));
 
         assertMethodAndPath(
                 RequestMethod.GET,
@@ -116,7 +116,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .willReturn(ok()));
 
         StepVerifier
-                .create(client.uploadFile(file, BUCKET_NAME))
+                .create(converterClient.uploadFile(file, BUCKET_NAME))
                 .verifyComplete();
 
         assertMethodAndPath(
@@ -137,7 +137,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
                         .willReturn(serverError()));
 
-        verifyError(client.uploadFile(file, BUCKET_NAME));
+        verifyError(converterClient.uploadFile(file, BUCKET_NAME));
 
         assertMethodAndPath(
                 RequestMethod.POST,
@@ -152,7 +152,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .willReturn(ok()));
 
         StepVerifier
-                .create(client.deleteDocument(BUCKET_NAME))
+                .create(converterClient.deleteDocument(BUCKET_NAME))
                 .verifyComplete();
 
         assertMethodAndPath(
@@ -167,7 +167,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                         .withQueryParam("bucketName", equalTo(BUCKET_NAME))
                         .willReturn(serverError()));
 
-        verifyError(client.deleteDocument(BUCKET_NAME));
+        verifyError(converterClient.deleteDocument(BUCKET_NAME));
 
         assertMethodAndPath(
                 RequestMethod.DELETE,
@@ -189,5 +189,4 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
                 .create(action)
                 .verifyErrorSatisfies(ex -> assertThat(ex).isInstanceOf(InternalServerError.class));
     }
-
 }

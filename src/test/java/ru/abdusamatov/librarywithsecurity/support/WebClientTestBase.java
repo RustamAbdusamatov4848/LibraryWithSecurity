@@ -24,7 +24,6 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 @AutoConfigureWireMock(port = 0)
 public abstract class WebClientTestBase {
 
-
     @Autowired
     protected WireMockServer wireMockServer;
 
@@ -43,5 +42,4 @@ public abstract class WebClientTestBase {
             return WebClient.builder();
         }
     }
-
 }

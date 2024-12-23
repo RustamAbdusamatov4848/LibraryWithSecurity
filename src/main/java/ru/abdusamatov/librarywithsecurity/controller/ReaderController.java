@@ -18,7 +18,7 @@ import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.service.ReaderService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderHandler;
 
 import java.util.List;
 
@@ -30,14 +30,14 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class ReaderController {
-    private final ReaderService readerService;
+    private final ReaderHandler readerHandler;
 
     @GetMapping
     public Mono<Response<List<UserDto>>> getUserList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
 
-        return readerService
+        return readerHandler
                 .getUserList(page, size)
                 .map(users -> Response.buildResponse(
                         Result.success(OK, "List of users"),
@@ -46,7 +46,7 @@ public class ReaderController {
 
     @GetMapping(value = "/{id}")
     public Mono<Response<UserDto>> getUserById(@PathVariable("id") final Long id) {
-        return readerService
+        return readerHandler
                 .getUserById(id)
                 .map(user -> Response.buildResponse(
                         Result.success(OK, "User successfully found"),
@@ -55,7 +55,7 @@ public class ReaderController {
 
     @GetMapping(value = "/{id}/document")
     public Mono<Response<FileDto>> getUserDocument(@PathVariable("id") final Long id) {
-        return readerService
+        return readerHandler
                 .getDocument(id)
                 .map(document -> Response.buildResponse(
                         Result.success(OK, "User document successfully found"),
@@ -65,17 +65,16 @@ public class ReaderController {
     @PostMapping
     public Mono<Response<UserDto>> createUser(@RequestPart("file") final MultipartFile file,
                                               @RequestPart("userDto") @Valid final UserDto userDto) {
-        return readerService
+        return readerHandler
                 .createUser(file, userDto)
                 .map(user -> Response.buildResponse(
                         Result.success(CREATED, "User successfully saved"),
                         user));
     }
 
-
     @PutMapping
     public Mono<Response<UserDto>> updateUser(@Valid @RequestBody final UserDto userDto) {
-        return readerService
+        return readerHandler
                 .updateUser(userDto)
                 .map(updatedUser -> Response.buildResponse(
                         Result.success(OK, "User successfully updated"),
@@ -84,7 +83,7 @@ public class ReaderController {
 
     @DeleteMapping(value = "/{id}")
     public Mono<Response<Void>> deleteUserByID(@PathVariable("id") final Long id) {
-        return readerService
+        return readerHandler
                 .deleteUserById(id)
                 .then(Mono.just(Response.buildResponse(
                         Result.success(NO_CONTENT, "Successfully deleted"))));

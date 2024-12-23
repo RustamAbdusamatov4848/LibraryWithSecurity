@@ -30,7 +30,6 @@ public interface UserMapper {
     @Mapping(source = "documentDto", target = "document")
     User dtoToUser(UserDto userDto);
 
-
     @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "fullName", target = "fullName")
     @Mapping(source = "email", target = "email")

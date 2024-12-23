@@ -28,8 +28,7 @@ public class GlobalExceptionHandler {
         var errors = new HashMap<String, String>();
         ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage())
-                );
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return exceptionHandler(BAD_REQUEST, "Validation field failed", errors);
     }

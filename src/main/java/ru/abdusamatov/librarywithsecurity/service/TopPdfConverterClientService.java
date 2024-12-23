@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
+import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
-import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.enums.ResponseStatus;
 
 import java.util.Base64;
@@ -18,34 +18,34 @@ import java.util.Base64;
 @RequiredArgsConstructor
 @Slf4j
 public class TopPdfConverterClientService {
-    private final TopPdfConverterClient client;
+    private final TopPdfConverterClient converterClient;
 
     public Mono<Void> createBucket(final String bucketName) {
-        return client.addBucket(bucketName)
+        return converterClient.addBucket(bucketName)
                 .flatMap(response -> checkResponseStatus(response,
                         String.format("Bucket %s successfully created", bucketName)))
                 .then();
     }
 
-    public Mono<FileDto> getDocument(final Document document) {
-        return client.getDocument(document.getBucketName(), document.getFileName())
+    public Mono<FileDto> getDocument(final DocumentDto documentDto) {
+        return converterClient.getDocument(documentDto.getBucketName(), documentDto.getFileName())
                 .flatMap(response -> checkResponseStatus(response,
-                        String.format("Document %s successfully downloaded", document.getFileName())))
-                .map(response -> createDocumentResponse(document, response));
+                        String.format("Document %s successfully downloaded", documentDto.getFileName())))
+                .map(response -> createDocumentResponse(documentDto, response));
     }
 
-    public Mono<Void> saveUserDocument(final MultipartFile file, final Document document) {
-        return createBucket(document.getBucketName())
-                .then(client.uploadFile(file, document.getBucketName())
+    public Mono<Void> saveUserDocument(final MultipartFile file, final DocumentDto documentDto) {
+        return createBucket(documentDto.getBucketName())
+                .then(converterClient.uploadFile(file, documentDto.getBucketName())
                         .flatMap(response -> checkResponseStatus(response,
-                                String.format("Document %s successfully saved", document.getFileName()))))
+                                String.format("Document %s successfully saved", documentDto.getFileName()))))
                 .then();
     }
 
-    public Mono<Void> deleteUserDocument(final Document document) {
-        return client.deleteDocument(document.getBucketName())
+    public Mono<Void> deleteUserDocument(final DocumentDto documentDto) {
+        return converterClient.deleteDocument(documentDto.getBucketName())
                 .flatMap(response -> checkResponseStatus(response,
-                        String.format("Document %s successfully deleted", document.getFileName())))
+                        String.format("Document %s successfully deleted", documentDto.getFileName())))
                 .then();
     }
 
@@ -58,12 +58,12 @@ public class TopPdfConverterClientService {
     }
 
     private FileDto createDocumentResponse(
-            final Document document,
+            final DocumentDto documentDto,
             final Response<byte[]> response
     ) {
         return FileDto.builder()
-                .fileName(document.getFileName())
-                .bucketName(document.getBucketName())
+                .fileName(documentDto.getFileName())
+                .bucketName(documentDto.getBucketName())
                 .fileContent(Base64.getEncoder().encodeToString(response.getData()))
                 .build();
     }

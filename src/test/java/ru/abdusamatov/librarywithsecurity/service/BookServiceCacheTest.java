@@ -37,24 +37,18 @@ public class BookServiceCacheTest extends TestBase {
     @MethodSource("createBook")
     void shouldCallRepositoryOnce_whenGetBookById(final BookDto dtoToBeSaved) {
         final var savedBook = bookService.createBook(dtoToBeSaved);
-
-        assertNotNull(savedBook);
         assertBookNotInCache(savedBook.getId());
 
         final var retrievedBook = bookService.getBookById(savedBook.getId());
-
-        assertNotNull(retrievedBook);
         assertBookInCache(savedBook.getId(), retrievedBook);
 
-        final var cachedBook = bookService.getBookById(savedBook.getId());
+        bookService.getBookById(savedBook.getId());
 
-        assertNotNull(cachedBook);
         verify(spyBookRepository)
                 .save(any(Book.class));
         verify(spyBookRepository)
                 .findById(savedBook.getId());
     }
-
 
     @ParameterizedTest
     @MethodSource("createBook")
@@ -66,14 +60,12 @@ public class BookServiceCacheTest extends TestBase {
                         .updateBookDto(savedBook)
                         .build());
 
-        assertNotNull(updatedBook);
         assertBookInCache(savedBook.getId(), updatedBook);
         verify(spyBookRepository, times(2))
                 .save(any(Book.class));
         verify(spyBookRepository)
                 .findById(updatedBook.getId());
     }
-
 
     @ParameterizedTest
     @MethodSource("createBook")
@@ -91,15 +83,6 @@ public class BookServiceCacheTest extends TestBase {
                 .delete(any(Book.class));
     }
 
-
-    private Cache assertCacheNotNull() {
-        final var cache = cacheManager.getCache(BOOK_CACHE);
-
-        assertNotNull(cache);
-
-        return cache;
-    }
-
     private void assertBookInCache(final Long id, final BookDto expectedBook) {
         final var cache = assertCacheNotNull();
 
@@ -114,6 +97,14 @@ public class BookServiceCacheTest extends TestBase {
 
         assertThat(cache.get(id))
                 .isNull();
+    }
+
+    private Cache assertCacheNotNull() {
+        final var cache = cacheManager.getCache(BOOK_CACHE);
+
+        assertNotNull(cache);
+
+        return cache;
     }
 
     private static Stream<Arguments> createBook() {
