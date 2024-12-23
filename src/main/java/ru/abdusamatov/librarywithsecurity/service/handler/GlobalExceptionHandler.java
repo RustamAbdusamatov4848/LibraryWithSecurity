@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.controller.handler;
+package ru.abdusamatov.librarywithsecurity.service.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
