@@ -75,8 +75,7 @@ public class BookController {
         return bookService
                 .deleteBook(id)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Successfully deleted"),
-                        null)));
+                        Result.success(NO_CONTENT, "Successfully deleted"))));
     }
 
     @PatchMapping(value = "/{id}/assign")
@@ -84,16 +83,14 @@ public class BookController {
         return bookService
                 .assignBook(id, newUser)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Book successfully assigned"),
-                        null)));
+                        Result.success(NO_CONTENT, "Book successfully assigned"))));
     }
 
     @PatchMapping(value = "/{id}/release")
     public Mono<Response<Void>> releaseBook(@PathVariable("id") final Long id) {
         return bookService.releaseBook(id)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Book successfully released"),
-                        null)));
+                        Result.success(NO_CONTENT, "Book successfully released"))));
     }
 
     @GetMapping(value = "/search")

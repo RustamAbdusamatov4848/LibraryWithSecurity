@@ -87,7 +87,6 @@ public class ReaderController {
         return readerService
                 .deleteUserById(id)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Successfully deleted"),
-                        null)));
+                        Result.success(NO_CONTENT, "Successfully deleted"))));
     }
 }
