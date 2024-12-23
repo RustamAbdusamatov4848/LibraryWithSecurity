@@ -36,21 +36,17 @@ public class BookServiceCacheTest extends TestBase {
     @ParameterizedTest
     @MethodSource("createBook")
     void shouldCallRepositoryOnce_whenGetBookById(final BookDto dtoToBeSaved) {
-        final var savedBook = bookService
-                .createBook(dtoToBeSaved)
-                .block();
+        final var savedBook = bookService.createBook(dtoToBeSaved);
 
         assertNotNull(savedBook);
         assertBookNotInCache(savedBook.getId());
 
-        final var retrievedBook = bookService
-                .getBookById(savedBook.getId())
-                .block();
+        final var retrievedBook = bookService.getBookById(savedBook.getId());
 
         assertNotNull(retrievedBook);
         assertBookInCache(savedBook.getId(), retrievedBook);
 
-        final var cachedBook = bookService.getBookById(savedBook.getId()).block();
+        final var cachedBook = bookService.getBookById(savedBook.getId());
 
         assertNotNull(cachedBook);
         verify(spyBookRepository)
@@ -68,8 +64,7 @@ public class BookServiceCacheTest extends TestBase {
         final var updatedBook = bookService
                 .updateBook(TestDataProvider
                         .updateBookDto(savedBook)
-                        .build())
-                .block();
+                        .build());
 
         assertNotNull(updatedBook);
         assertBookInCache(savedBook.getId(), updatedBook);
@@ -85,7 +80,7 @@ public class BookServiceCacheTest extends TestBase {
     void shouldDeleteBookFromCache_whenDeleteBook(final BookDto dtoToBeSaved) {
         final var savedBook = addSavedEntityToCache(dtoToBeSaved);
 
-        bookService.deleteBook(savedBook.getId()).block();
+        bookService.deleteBook(savedBook.getId());
 
         assertBookNotInCache(savedBook.getId());
         verify(spyBookRepository)
@@ -130,9 +125,7 @@ public class BookServiceCacheTest extends TestBase {
     }
 
     private BookDto addSavedEntityToCache(final BookDto dtoToSaved) {
-        final var savedBook = bookService
-                .createBook(dtoToSaved)
-                .block();
+        final var savedBook = bookService.createBook(dtoToSaved);
 
         cacheManager.getCache(BOOK_CACHE).put(savedBook.getId(), savedBook);
 

@@ -17,7 +17,7 @@ import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.service.BookService;
+import ru.abdusamatov.librarywithsecurity.service.handler.BookHandler;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
-    private final BookService bookService;
+    private final BookHandler bookHandler;
 
     @GetMapping
     public Mono<Response<List<BookDto>>> getBookList(
@@ -37,7 +37,7 @@ public class BookController {
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") final boolean isSorted) {
 
-        return bookService
+        return bookHandler
                 .getBookList(page, size, isSorted)
                 .map(list -> Response.buildResponse(
                         Result.success(OK, "List of books"),
@@ -46,7 +46,7 @@ public class BookController {
 
     @GetMapping(value = "/{id}")
     public Mono<Response<BookDto>> showBookById(@PathVariable("id") final Long id) {
-        return bookService
+        return bookHandler
                 .getBookById(id)
                 .map(bookDto -> Response.buildResponse(
                         Result.success(OK, "Book successfully found"),
@@ -55,7 +55,7 @@ public class BookController {
 
     @PostMapping
     public Mono<Response<BookDto>> createBook(@Valid @RequestBody final BookDto bookDto) {
-        return bookService
+        return bookHandler
                 .createBook(bookDto)
                 .map(savedBook -> Response.buildResponse(
                         Result.success(CREATED, "Book successfully created"),
@@ -64,7 +64,7 @@ public class BookController {
 
     @PutMapping
     public Mono<Response<BookDto>> updateBook(@Valid @RequestBody final BookDto bookDto) {
-        return bookService.updateBook(bookDto)
+        return bookHandler.updateBook(bookDto)
                 .map(updatedBook -> Response.buildResponse(
                         Result.success(OK, "Book successfully updated"),
                         updatedBook));
@@ -72,7 +72,7 @@ public class BookController {
 
     @DeleteMapping(value = "/{id}")
     public Mono<Response<Void>> deleteBook(@PathVariable("id") final Long id) {
-        return bookService
+        return bookHandler
                 .deleteBook(id)
                 .then(Mono.just(Response.buildResponse(
                         Result.success(NO_CONTENT, "Successfully deleted"))));
@@ -80,7 +80,7 @@ public class BookController {
 
     @PatchMapping(value = "/{id}/assign")
     public Mono<Response<Void>> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
-        return bookService
+        return bookHandler
                 .assignBook(id, newUser)
                 .then(Mono.just(Response.buildResponse(
                         Result.success(NO_CONTENT, "Book successfully assigned"))));
@@ -88,14 +88,14 @@ public class BookController {
 
     @PatchMapping(value = "/{id}/release")
     public Mono<Response<Void>> releaseBook(@PathVariable("id") final Long id) {
-        return bookService.releaseBook(id)
+        return bookHandler.releaseBook(id)
                 .then(Mono.just(Response.buildResponse(
                         Result.success(NO_CONTENT, "Book successfully released"))));
     }
 
     @GetMapping(value = "/search")
     public Mono<Response<List<BookDto>>> searchBooks(@RequestParam(value = "query") final String query) {
-        return bookService.searchByTitle(query)
+        return bookHandler.searchByTitle(query)
                 .map(boolList -> Response.buildResponse(
                         Result.success(OK, String.format("Found books with title %s", query)),
                         boolList));
