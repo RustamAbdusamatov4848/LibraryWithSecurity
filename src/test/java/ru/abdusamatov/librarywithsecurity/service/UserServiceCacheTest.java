@@ -1,10 +1,12 @@
 package ru.abdusamatov.librarywithsecurity.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.cache.Cache;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
@@ -12,7 +14,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class UserServiceCacheTest extends TestBase {
 
@@ -21,6 +26,11 @@ public class UserServiceCacheTest extends TestBase {
     @Override
     protected void clearDatabase() {
         spyUserRepository.deleteAll();
+    }
+
+    @AfterEach
+    public void afterEach() {
+        verifyNoMoreInteractions(spyUserRepository);
     }
 
     @ParameterizedTest
@@ -46,6 +56,8 @@ public class UserServiceCacheTest extends TestBase {
 
         assertNotNull(cachedUser);
         verify(spyUserRepository)
+                .save(any(User.class));
+        verify(spyUserRepository)
                 .findById(savedUser.getId());
     }
 
@@ -62,6 +74,10 @@ public class UserServiceCacheTest extends TestBase {
 
         assertNotNull(updatedUser);
         assertUserInCache(updatedUser);
+        verify(spyUserRepository, times(2))
+                .save(any(User.class));
+        verify(spyUserRepository)
+                .findById(updatedUser.getId());
     }
 
     @ParameterizedTest
@@ -72,6 +88,12 @@ public class UserServiceCacheTest extends TestBase {
         userService.deleteUserById(savedUser.getId()).block();
 
         assertUserNotInCache(savedUser.getId());
+        verify(spyUserRepository)
+                .save(any(User.class));
+        verify(spyUserRepository)
+                .findById(savedUser.getId());
+        verify(spyUserRepository)
+                .delete(any(User.class));
     }
 
     private Cache assertCacheNotNull() {
