@@ -148,7 +148,6 @@ public class BookControllerTest extends TestBase {
         TestAssertUtil.assertEntityNotFound(response);
     }
 
-
     @Test
     void shouldReturnBadRequest_whenUpdateBookWithInvalidFields() {
         final var bookToBeUpdated = TestDataProvider

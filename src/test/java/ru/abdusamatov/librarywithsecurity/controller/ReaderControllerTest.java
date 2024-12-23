@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -102,6 +103,7 @@ public class ReaderControllerTest extends TestBase {
                 .assertSuccess(OK, "User document successfully found", response);
         verify(client, times(1))
                 .getDocument(userDocument.getBucketName(), userDocument.getFileName());
+        verifyNoMoreInteractions(client);
     }
 
     @Test
@@ -140,6 +142,11 @@ public class ReaderControllerTest extends TestBase {
                         "documentDto.id",
                         "documentDto.userId")
                 .isEqualTo(validUserDto);
+        verify(client)
+                .addBucket(validUserDto.getDocumentDto().getBucketName());
+        verify(client)
+                .uploadFile(any(MultipartFile.class), anyString());
+        verifyNoMoreInteractions(client);
     }
 
     @Test
@@ -214,6 +221,7 @@ public class ReaderControllerTest extends TestBase {
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
         verify(client, times(1))
                 .deleteDocument(bucketName);
+        verifyNoMoreInteractions(client);
     }
 
     @Test
