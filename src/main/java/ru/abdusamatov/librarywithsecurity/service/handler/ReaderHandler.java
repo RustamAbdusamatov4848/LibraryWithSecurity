@@ -51,8 +51,10 @@ public class ReaderHandler {
     }
 
     public Mono<Void> deleteUserById(final Long userId) {
-        return Mono.fromRunnable(() -> userService.deleteUserById(userId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .then(documentHandler.deleteUserDocument(userId));
+        return documentHandler.deleteUserDocument(userId)
+                .then(Mono.fromRunnable(() -> userService.deleteUserById(userId))
+                        .subscribeOn(Schedulers.boundedElastic()))
+                .then();
     }
+
 }

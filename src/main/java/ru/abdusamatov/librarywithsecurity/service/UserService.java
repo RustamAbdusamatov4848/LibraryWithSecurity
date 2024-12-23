@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final DocumentMapper documentMapper;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUserList(final Integer page, final Integer size) {
@@ -45,6 +47,10 @@ public class UserService {
 
     @Transactional
     public UserDto createUser(final UserDto dto) {
+        final var document = documentMapper.dtoToDocument(dto.getDocumentDto());
+        final var user = userMapper.dtoToUser(dto);
+        user.setDocument(document);
+
         final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
 
         log.info("Saving new User with ID: {}", createdUser.getId());
