@@ -84,7 +84,7 @@ public class BookMapperTest {
     public static Stream<Arguments> shouldMapBookToBookDto() {
         Book book = TestDataProvider
                 .createBook()
-                .owner(TestDataProvider.createUser().id(1L).build())
+                .owner(TestDataProvider.createUser())
                 .build();
 
         BookDto expected = TestDataProvider
@@ -123,6 +123,7 @@ public class BookMapperTest {
     public static Stream<Arguments> shouldUpdateBookFromDto() {
         Book existingBook = TestDataProvider
                 .createBook()
+                .owner(TestDataProvider.createUser())
                 .build();
 
         BookDto newDto = TestDataProvider
@@ -142,7 +143,7 @@ public class BookMapperTest {
                 .authorSurname("Updated Surname")
                 .yearOfPublication(existingBook.getYearOfPublication())
                 .takenAt(existingBook.getTakenAt())
-                .owner(existingBook.getOwner() != null ? existingBook.getOwner() : null)
+                .owner(existingBook.getOwner())
                 .build();
 
         return Stream.of(Arguments.arguments(newDto, existingBook, expected));

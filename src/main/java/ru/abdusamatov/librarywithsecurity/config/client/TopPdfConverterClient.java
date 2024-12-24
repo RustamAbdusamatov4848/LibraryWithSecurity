@@ -6,6 +6,7 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 
@@ -13,18 +14,17 @@ import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
 public class TopPdfConverterClient {
     private final WebClient webClient;
 
-    public Response<Void> addBucket(final String bucketName) {
+    public Mono<Response<Void>> addBucket(final String bucketName) {
         return webClient
                 .post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/addBucket/" + bucketName)
                         .build())
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference());
     }
 
-    public Response<byte[]> getDocument(final String bucketName, final String fileName) {
+    public Mono<Response<byte[]>> getDocument(final String bucketName, final String fileName) {
         return webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -34,11 +34,10 @@ public class TopPdfConverterClient {
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class))
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference(byte[].class));
     }
 
-    public Response<Void> uploadFile(final MultipartFile file, final String bucketName) {
+    public Mono<Response<Void>> uploadFile(final MultipartFile file, final String bucketName) {
         final var builder = new MultipartBodyBuilder();
         builder.part("file", file.getResource());
 
@@ -51,11 +50,11 @@ public class TopPdfConverterClient {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference());
     }
 
-    public Response<Void> deleteDocument(final String bucketName) {
+
+    public Mono<Response<Void>> deleteDocument(final String bucketName) {
         return webClient
                 .delete()
                 .uri(uriBuilder -> uriBuilder
@@ -63,7 +62,6 @@ public class TopPdfConverterClient {
                         .queryParam("bucketName", bucketName)
                         .build(bucketName))
                 .retrieve()
-                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference())
-                .block();
+                .bodyToMono(ParameterizedTypeReferenceUtil.getResponseReference());
     }
 }

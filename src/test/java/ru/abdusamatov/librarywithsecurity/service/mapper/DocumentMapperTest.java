@@ -55,7 +55,7 @@ public class DocumentMapperTest {
     }
 
     public static Stream<Arguments> shouldMapDocumentToDocumentDto() {
-        final var user = TestDataProvider.createUser().build();
+        final var user = TestDataProvider.createUser();
 
         final var document = TestDataProvider
                 .createDocument()

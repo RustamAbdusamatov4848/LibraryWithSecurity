@@ -7,7 +7,9 @@ import org.mapstruct.MappingTarget;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.User;
 
-@Mapper(componentModel = "spring")
+
+@Mapper(config = MapperConfiguration.class,
+        uses = {DocumentMapper.class, BookMapper.class})
 public interface UserMapper {
 
     @BeanMapping(ignoreByDefault = true)
@@ -16,7 +18,7 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "books", target = "books")
-    @Mapping(source = "document.id", target = "documentId")
+    @Mapping(source = "document", target = "documentDto")
     UserDto userToDto(User user);
 
     @BeanMapping(ignoreByDefault = true)
@@ -25,15 +27,14 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "books", target = "books")
-    @Mapping(source = "documentId", target = "document.id")
+    @Mapping(source = "documentDto", target = "document")
     User dtoToUser(UserDto userDto);
-
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "fullName", target = "fullName")
     @Mapping(source = "email", target = "email")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "books", target = "books")
-    @Mapping(source = "documentId", target = "document.id")
+    @Mapping(source = "documentDto", target = "document")
     User updateUserFromDto(UserDto userDto, @MappingTarget User user);
 }

@@ -5,14 +5,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import ru.abdusamatov.librarywithsecurity.dto.AuthenticationDto;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
-import ru.abdusamatov.librarywithsecurity.dto.LibrarianDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.Document;
-import ru.abdusamatov.librarywithsecurity.model.Librarian;
 import ru.abdusamatov.librarywithsecurity.model.User;
 
 import java.time.LocalDate;
@@ -25,29 +22,25 @@ import java.util.stream.IntStream;
 
 
 public class TestDataProvider {
-    public static final String FILE_NAME = "passport.jpg";
-    public static final int MAX_NAME_LENGTH = 30;
-    public static final int MAX_TITLE_LENGTH = 200;
-    public static final int MAX_PASSWORD_LENGTH = 100;
-    public static final int MIN_YEAR_OF_PUBLICATION = 1500;
-    public static final String LONG_NAME = "a".repeat(MAX_NAME_LENGTH + 1);
-    public static final String LONG_TITLE_NAME = "a".repeat(MAX_TITLE_LENGTH + 1);
-    public static final String LONG_PASSWORD = "a".repeat(MAX_PASSWORD_LENGTH + 1);
-    public static final int INVALID_YEAR_OF_PUBLICATION = 1499;
-    public static final String INVALID_EMAIL = "invalid-email";
-    public static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
-    public static final Random RANDOM = new Random();
+    private static final String FILE_NAME = "passport.jpg";
+    private static final int MAX_NAME_LENGTH = 30;
+    private static final int MAX_TITLE_LENGTH = 200;
+    private static final int MIN_YEAR_OF_PUBLICATION = 1500;
+    private static final String LONG_NAME = "a".repeat(MAX_NAME_LENGTH + 1);
+    private static final String LONG_TITLE_NAME = "a".repeat(MAX_TITLE_LENGTH + 1);
+    private static final int INVALID_YEAR_OF_PUBLICATION = 1499;
+    private static final String INVALID_EMAIL = "invalid-email";
+    private static final LocalDate INVALID_DATA_OF_BIRTH = LocalDate.now().plusDays(1);
+    private static final Random RANDOM = new Random();
 
     public static Book.BookBuilder createBook() {
-        final var owner = createUser().build();
         return Book.builder()
-                .id(1L)
                 .title("Book Title" + getLimitUUID())
                 .authorName("AuthorName")
                 .authorSurname("AuthorSurname")
                 .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
                 .takenAt(LocalDateTime.now())
-                .owner(owner);
+                .owner(null);
     }
 
     public static BookDto.BookDtoBuilder createBookDto() {
@@ -100,14 +93,21 @@ public class TestDataProvider {
                 .toList();
     }
 
-    public static User.UserBuilder createUser() {
-        var document = createDocument().build();
-        var user = createUserWithoutDocument();
+    public static User createUser() {
+        final var user = TestDataProvider.createUserWithoutDocument().build();
+        final var document = TestDataProvider.createDocument().owner(user).build();
 
-        document.setOwner(user.build());
-        user.document(document);
+        user.setDocument(document);
 
         return user;
+    }
+
+    public static User.UserBuilder createUserWithoutDocument() {
+        return User.builder()
+                .fullName("Test User" + getLimitUUID(10))
+                .email("testuser" + getLimitUUID(10) + "@example.com")
+                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                .books(Collections.emptyList());
     }
 
     public static UserDto.UserDtoBuilder createUserDto() {
@@ -115,7 +115,7 @@ public class TestDataProvider {
                 .fullName("Test User" + getLimitUUID(10))
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .documentId(1L);
+                .documentDto(createDocumentDto().build());
     }
 
     public static UserDto.UserDtoBuilder createUserDtoWithInvalidFields() {
@@ -123,7 +123,7 @@ public class TestDataProvider {
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
                 .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .documentId(1L);
+                .documentDto(createDocumentDto().build());
     }
 
     public static UserDto.UserDtoBuilder updateUserDto(final UserDto userToBeUpdated) {
@@ -133,7 +133,7 @@ public class TestDataProvider {
                 .email("testuser" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(getRandomDate(LocalDate.now()))
                 .books(userToBeUpdated.getBooks())
-                .documentId(userToBeUpdated.getDocumentId());
+                .documentDto(userToBeUpdated.getDocumentDto());
     }
 
     public static UserDto.UserDtoBuilder updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
@@ -142,67 +142,31 @@ public class TestDataProvider {
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
                 .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .documentId(userToBeUpdated.getDocumentId());
+                .documentDto(userToBeUpdated.getDocumentDto());
     }
 
-    public static List<UserDto> createListUserDto(final int size) {
+    public static List<User> createListUser(final int size) {
         return IntStream.range(0, size)
-                .mapToObj(i -> createUserDto().build())
+                .mapToObj(i -> createUser())
                 .toList();
-    }
-
-    public static Librarian.LibrarianBuilder createLibrarian() {
-        return Librarian.builder()
-                .id(1L)
-                .fullName("Test librarian" + getLimitUUID(10))
-                .email("testlibrarian" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword());
-    }
-
-    public static LibrarianDto.LibrarianDtoBuilder createLibrarianDto() {
-        return LibrarianDto.builder()
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword());
-    }
-
-    public static LibrarianDto.LibrarianDtoBuilder createLibrarianDtoWithInvalidFields() {
-        return LibrarianDto.builder()
-                .fullName(LONG_NAME)
-                .email(INVALID_EMAIL)
-                .password(LONG_PASSWORD);
-    }
-
-    public static AuthenticationDto.AuthenticationDtoBuilder createAuthenticationDto() {
-        return AuthenticationDto.builder()
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .password(getRandomPassword());
-    }
-
-    public static AuthenticationDto.AuthenticationDtoBuilder createAuthenticationDto(final String email, final String password) {
-        return AuthenticationDto.builder()
-                .email(email)
-                .password(password);
     }
 
     public static Document.DocumentBuilder createDocument() {
         return Document.builder()
-                .id(1L)
-                .bucketName("bucket-example")
-                .fileName(FILE_NAME);
+                .bucketName("bucket-example" + "-" + getLimitUUID(8))
+                .fileName(FILE_NAME + "-" + getLimitUUID(8));
     }
 
     public static DocumentDto.DocumentDtoBuilder createDocumentDto() {
         return DocumentDto.builder()
-                .id(1L)
-                .bucketName("bucket-example")
-                .fileName(FILE_NAME)
-                .userId(1L);
+                .bucketName("bucket-example" + "-" + getLimitUUID(8))
+                .fileName(FILE_NAME + "-" + getLimitUUID(8));
     }
 
     @SneakyThrows
     public static byte[] getImageBytes(final String filePath) {
-        var resource = new ClassPathResource(filePath);
+        final var resource = new ClassPathResource(filePath);
+
         return FileCopyUtils.copyToByteArray(resource.getInputStream());
     }
 
@@ -217,6 +181,7 @@ public class TestDataProvider {
 
     private static String getLimitUUID(final int limit) {
         final var uuid = UUID.randomUUID();
+
         return uuid.toString()
                 .replace("-", "")
                 .substring(0, limit + 1);
@@ -232,26 +197,5 @@ public class TestDataProvider {
 
     private static int getRandomInvalidYearOfPublication() {
         return RANDOM.nextInt(MIN_YEAR_OF_PUBLICATION);
-    }
-
-    private static String getRandomPassword() {
-        final var source = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        final var random = new Random();
-        final var passwordLength = random.nextInt(5, MAX_PASSWORD_LENGTH);
-
-        return random.ints(passwordLength, 0, source.length())
-                .mapToObj(source::charAt)
-                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
-                .toString();
-    }
-
-    private static User.UserBuilder createUserWithoutDocument() {
-
-        return User.builder()
-                .id(1L)
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
-                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                .books(Collections.emptyList());
     }
 }

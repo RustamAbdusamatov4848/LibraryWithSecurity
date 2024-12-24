@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
-import ru.abdusamatov.librarywithsecurity.model.User;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
@@ -70,7 +69,7 @@ public class BookService {
                 .map(book -> {
                     bookMapper.updateBookFromDto(dto, book);
                     if (dto.getUserId() != null) {
-                        User owner = userRepository.findById(dto.getUserId())
+                        final var owner = userRepository.findById(dto.getUserId())
                                 .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dto.getUserId()));
                         book.setOwner(owner);
                     } else {

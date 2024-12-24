@@ -3,8 +3,7 @@
 ### **Brief description of the project**
 
 The essence of this project is to provide simple functionality for an online library, where a conditional librarian has
-2 tables (a list of people and a list of books).
-The librarian and the person who borrows books from the library have different access to library data. *
+2 tables (a list of people and a list of books). *
 *[Here is the project this project is based on](https://github.com/RustamAbdusamatov4848/LibraryWithJDBCTemplate)**
 
 ## Getting Started
@@ -80,14 +79,13 @@ You can interact with application through Postman or Swagger.
 
 The librarian has the ability to:
 
-1. Librarian authorization and registration
-2. View reader list
-3. Add/Edit and remove reader from the database;
-4. View book list;
-5. Add / Edit and delete books from the database;
-6. Give out books to a certain reader, or after the reader returned the book back to the library, mark it in the
+1. View reader list
+2. Add/Edit and remove reader from the database;
+3. View book list;
+4. Add / Edit and delete books from the database;
+5. Give out books to a certain reader, or after the reader returned the book back to the library, mark it in the
    database.
-7. Search books. I plan to add a reader search function in the future.
+6. Search books. I plan to add a reader search function in the future.
 
 ## Load Testing
 

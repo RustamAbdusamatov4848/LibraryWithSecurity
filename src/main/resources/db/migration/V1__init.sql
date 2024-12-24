@@ -47,20 +47,3 @@ CREATE TABLE library.book
             REFERENCES library.user (id)
             ON DELETE SET NULL
 );
-
--- ==========================================
--- Таблица: library.librarian
--- Хранит информацию о библиотекарях.
--- Поля:
--- - id: Уникальный идентификатор библиотекаря (генерируется автоматически).
--- - full_name: Полное имя библиотекаря (длина от 2 до 30 символов, обязательное поле).
--- - email: Электронная почта библиотекаря (уникальная, обязательное поле).
--- - password: Хэшированный пароль библиотекаря (обязательное поле).
--- ==========================================
-CREATE TABLE IF NOT EXISTS library.librarian
-(
-    id        BIGSERIAL PRIMARY KEY,
-    full_name VARCHAR(30)         NOT NULL CHECK (LENGTH(full_name) BETWEEN 2 AND 30),
-    email     VARCHAR(255) UNIQUE NOT NULL,
-    password  VARCHAR(100)        NOT NULL
-);

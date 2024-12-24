@@ -1,15 +1,13 @@
-package ru.abdusamatov.librarywithsecurity.controller.handler;
+package ru.abdusamatov.librarywithsecurity.service.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.exception.ExistEmailException;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 
@@ -19,7 +17,6 @@ import java.util.Map;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @ControllerAdvice
 @Slf4j
@@ -31,8 +28,7 @@ public class GlobalExceptionHandler {
         var errors = new HashMap<String, String>();
         ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage())
-                );
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return exceptionHandler(BAD_REQUEST, "Validation field failed", errors);
     }
@@ -45,26 +41,6 @@ public class GlobalExceptionHandler {
         final var errors = Map.of("cause", message);
 
         return exceptionHandler(NOT_FOUND, "Failed entity search", errors);
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Response<Void>> handleAuthenticationException(final AuthenticationException ex) {
-        log.error("Failed authorization: {}", ex.getMessage(), ex);
-
-        final var message = ex.getMessage();
-        final var errors = Map.of("cause", message);
-
-        return exceptionHandler(UNAUTHORIZED, "Failed authorization", errors);
-    }
-
-    @ExceptionHandler(ExistEmailException.class)
-    public ResponseEntity<Response<Void>> handleExistEmailException(final ExistEmailException ex) {
-        log.error("Failed email validation: {}", ex.getMessage(), ex);
-
-        final var message = ex.getMessage();
-        final var errors = Map.of("cause", message);
-
-        return exceptionHandler(BAD_REQUEST, "Failed email validation, already exist", errors);
     }
 
     @ExceptionHandler(TopPdfConverterException.class)
