@@ -51,7 +51,7 @@ public class UserService {
         final var user = userMapper.dtoToUser(dto);
         user.setDocument(document);
 
-        final var createdUser = userRepository.save(userMapper.dtoToUser(dto));
+        final var createdUser = userRepository.save(user);
 
         log.info("Saving new User with ID: {}", createdUser.getId());
         return userMapper.userToDto(createdUser);
