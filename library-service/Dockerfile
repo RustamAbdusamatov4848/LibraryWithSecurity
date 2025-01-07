@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY --from=build /build/library-service/target/*.jar library-service.jar
 
-EXPOSE 8080 8443
+EXPOSE 8085 8443
 
 CMD ["java", "-jar", "library-service.jar"]
 
