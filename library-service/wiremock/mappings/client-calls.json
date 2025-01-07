@@ -9,7 +9,7 @@
         "status": 200,
         "jsonBody": {
           "result": {
-            "httpStatusCode": 201,
+            "httpStatusCode": "CREATED",
             "status": "SUCCESS",
             "description": "Bucket bucket-example successfully created"
           }
@@ -36,7 +36,7 @@
         "status": 200,
         "jsonBody": {
           "result": {
-            "httpStatusCode": 200,
+            "httpStatusCode": "OK",
             "status": "SUCCESS",
             "description": "File passport.jpg successfully loaded"
           },
@@ -61,7 +61,7 @@
         "status": 200,
         "jsonBody": {
           "result": {
-            "httpStatusCode": 200,
+            "httpStatusCode": "OK",
             "status": "SUCCESS",
             "description": "File passport.jpg successfully uploaded"
           }
@@ -85,7 +85,7 @@
         "status": 200,
         "jsonBody": {
           "result": {
-            "httpStatusCode": 204,
+            "httpStatusCode": "NO CONTENT",
             "status": "SUCCESS",
             "description": "Bucket example-bucket deleted"
           }

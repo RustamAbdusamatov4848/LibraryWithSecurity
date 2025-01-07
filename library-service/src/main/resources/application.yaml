@@ -37,6 +37,15 @@ spring:
     redis:
       time-to-live: 600000
 
+  #RabbitMQ
+  rabbitmq:
+    host: ${RABBIT_HOST}
+    port: ${RABBIT_PORT}
+    username: ${RABBIT_USERNAME}
+    password: ${RABBIT_PASSWORD}
+    queues:
+      notification-queue: ${RABBIT_MAIL_QUEUE}
+
 # OpenApi settings
 springdoc:
   api-docs:
@@ -46,3 +55,6 @@ springdoc:
 #Client settings
 top-pdf-converter:
   base-url: ${CLIENT_BASE_URL}/${CLIENT_BASE_PATH}
+
+server:
+  port: ${LIBRARY_SERVICE_PORT}
