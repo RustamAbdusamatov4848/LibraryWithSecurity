@@ -17,8 +17,8 @@ services:
 
   app:
     build:
-      dockerfile: Dockerfile
-      context: .
+      dockerfile: library-service/Dockerfile
+      context: ..
     restart: always
     container_name: lib-app
     depends_on:
