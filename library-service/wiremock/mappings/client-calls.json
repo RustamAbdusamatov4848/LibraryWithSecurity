@@ -50,12 +50,7 @@
     {
       "request": {
         "method": "POST",
-        "url": "/api/v1/file-storage-management/upload",
-        "queryParameters": {
-          "bucketName": {
-            "equalTo": "bucket-example"
-          }
-        }
+        "urlPattern": "/api/v1/file-storage-management/upload\\?bucketName=.*"
       },
       "response": {
         "status": 200,
