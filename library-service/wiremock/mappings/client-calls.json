@@ -22,15 +22,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/api/v1/file-storage-management/file/download",
-        "queryParameters": {
-          "fileName": {
-            "equalTo": "passport.jpg"
-          },
-          "bucketName": {
-            "equalTo": "bucket-example"
-          }
-        }
+        "urlPattern": "/api/v1/file-storage-management/file/download\\?bucketName=.*&fileName=.*"
       },
       "response": {
         "status": 200,
@@ -69,18 +61,13 @@
     {
       "request": {
         "method": "DELETE",
-        "url": "/api/v1/file-storage-management/bucket/delete",
-        "queryParameters": {
-          "bucketName": {
-            "equalTo": "bucket-example"
-          }
-        }
+        "urlPattern": "/api/v1/file-storage-management/bucket/delete\\?bucketName=.*"
       },
       "response": {
         "status": 200,
         "jsonBody": {
           "result": {
-            "httpStatusCode": "NO CONTENT",
+            "httpStatusCode": "NO_CONTENT",
             "status": "SUCCESS",
             "description": "Bucket example-bucket deleted"
           }
