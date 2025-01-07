@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserMapperTest extends TestBase {
 
     @Autowired
-    private UserMapper mapper;
+    private UserMapperImpl mapper;
 
     @ParameterizedTest
     @MethodSource("shouldMapUserToDto")
