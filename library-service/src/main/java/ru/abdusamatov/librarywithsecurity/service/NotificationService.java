@@ -3,6 +3,7 @@ package ru.abdusamatov.librarywithsecurity.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import ru.abdusamatov.commons.dto.EmailMessageDto;
 import ru.abdusamatov.librarywithsecurity.config.RabbitMQConfig;
 
 @Service
@@ -12,6 +13,6 @@ public class NotificationService {
     private final RabbitMQConfig rabbitMQConfig;
 
     public void sendAssignmentMessage() {
-
+        var message = EmailMessageDto.builder();
     }
 }
