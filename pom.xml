@@ -28,7 +28,17 @@
 
     <modules>
         <module>library-service</module>
+        <module>notification-service</module>
+        <module>commons</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.abdusamatov</groupId>
+            <artifactId>commons</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
