@@ -43,6 +43,7 @@ spring:
     port: ${RABBIT_PORT}
     username: ${RABBIT_USERNAME}
     password: ${RABBIT_PASSWORD}
+    exchange: ${EXCHANGE_NAME}
     queues:
       notification-queue: ${RABBIT_MAIL_QUEUE}
 
