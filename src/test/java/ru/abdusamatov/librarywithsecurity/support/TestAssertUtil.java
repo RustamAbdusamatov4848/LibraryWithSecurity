@@ -1,13 +1,13 @@
 package ru.abdusamatov.librarywithsecurity.support;
 
 import org.springframework.http.HttpStatus;
-import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.ilyam.dto.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static ru.abdusamatov.librarywithsecurity.model.enums.ResponseStatus.ERROR;
-import static ru.abdusamatov.librarywithsecurity.model.enums.ResponseStatus.SUCCESS;
+import static ru.ilyam.dto.enums.ResponseStatus.ERROR;
+import static ru.ilyam.dto.enums.ResponseStatus.SUCCESS;
 
 public class TestAssertUtil {
 

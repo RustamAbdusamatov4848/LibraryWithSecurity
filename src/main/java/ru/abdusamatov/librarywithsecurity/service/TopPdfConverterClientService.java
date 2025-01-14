@@ -8,9 +8,9 @@ import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
-import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
-import ru.abdusamatov.librarywithsecurity.model.enums.ResponseStatus;
+import ru.ilyam.dto.Response;
+import ru.ilyam.dto.enums.ResponseStatus;
 
 import java.util.Base64;
 

@@ -48,7 +48,6 @@ public class BookHandler {
     public Mono<Void> assignBook(final Long id, final UserDto userDto) {
         return Mono.fromRunnable(() -> bookService.assignBook(id, userDto))
                 .subscribeOn(Schedulers.boundedElastic())
-                //notification
                 .then();
     }
 
