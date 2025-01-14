@@ -3,7 +3,7 @@ package ru.abdusamatov.librarywithsecurity.util;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.core.ParameterizedTypeReference;
-import ru.abdusamatov.librarywithsecurity.dto.response.Response;
+import ru.ilyam.dto.Response;
 
 @UtilityClass
 public class ParameterizedTypeReferenceUtil {
