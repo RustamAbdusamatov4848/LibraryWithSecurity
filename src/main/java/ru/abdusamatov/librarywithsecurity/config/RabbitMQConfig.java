@@ -1,39 +1,33 @@
 package ru.abdusamatov.librarywithsecurity.config;
 
-import lombok.Getter;
-import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@Getter
+@EnableConfigurationProperties(RabbitMQProperties.class)
 public class RabbitMQConfig {
 
-    @Value("${spring.rabbitmq.queues.notification-queue}")
-    private String queueName;
-
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchangeName;
-
     @Bean
-    public Queue queue() {
-        return new Queue(queueName, false);
-    }
-
-    @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(exchangeName);
-    }
-
-    @Bean
-    public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder
-                .bind(queue)
+    public Declarables rabbitDeclarables(final RabbitMQProperties properties) {
+        var exchange = new DirectExchange(properties.getExchange(), true, false);
+        var libraryQueue = new Queue(properties.getLibrary().getQueue(), true);
+        var app1Binding = BindingBuilder
+                .bind(libraryQueue)
                 .to(exchange)
-                .with("library.notification.#");
+                .with(properties.getLibrary().getRoutingKey());
+
+        return new Declarables(exchange, libraryQueue, app1Binding);
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }

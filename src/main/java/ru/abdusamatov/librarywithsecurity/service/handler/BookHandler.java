@@ -7,7 +7,6 @@ import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.service.NotificationService;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookHandler {
     private final BookService bookService;
-    private final NotificationService notificationService;
 
     public Mono<List<BookDto>> getBookList(final Integer page, final Integer size, final boolean isSorted) {
         return Mono.fromCallable(() -> bookService.getBookList(page, size, isSorted))

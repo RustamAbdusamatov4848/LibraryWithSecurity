@@ -32,6 +32,7 @@ public class BookService {
     private final UserRepository userRepository;
     private final BookMapper bookMapper;
     private final UserMapper userMapper;
+    private final LibraryEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<BookDto> getBookList(final Integer page, final Integer size, final boolean isSorted) {
@@ -105,6 +106,8 @@ public class BookService {
         bookRepository.save(book);
 
         log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
+
+        eventPublisher.publishEvent(userDto.getFullName(), book.getTitle());
     }
 
     @CachePut(key = "#id")
