@@ -15,25 +15,6 @@ services:
     networks:
       - app-network
 
-  app:
-    build:
-      dockerfile: Dockerfile
-      context: .
-    restart: always
-    container_name: lib-app
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    env_file:
-      - .env
-    ports:
-      - "8085:8085"
-      - "8443:8443"
-    networks:
-      - app-network
-
   redis:
     image: 'redis:latest'
     restart: unless-stopped
@@ -52,9 +33,9 @@ services:
 
   wiremock:
     image: 'wiremock/wiremock:latest'
-    container_name: top-pdf-converter-service
+    container_name: client-service
     ports:
-      - "8080:8080"
+      - "8082:8080"
     entrypoint: [ "/docker-entrypoint.sh", "--global-response-templating", "--disable-gzip", "--verbose" ]
     volumes:
       - ./wiremock/mappings:/home/wiremock/mappings
@@ -63,4 +44,4 @@ services:
 
 networks:
   app-network:
-    external: true
+    driver: bridge

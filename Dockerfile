@@ -1,23 +1,9 @@
-FROM maven:3.9.8-amazoncorretto-21-al2023 AS build
-
-WORKDIR /build
-
-COPY library-service/pom.xml .
-COPY library-service/pom.xml library-service/pom.xml
-
-COPY library-service/src library-service/src
-COPY library-service/wiremock library-service/wiremock
-
-RUN mvn clean install -DskipTests -Dcheckstyle.skip
-
 FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 
-COPY --from=build /build/library-service/target/*.jar library-service.jar
+COPY target/LibraryWithSecurity-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8085 8443
 
-CMD ["java", "-jar", "library-service.jar"]
-
-
+CMD ["java", "-jar", "app.jar"]

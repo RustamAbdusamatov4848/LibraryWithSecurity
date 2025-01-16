@@ -13,8 +13,10 @@ spring:
 
   # Flyway settings
   flyway:
-    enabled: true
-    validate-on-migrate: true
+    baseline-version: '0'
+    baseline-on-migrate: true
+    sql-migration-prefix: V
+    locations: classpath:migration
 
   # Hibernate settings
   jpa:
@@ -43,9 +45,10 @@ spring:
     port: ${RABBIT_PORT}
     username: ${RABBIT_USERNAME}
     password: ${RABBIT_PASSWORD}
-    exchange: ${EXCHANGE_NAME}
-    queues:
-      notification-queue: ${RABBIT_MAIL_QUEUE}
+    exchange: ${RABBIT_EXCHANGE:direct}
+    library:
+      queue: ${RABBIT_LIBRARY_MAIL_QUEUE:library.mail.queue}
+      routingKey: ${RABBIT_LIBRARY_MAIL_RK:library.notification}
 
 # OpenApi settings
 springdoc:
