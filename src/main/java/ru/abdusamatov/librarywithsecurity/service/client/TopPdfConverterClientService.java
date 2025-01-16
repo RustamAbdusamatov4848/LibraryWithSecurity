@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.service;
+package ru.abdusamatov.librarywithsecurity.service.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

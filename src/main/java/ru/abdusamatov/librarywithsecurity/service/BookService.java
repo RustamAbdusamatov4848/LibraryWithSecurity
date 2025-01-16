@@ -18,6 +18,7 @@ import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
+import ru.abdusamatov.librarywithsecurity.service.notification.LibraryEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
