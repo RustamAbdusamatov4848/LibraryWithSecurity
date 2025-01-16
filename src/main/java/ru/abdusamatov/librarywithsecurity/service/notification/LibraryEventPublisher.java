@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.service;
+package ru.abdusamatov.librarywithsecurity.service.notification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.OutboxApplicationEvent;
 import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEvent;
-import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEventRepository;
+import ru.abdusamatov.librarywithsecurity.repository.OutboxDomainEventRepository;
 
 @Service
 @RequiredArgsConstructor

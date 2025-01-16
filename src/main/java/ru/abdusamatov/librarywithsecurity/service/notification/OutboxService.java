@@ -1,9 +1,9 @@
-package ru.abdusamatov.librarywithsecurity.service;
+package ru.abdusamatov.librarywithsecurity.service.notification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEvent;
-import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEventRepository;
+import ru.abdusamatov.librarywithsecurity.repository.OutboxDomainEventRepository;
 import ru.ilyam.dto.enums.ApplicationNameEnum;
 import ru.ilyam.dto.enums.LibraryEventNameEnum;
 import ru.ilyam.dto.library.LibraryEventDto;

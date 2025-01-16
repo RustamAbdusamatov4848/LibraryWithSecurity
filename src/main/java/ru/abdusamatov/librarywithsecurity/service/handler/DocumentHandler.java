@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.service.DocumentService;
-import ru.abdusamatov.librarywithsecurity.service.TopPdfConverterClientService;
+import ru.abdusamatov.librarywithsecurity.service.client.TopPdfConverterClientService;
 
 @Service
 @RequiredArgsConstructor
