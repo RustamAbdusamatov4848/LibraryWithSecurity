@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
+import ru.abdusamatov.librarywithsecurity.context.RabbitMQInitializer;
 import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
@@ -22,7 +23,8 @@ import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
-        RedisInitializer.class
+        RedisInitializer.class,
+        RabbitMQInitializer.class
 })
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient

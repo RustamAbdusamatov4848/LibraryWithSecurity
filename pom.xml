@@ -34,6 +34,7 @@
         <spotbugs.version>4.8.6</spotbugs.version>
         <spring-cloud-contract-wiremock.version>4.1.5</spring-cloud-contract-wiremock.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
+        <test-container-rabbit-version>1.19.8</test-container-rabbit-version>
     </properties>
 
 
@@ -140,6 +141,12 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>rabbitmq</artifactId>
+            <version>${test-container-rabbit-version}</version>
         </dependency>
 
         <dependency>
