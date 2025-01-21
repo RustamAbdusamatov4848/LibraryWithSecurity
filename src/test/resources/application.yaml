@@ -1,3 +1,15 @@
+spring:
+  rabbitmq:
+    exchange: test.notification.exchange
+    library:
+      queue: test.mail.queue
+      routingKey: test.notification
+  flyway:
+    baseline-version: '0'
+    baseline-on-migrate: true
+    sql-migration-prefix: V
+    locations: classpath:migration
+
 wiremock:
   reset-mappings-after-each-test: true
   server:

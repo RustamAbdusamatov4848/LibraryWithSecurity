@@ -11,6 +11,9 @@ import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.User;
+import ru.ilyam.dto.enums.ApplicationNameEnum;
+import ru.ilyam.dto.enums.LibraryEventNameEnum;
+import ru.ilyam.dto.library.LibraryEventDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -161,6 +164,12 @@ public class TestDataProvider {
         return DocumentDto.builder()
                 .bucketName("bucket-example" + "-" + getLimitUUID(8))
                 .fileName(FILE_NAME + "-" + getLimitUUID(8));
+    }
+
+    public static LibraryEventDto.LibraryEventDtoBuilder createLibraryEvent(LibraryEventNameEnum operation) {
+        return LibraryEventDto.builder()
+                .eventName(operation)
+                .applicationName(ApplicationNameEnum.LIBRARY);
     }
 
     @SneakyThrows
