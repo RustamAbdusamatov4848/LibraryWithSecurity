@@ -1,6 +1,7 @@
 package ru.abdusamatov.librarywithsecurity.support;
 
 import org.junit.jupiter.api.AfterEach;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,17 +10,20 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import ru.abdusamatov.librarywithsecurity.config.RabbitMQProperties;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
 import ru.abdusamatov.librarywithsecurity.context.RabbitMQInitializer;
 import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
+import ru.abdusamatov.librarywithsecurity.repository.OutboxDomainEventRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.service.handler.ReaderHandler;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
 import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
+import ru.abdusamatov.librarywithsecurity.service.notification.RabbitEventPublisher;
 
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
@@ -57,6 +61,15 @@ public abstract class TestBase {
     @Autowired
     protected CacheManager cacheManager;
 
+    @Autowired
+    protected RabbitMQProperties rabbitMQProperties;
+
+    @Autowired
+    protected RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    protected OutboxDomainEventRepository repository;
+
     @MockBean
     protected TopPdfConverterClient topPdfConverterClient;
 
@@ -65,6 +78,9 @@ public abstract class TestBase {
 
     @SpyBean
     protected UserRepository spyUserRepository;
+
+    @SpyBean
+    protected RabbitEventPublisher publisher;
 
     @AfterEach
     public void tearDown() {

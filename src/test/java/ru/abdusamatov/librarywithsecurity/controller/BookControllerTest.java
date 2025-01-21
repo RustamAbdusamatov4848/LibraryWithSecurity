@@ -1,6 +1,8 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
@@ -10,10 +12,15 @@ import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
 import ru.ilyam.dto.Response;
+import ru.ilyam.dto.enums.LibraryEventNameEnum;
+import ru.ilyam.dto.library.LibraryEventDto;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -23,6 +30,11 @@ import static org.springframework.http.HttpStatus.OK;
 public class BookControllerTest extends TestBase {
 
     private static final String BASE_URL = "books";
+
+    @AfterEach
+    public void afterEach() {
+        verifyNoMoreInteractions(publisher);
+    }
 
     @Test
     void shouldGetAllBooks() {
@@ -202,19 +214,35 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldAssignBook_whenValidDataProvided() {
-        final var id = bookRepository
+        final var savedBook = bookRepository
                 .save(TestDataProvider
                         .createBook()
-                        .build())
-                .getId();
-
+                        .build());
+        final var id = savedBook.getId();
         final var userDtoToBeAssigned = userMapper
                 .userToDto(userRepository.save(TestDataProvider.createUser()));
+        final var event = TestDataProvider
+                .createLibraryEvent(LibraryEventNameEnum.BOOK_ASSIGNED)
+                .userName(userDtoToBeAssigned.getFullName())
+                .bookName(savedBook.getTitle())
+                .build();
 
         final var response = executeAssignBook(OK, id, userDtoToBeAssigned);
 
         TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
+
+        final var captor = ArgumentCaptor.forClass(LibraryEventDto.class);
+        verify(publisher).publishEvent(captor.capture());
+        assertThat(captor.getValue())
+                .satisfies(eventMessage -> {
+                    assertThat(eventMessage.getUserName()).isEqualTo(event.getUserName());
+                    assertThat(eventMessage.getBookName()).isEqualTo(event.getBookName());
+                    assertThat(eventMessage.getEventName()).isEqualTo(event.getEventName());
+                    assertThat(eventMessage.getApplicationName()).isEqualTo(event.getApplicationName());
+                });
+
+        verify(publisher).publishEvent(any(LibraryEventDto.class));
     }
 
     @Test
