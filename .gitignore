@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Local dev ###
-library-service/docker-compose-local.yaml
+docker-compose-local.yaml
