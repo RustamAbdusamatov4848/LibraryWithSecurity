@@ -13,8 +13,8 @@ import reactor.test.StepVerifier;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.WebClientTestBase;
-import ru.ilyam.dto.Response;
-import ru.ilyam.dto.Result;
+import ru.ilyam.http.Response;
+import ru.ilyam.http.Result;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;

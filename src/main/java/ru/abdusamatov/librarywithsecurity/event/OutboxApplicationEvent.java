@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.dto;
+package ru.abdusamatov.librarywithsecurity.event;
 
 import lombok.Value;
 import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEvent;

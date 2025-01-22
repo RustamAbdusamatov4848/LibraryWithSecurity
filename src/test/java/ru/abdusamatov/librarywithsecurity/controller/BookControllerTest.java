@@ -11,9 +11,9 @@ import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
-import ru.ilyam.dto.Response;
-import ru.ilyam.dto.enums.LibraryEventNameEnum;
-import ru.ilyam.dto.library.LibraryEventDto;
+import ru.ilyam.http.Response;
+import ru.ilyam.enums.LibraryEventNameEnum;
+import ru.ilyam.event.LibraryEvent;
 
 import java.util.List;
 
@@ -232,7 +232,7 @@ public class BookControllerTest extends TestBase {
         TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
 
-        final var captor = ArgumentCaptor.forClass(LibraryEventDto.class);
+        final var captor = ArgumentCaptor.forClass(LibraryEvent.class);
         verify(publisher).publishEvent(captor.capture());
         assertThat(captor.getValue())
                 .satisfies(eventMessage -> {
@@ -242,7 +242,7 @@ public class BookControllerTest extends TestBase {
                     assertThat(eventMessage.getApplicationName()).isEqualTo(event.getApplicationName());
                 });
 
-        verify(publisher).publishEvent(any(LibraryEventDto.class));
+        verify(publisher).publishEvent(any(LibraryEvent.class));
     }
 
     @Test

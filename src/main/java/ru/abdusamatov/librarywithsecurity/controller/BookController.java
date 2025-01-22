@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.service.handler.BookHandler;
-import ru.ilyam.dto.Response;
-import ru.ilyam.dto.Result;
+import ru.ilyam.http.Response;
+import ru.ilyam.http.Result;
 
 import java.util.List;
 

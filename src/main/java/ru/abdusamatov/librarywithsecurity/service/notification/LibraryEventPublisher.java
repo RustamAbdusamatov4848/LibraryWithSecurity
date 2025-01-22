@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.abdusamatov.librarywithsecurity.dto.OutboxApplicationEvent;
+import ru.abdusamatov.librarywithsecurity.event.OutboxApplicationEvent;
 import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEvent;
 import ru.abdusamatov.librarywithsecurity.repository.OutboxDomainEventRepository;
 

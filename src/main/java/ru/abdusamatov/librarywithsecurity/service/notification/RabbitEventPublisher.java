@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 import ru.abdusamatov.librarywithsecurity.config.RabbitMQProperties;
-import ru.ilyam.dto.library.LibraryEventDto;
-import ru.ilyam.dto.util.WrapperUtil;
+import ru.ilyam.event.LibraryEvent;
+import ru.ilyam.util.WrapperUtil;
 
 @Component
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ public class RabbitEventPublisher {
     private final RabbitTemplate rabbitTemplate;
     private final RabbitMQProperties config;
 
-    public void publishEvent(final LibraryEventDto libraryEvent) {
+    public void publishEvent(final LibraryEvent libraryEvent) {
         WrapperUtil.produce(
                 config.getExchange(),
                 config.getLibrary().getRoutingKey(),

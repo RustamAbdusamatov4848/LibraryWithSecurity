@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import ru.abdusamatov.librarywithsecurity.dto.OutboxApplicationEvent;
+import ru.abdusamatov.librarywithsecurity.event.OutboxApplicationEvent;
 import ru.abdusamatov.librarywithsecurity.service.notification.OutboxService;
 
 @Component

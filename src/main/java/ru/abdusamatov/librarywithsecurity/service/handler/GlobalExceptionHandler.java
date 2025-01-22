@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
-import ru.ilyam.dto.Response;
-import ru.ilyam.dto.Result;
+import ru.ilyam.http.Response;
+import ru.ilyam.http.Result;
 
 import java.util.HashMap;
 import java.util.Map;
