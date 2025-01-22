@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEvent;
 import ru.abdusamatov.librarywithsecurity.repository.OutboxDomainEventRepository;
-import ru.ilyam.dto.enums.ApplicationNameEnum;
-import ru.ilyam.dto.enums.LibraryEventNameEnum;
-import ru.ilyam.dto.library.LibraryEventDto;
+import ru.ilyam.enums.ApplicationNameEnum;
+import ru.ilyam.enums.LibraryEventNameEnum;
+import ru.ilyam.event.LibraryEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class OutboxService {
 
     public void sendFromOutbox(OutboxDomainEvent outboxDomainEvent) {
         rabbitEventPublisher.publishEvent(
-                LibraryEventDto.builder()
+                LibraryEvent.builder()
                         .userName(outboxDomainEvent.getUserName())
                         .bookName(outboxDomainEvent.getBookName())
                         .eventName(LibraryEventNameEnum.BOOK_ASSIGNED)

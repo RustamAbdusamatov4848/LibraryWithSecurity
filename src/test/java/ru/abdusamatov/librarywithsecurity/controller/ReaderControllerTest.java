@@ -17,8 +17,8 @@ import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
-import ru.ilyam.dto.Response;
-import ru.ilyam.dto.Result;
+import ru.ilyam.http.Response;
+import ru.ilyam.http.Result;
 
 import java.util.List;
 

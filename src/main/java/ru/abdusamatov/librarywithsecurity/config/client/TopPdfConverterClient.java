@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
-import ru.ilyam.dto.Response;
+import ru.ilyam.http.Response;
 
 @RequiredArgsConstructor
 public class TopPdfConverterClient {

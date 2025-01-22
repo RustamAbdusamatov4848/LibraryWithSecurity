@@ -11,9 +11,9 @@ import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.User;
-import ru.ilyam.dto.enums.ApplicationNameEnum;
-import ru.ilyam.dto.enums.LibraryEventNameEnum;
-import ru.ilyam.dto.library.LibraryEventDto;
+import ru.ilyam.enums.ApplicationNameEnum;
+import ru.ilyam.enums.LibraryEventNameEnum;
+import ru.ilyam.event.LibraryEvent;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -166,8 +166,8 @@ public class TestDataProvider {
                 .fileName(FILE_NAME + "-" + getLimitUUID(8));
     }
 
-    public static LibraryEventDto.LibraryEventDtoBuilder createLibraryEvent(LibraryEventNameEnum operation) {
-        return LibraryEventDto.builder()
+    public static LibraryEvent.LibraryEventBuilder createLibraryEvent(LibraryEventNameEnum operation) {
+        return LibraryEvent.builder()
                 .eventName(operation)
                 .applicationName(ApplicationNameEnum.LIBRARY);
     }

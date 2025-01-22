@@ -9,8 +9,8 @@ import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
-import ru.ilyam.dto.Response;
-import ru.ilyam.dto.enums.ResponseStatus;
+import ru.ilyam.http.Response;
+import ru.ilyam.enums.ResponseStatus;
 
 import java.util.Base64;
 
