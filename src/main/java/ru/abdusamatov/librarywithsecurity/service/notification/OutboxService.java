@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.abdusamatov.librarywithsecurity.model.OutboxDomainEvent;
 import ru.abdusamatov.librarywithsecurity.repository.OutboxDomainEventRepository;
-import ru.ilyam.enums.ApplicationNameEnum;
 import ru.ilyam.enums.LibraryEventNameEnum;
 import ru.ilyam.event.LibraryEvent;
 
@@ -20,7 +19,6 @@ public class OutboxService {
                         .userName(outboxDomainEvent.getUserName())
                         .bookName(outboxDomainEvent.getBookName())
                         .eventName(LibraryEventNameEnum.BOOK_ASSIGNED)
-                        .applicationName(ApplicationNameEnum.LIBRARY)
                         .build()
         );
         repository.delete(outboxDomainEvent);

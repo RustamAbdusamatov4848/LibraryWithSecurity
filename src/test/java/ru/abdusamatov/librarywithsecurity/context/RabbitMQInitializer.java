@@ -10,13 +10,15 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.Set;
 
 public class RabbitMQInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    public static final String FULL_IMAGE_NAME = "rabbitmq:4.0.5-management-alpine";
+    public static final String IMAGE_NAME = "rabbitmq";
     private static final String VHOST = "test-vhost";
     private static final String USER_NAME = "test-rabbitmq";
     private static final String USER_PASSWORD = "test-rabbitmq-pwd";
     private static final String PERMISSION_ANY = ".*";
 
-    private static final DockerImageName IMAGE = DockerImageName.parse("rabbitmq:4.0.5-management-alpine")
-            .asCompatibleSubstituteFor("rabbitmq");
+    private static final DockerImageName IMAGE = DockerImageName.parse(FULL_IMAGE_NAME)
+            .asCompatibleSubstituteFor(IMAGE_NAME);
     private static final RabbitMQContainer CONTAINER = new RabbitMQContainer(IMAGE)
             .withVhost(VHOST)
             .withUser(USER_NAME, USER_PASSWORD, Set.of("management"))
