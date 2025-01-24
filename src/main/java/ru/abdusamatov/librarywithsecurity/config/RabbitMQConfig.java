@@ -18,12 +18,12 @@ public class RabbitMQConfig {
     public Declarables rabbitDeclarables(final RabbitMQProperties properties) {
         var exchange = new DirectExchange(properties.getExchange(), true, false);
         var libraryQueue = new Queue(properties.getLibrary().getQueue(), true);
-        var app1Binding = BindingBuilder
+        var libraryBinding = BindingBuilder
                 .bind(libraryQueue)
                 .to(exchange)
                 .with(properties.getLibrary().getRoutingKey());
 
-        return new Declarables(exchange, libraryQueue, app1Binding);
+        return new Declarables(exchange, libraryQueue, libraryBinding);
     }
 
     @Bean
