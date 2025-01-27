@@ -11,9 +11,9 @@ import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceTestUtil;
-import ru.ilyam.http.Response;
 import ru.ilyam.enums.LibraryEventNameEnum;
 import ru.ilyam.event.LibraryEvent;
+import ru.ilyam.http.Response;
 
 import java.util.List;
 
@@ -239,7 +239,7 @@ public class BookControllerTest extends TestBase {
                     assertThat(eventMessage.getUserName()).isEqualTo(event.getUserName());
                     assertThat(eventMessage.getBookName()).isEqualTo(event.getBookName());
                     assertThat(eventMessage.getEventName()).isEqualTo(event.getEventName());
-                    assertThat(eventMessage.getApplicationName()).isEqualTo(event.getApplicationName());
+                    assertThat(eventMessage.getApplicationNameEnum()).isEqualTo(event.getApplicationNameEnum());
                 });
 
         verify(publisher).publishEvent(any(LibraryEvent.class));
