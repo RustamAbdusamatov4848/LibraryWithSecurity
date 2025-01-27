@@ -5,7 +5,7 @@ import org.mapstruct.MapperConfig;
 
 @MapperConfig(
         componentModel = "spring",
-        injectionStrategy = InjectionStrategy.FIELD
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
 public interface MapperConfiguration {
 }

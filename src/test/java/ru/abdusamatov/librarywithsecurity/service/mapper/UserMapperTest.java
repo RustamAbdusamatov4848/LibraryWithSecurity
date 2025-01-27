@@ -4,12 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.User;
-import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.Collections;
@@ -17,10 +15,11 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserMapperTest extends TestBase {
+public class UserMapperTest {
 
-    @Autowired
-    private UserMapperImpl mapper;
+    private final DocumentMapper documentMapper = new DocumentMapperImpl();
+    private final BookMapper bookMapper = new BookMapperImpl();
+    private final UserMapper mapper = new UserMapperImpl(documentMapper, bookMapper);
 
     @ParameterizedTest
     @MethodSource("shouldMapUserToDto")
@@ -229,9 +228,5 @@ public class UserMapperTest extends TestBase {
                         .id(bookDto.getUserId())
                         .build())
                 .build();
-    }
-
-    @Override
-    protected void clearDatabase() {
     }
 }
