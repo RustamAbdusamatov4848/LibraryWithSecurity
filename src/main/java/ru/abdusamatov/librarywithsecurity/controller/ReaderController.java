@@ -1,7 +1,6 @@
 package ru.abdusamatov.librarywithsecurity.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,7 @@ public class ReaderController {
 
     @Operation(summary = "Method for getting all registered readers")
     @GetMapping
-    public Mono<Response<List<UserDto>>> getUserList(
+    public Mono<Response<List<UserDto>>> getReaderList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
 
