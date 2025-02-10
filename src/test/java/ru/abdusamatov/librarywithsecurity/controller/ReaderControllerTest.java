@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -93,15 +94,16 @@ public class ReaderControllerTest extends TestBase {
         final var savedUser = userRepository.save(TestDataProvider.createUser());
         final var userDocument = savedUser.getDocument();
 
-        when(client.getDocument(userDocument.getBucketName(), userDocument.getFileName()))
+        when(topPdfConverterClient.getDocument(userDocument.getBucketName(), userDocument.getFileName()))
                 .thenReturn(getMonoResponseByteArray(userDocument.getFileName()));
 
         final var response = executeGetUserDocument(savedUser.getId());
 
         TestAssertUtil
                 .assertSuccess(OK, "User document successfully found", response);
-        verify(client, times(1))
+        verify(topPdfConverterClient, times(1))
                 .getDocument(userDocument.getBucketName(), userDocument.getFileName());
+        verifyNoMoreInteractions(topPdfConverterClient);
     }
 
     @Test
@@ -110,10 +112,10 @@ public class ReaderControllerTest extends TestBase {
                 .createUserDto()
                 .build();
 
-        when(client.addBucket(validUserDto.getDocumentDto().getBucketName()))
+        when(topPdfConverterClient.addBucket(validUserDto.getDocumentDto().getBucketName()))
                 .thenReturn(getMonoResponseVoid(
                         "Bucket " + validUserDto.getDocumentDto().getBucketName() + " successfully created"));
-        when(client.uploadFile(
+        when(topPdfConverterClient.uploadFile(
                 any(MultipartFile.class),
                 anyString()))
                 .thenReturn(getMonoResponseVoid(
@@ -140,6 +142,11 @@ public class ReaderControllerTest extends TestBase {
                         "documentDto.id",
                         "documentDto.userId")
                 .isEqualTo(validUserDto);
+        verify(topPdfConverterClient)
+                .addBucket(validUserDto.getDocumentDto().getBucketName());
+        verify(topPdfConverterClient)
+                .uploadFile(any(MultipartFile.class), anyString());
+        verifyNoMoreInteractions(topPdfConverterClient);
     }
 
     @Test
@@ -205,15 +212,16 @@ public class ReaderControllerTest extends TestBase {
         final var savedUser = userRepository.save(TestDataProvider.createUser());
         final var bucketName = savedUser.getDocument().getBucketName();
 
-        when(client.deleteDocument(bucketName))
+        when(topPdfConverterClient.deleteDocument(bucketName))
                 .thenReturn(getMonoResponseVoid("Bucket " + bucketName + " deleted"));
 
         final var response = executeDeleteUserById(OK, savedUser.getId());
 
         TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
-        verify(client, times(1))
+        verify(topPdfConverterClient, times(1))
                 .deleteDocument(bucketName);
+        verifyNoMoreInteractions(topPdfConverterClient);
     }
 
     @Test
@@ -392,5 +400,4 @@ public class ReaderControllerTest extends TestBase {
     protected void clearDatabase() {
         userRepository.deleteAll();
     }
-
 }

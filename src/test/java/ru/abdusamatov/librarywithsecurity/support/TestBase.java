@@ -15,10 +15,10 @@ import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
 import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
-import ru.abdusamatov.librarywithsecurity.service.ReaderService;
+import ru.abdusamatov.librarywithsecurity.service.handler.ReaderHandler;
 import ru.abdusamatov.librarywithsecurity.service.UserService;
-import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapperImpl;
-import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapperImpl;
+import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
+import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
 
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
@@ -29,10 +29,10 @@ import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapperImpl;
 public abstract class TestBase {
 
     @Autowired
-    protected BookMapperImpl bookMapper;
+    protected BookMapper bookMapper;
 
     @Autowired
-    protected UserMapperImpl userMapper;
+    protected UserMapper userMapper;
 
     @Autowired
     protected WebTestClient webTestClient;
@@ -50,20 +50,20 @@ public abstract class TestBase {
     protected UserService userService;
 
     @Autowired
-    protected ReaderService readerService;
+    protected ReaderHandler readerService;
 
     @Autowired
     protected CacheManager cacheManager;
 
     @MockBean
-    protected TopPdfConverterClient client;
+    protected TopPdfConverterClient topPdfConverterClient;
 
     @SpyBean
     protected BookRepository spyBookRepository;
 
     @SpyBean
     protected UserRepository spyUserRepository;
-    
+
     @AfterEach
     public void tearDown() {
         clearDatabase();

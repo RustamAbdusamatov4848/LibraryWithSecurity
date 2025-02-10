@@ -4,52 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-import ru.abdusamatov.librarywithsecurity.dto.FileDto;
+import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
-import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
 import ru.abdusamatov.librarywithsecurity.repository.DocumentRepository;
+import ru.abdusamatov.librarywithsecurity.service.mapper.DocumentMapper;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class DocumentService {
-    private final DocumentRepository repository;
-    private final TopPdfConverterClientService clientService;
-
-    @Transactional(readOnly = true)
-    public Mono<Void> saveUserDocument(final MultipartFile file, final Long documentId) {
-        return Mono.fromCallable(() -> repository.findById(documentId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(documentOptional -> documentOptional
-                        .map(document -> clientService.saveUserDocument(file, document))
-                        .orElse(Mono.error(new RuntimeException("Document not found with ID " + documentId))))
-                .doOnSuccess(document -> log.info("Successfully saved document with ID {}", documentId))
-                .then();
-    }
-
+    private final DocumentRepository documentRepository;
+    private final DocumentMapper documentMapper;
 
     @Transactional
-    public Mono<FileDto> getDocument(final long userId) {
-        return Mono.fromCallable(() -> repository.findByOwnerId(userId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(document -> document
-                        .map(clientService::getDocument)
-                        .orElseGet(() -> Mono.error(new TopPdfConverterException("Document not found for user ID: " + userId)))
-                );
+    public DocumentDto findDocument(final long userId) {
+        return documentRepository.findByOwnerId(userId)
+                .map(documentMapper::documentToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Document", "user ID", userId));
     }
-
-    @Transactional
-    public Mono<Void> deleteUserDocument(final long userId) {
-        return Mono.fromCallable(() -> repository.findByOwnerId(userId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(optionalDocument -> optionalDocument
-                        .map(document -> clientService.deleteUserDocument(document)
-                                .then(Mono.empty())).orElseGet(() -> Mono.error(new ResourceNotFoundException("Document", "user ID", userId))))
-                .doOnSuccess(result -> log.info("Successfully deleted document for user ID: {}", userId))
-                .then();
-    }
-
 }

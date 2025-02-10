@@ -1,4 +1,4 @@
-package ru.abdusamatov.librarywithsecurity.controller.handler;
+package ru.abdusamatov.librarywithsecurity.service.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,8 +28,7 @@ public class GlobalExceptionHandler {
         var errors = new HashMap<String, String>();
         ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage())
-                );
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return exceptionHandler(BAD_REQUEST, "Validation field failed", errors);
     }

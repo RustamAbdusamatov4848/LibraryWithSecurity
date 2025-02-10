@@ -19,7 +19,7 @@ import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
-import ru.abdusamatov.librarywithsecurity.service.BookService;
+import ru.abdusamatov.librarywithsecurity.service.handler.BookHandler;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import static org.springframework.http.HttpStatus.OK;
         description = "APIs for managing library books"
 )
 public class BookController {
-    private final BookService bookService;
+    private final BookHandler bookHandler;
 
     @Operation(summary = "Method for getting all registered books")
     @GetMapping
@@ -44,7 +44,7 @@ public class BookController {
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "true") final boolean isSorted) {
 
-        return bookService
+        return bookHandler
                 .getBookList(page, size, isSorted)
                 .map(list -> Response.buildResponse(
                         Result.success(OK, "List of books"),
@@ -54,7 +54,7 @@ public class BookController {
     @Operation(summary = "Method for retrieving a book by its ID")
     @GetMapping(value = "/{id}")
     public Mono<Response<BookDto>> showBookById(@PathVariable("id") final Long id) {
-        return bookService
+        return bookHandler
                 .getBookById(id)
                 .map(bookDto -> Response.buildResponse(
                         Result.success(OK, "Book successfully found"),
@@ -64,7 +64,7 @@ public class BookController {
     @Operation(summary = "Method for creating a new book")
     @PostMapping
     public Mono<Response<BookDto>> createBook(@Valid @RequestBody final BookDto bookDto) {
-        return bookService
+        return bookHandler
                 .createBook(bookDto)
                 .map(savedBook -> Response.buildResponse(
                         Result.success(CREATED, "Book successfully created"),
@@ -74,7 +74,7 @@ public class BookController {
     @Operation(summary = "Method for updating an existing book")
     @PutMapping
     public Mono<Response<BookDto>> updateBook(@Valid @RequestBody final BookDto bookDto) {
-        return bookService.updateBook(bookDto)
+        return bookHandler.updateBook(bookDto)
                 .map(updatedBook -> Response.buildResponse(
                         Result.success(OK, "Book successfully updated"),
                         updatedBook));
@@ -83,36 +83,33 @@ public class BookController {
     @Operation(summary = "Method for deleting a book by its ID")
     @DeleteMapping(value = "/{id}")
     public Mono<Response<Void>> deleteBook(@PathVariable("id") final Long id) {
-        return bookService
+        return bookHandler
                 .deleteBook(id)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Successfully deleted"),
-                        null)));
+                        Result.success(NO_CONTENT, "Successfully deleted"))));
     }
 
     @Operation(summary = "Method for assigning a book to a user")
     @PatchMapping(value = "/{id}/assign")
     public Mono<Response<Void>> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
-        return bookService
+        return bookHandler
                 .assignBook(id, newUser)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Book successfully assigned"),
-                        null)));
+                        Result.success(NO_CONTENT, "Book successfully assigned"))));
     }
 
     @Operation(summary = "Method for releasing a book from a user")
     @PatchMapping(value = "/{id}/release")
     public Mono<Response<Void>> releaseBook(@PathVariable("id") final Long id) {
-        return bookService.releaseBook(id)
+        return bookHandler.releaseBook(id)
                 .then(Mono.just(Response.buildResponse(
-                        Result.success(NO_CONTENT, "Book successfully released"),
-                        null)));
+                        Result.success(NO_CONTENT, "Book successfully released"))));
     }
 
     @Operation(summary = "Method for searching books by their title")
     @GetMapping(value = "/search")
     public Mono<Response<List<BookDto>>> searchBooks(@RequestParam(value = "query") final String query) {
-        return bookService.searchByTitle(query)
+        return bookHandler.searchByTitle(query)
                 .map(boolList -> Response.buildResponse(
                         Result.success(OK, String.format("Found books with title %s", query)),
                         boolList));
