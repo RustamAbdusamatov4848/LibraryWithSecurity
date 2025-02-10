@@ -12,12 +12,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
-import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.repository.ReaderRepository;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
-import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
+import ru.abdusamatov.librarywithsecurity.service.mapper.ReaderMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,9 +29,9 @@ import java.util.List;
 @CacheConfig(cacheNames = "book")
 public class BookService {
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final ReaderRepository readerRepository;
     private final BookMapper bookMapper;
-    private final UserMapper userMapper;
+    private final ReaderMapper readerMapper;
 
     @Transactional(readOnly = true)
     public List<BookDto> getBookList(final Integer page, final Integer size, final boolean isSorted) {
@@ -68,9 +68,9 @@ public class BookService {
         final var updatedBook = bookRepository.findById(dto.getId())
                 .map(book -> {
                     bookMapper.updateBookFromDto(dto, book);
-                    if (dto.getUserId() != null) {
-                        final var owner = userRepository.findById(dto.getUserId())
-                                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", dto.getUserId()));
+                    if (dto.getReaderId() != null) {
+                        final var owner = readerRepository.findById(dto.getReaderId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Reader", "ID", dto.getReaderId()));
                         book.setOwner(owner);
                     } else {
                         book.setOwner(null);
@@ -96,15 +96,15 @@ public class BookService {
 
     @CachePut(key = "#id")
     @Transactional
-    public void assignBook(final Long id, final UserDto userDto) {
+    public void assignBook(final Long id, final ReaderDto readerDto) {
         final var book = bookRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Book", "ID", id));
 
-        book.setOwner(userMapper.dtoToUser(userDto));
+        book.setOwner(readerMapper.dtoToReader(readerDto));
         book.setTakenAt(LocalDateTime.now());
         bookRepository.save(book);
 
-        log.info("Book with id {},has new owner with id {}", book.getId(), userDto.getId());
+        log.info("Book with id {},has new owner with id {}", book.getId(), readerDto.getId());
     }
 
     @CachePut(key = "#id")

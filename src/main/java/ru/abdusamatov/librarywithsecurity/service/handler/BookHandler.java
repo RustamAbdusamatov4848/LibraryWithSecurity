@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
 
 import java.util.Collections;
@@ -43,8 +43,8 @@ public class BookHandler {
                 .then();
     }
 
-    public Mono<Void> assignBook(final Long id, final UserDto userDto) {
-        return Mono.fromRunnable(() -> bookService.assignBook(id, userDto))
+    public Mono<Void> assignBook(final Long id, final ReaderDto readerDto) {
+        return Mono.fromRunnable(() -> bookService.assignBook(id, readerDto))
                 .subscribeOn(Schedulers.boundedElastic())
                 .then();
     }

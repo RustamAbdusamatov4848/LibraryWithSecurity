@@ -37,10 +37,10 @@ public class Document {
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "user_id",
+            name = "reader_id",
             nullable = false,
             unique = true,
             referencedColumnName = "id")
-    private User owner;
+    private Reader owner;
 
 }

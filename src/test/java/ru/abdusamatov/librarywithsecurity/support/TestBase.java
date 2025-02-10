@@ -13,12 +13,12 @@ import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.context.PostgreSQLInitializer;
 import ru.abdusamatov.librarywithsecurity.context.RedisInitializer;
 import ru.abdusamatov.librarywithsecurity.repository.BookRepository;
-import ru.abdusamatov.librarywithsecurity.repository.UserRepository;
+import ru.abdusamatov.librarywithsecurity.repository.ReaderRepository;
 import ru.abdusamatov.librarywithsecurity.service.BookService;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 import ru.abdusamatov.librarywithsecurity.service.handler.ReaderHandler;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
 import ru.abdusamatov.librarywithsecurity.service.mapper.BookMapper;
-import ru.abdusamatov.librarywithsecurity.service.mapper.UserMapper;
+import ru.abdusamatov.librarywithsecurity.service.mapper.ReaderMapper;
 
 @ContextConfiguration(initializers = {
         PostgreSQLInitializer.class,
@@ -32,7 +32,7 @@ public abstract class TestBase {
     protected BookMapper bookMapper;
 
     @Autowired
-    protected UserMapper userMapper;
+    protected ReaderMapper readerMapper;
 
     @Autowired
     protected WebTestClient webTestClient;
@@ -41,16 +41,16 @@ public abstract class TestBase {
     protected BookRepository bookRepository;
 
     @Autowired
-    protected UserRepository userRepository;
+    protected ReaderRepository readerRepository;
 
     @Autowired
     protected BookService bookService;
 
     @Autowired
-    protected UserService userService;
+    protected ReaderService readerService;
 
     @Autowired
-    protected ReaderHandler readerService;
+    protected ReaderHandler readerHandler;
 
     @Autowired
     protected CacheManager cacheManager;
@@ -62,7 +62,7 @@ public abstract class TestBase {
     protected BookRepository spyBookRepository;
 
     @SpyBean
-    protected UserRepository spyUserRepository;
+    protected ReaderRepository spyReaderRepository;
 
     @AfterEach
     public void tearDown() {

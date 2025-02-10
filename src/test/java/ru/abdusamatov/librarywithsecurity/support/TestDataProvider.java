@@ -7,10 +7,10 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.Document;
-import ru.abdusamatov.librarywithsecurity.model.User;
+import ru.abdusamatov.librarywithsecurity.model.Reader;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,7 +66,7 @@ public class TestDataProvider {
                 .authorName("Author name updated")
                 .authorSurname("Author surname updated")
                 .yearOfPublication(RANDOM.nextInt(1500, LocalDate.now().getYear()))
-                .userId(bookToBeUpdated.getUserId())
+                .readerId(bookToBeUpdated.getReaderId())
                 .takenAt(bookToBeUpdated.getTakenAt());
     }
 
@@ -78,7 +78,7 @@ public class TestDataProvider {
                 .authorSurname(LONG_NAME)
                 .yearOfPublication(getRandomInvalidYearOfPublication())
                 .takenAt(bookToBeUpdated.getTakenAt())
-                .userId(bookToBeUpdated.getUserId());
+                .readerId(bookToBeUpdated.getReaderId());
     }
 
     public static List<Book> createListBook(final int size) {
@@ -93,61 +93,61 @@ public class TestDataProvider {
                 .toList();
     }
 
-    public static User createUser() {
-        final var user = TestDataProvider.createUserWithoutDocument().build();
-        final var document = TestDataProvider.createDocument().owner(user).build();
+    public static Reader createReader() {
+        final var reader = TestDataProvider.createReaderWithoutDocument().build();
+        final var document = TestDataProvider.createDocument().owner(reader).build();
 
-        user.setDocument(document);
+        reader.setDocument(document);
 
-        return user;
+        return reader;
     }
 
-    public static User.UserBuilder createUserWithoutDocument() {
-        return User.builder()
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
+    public static Reader.ReaderBuilder createReaderWithoutDocument() {
+        return Reader.builder()
+                .fullName("Test Reader" + getLimitUUID(10))
+                .email("testReader" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(LocalDate.of(1990, 1, 1))
                 .books(Collections.emptyList());
     }
 
-    public static UserDto.UserDtoBuilder createUserDto() {
-        return UserDto.builder()
-                .fullName("Test User" + getLimitUUID(10))
-                .email("testuser" + getLimitUUID(10) + "@example.com")
+    public static ReaderDto.ReaderDtoBuilder createReaderDto() {
+        return ReaderDto.builder()
+                .fullName("Test Reader" + getLimitUUID(10))
+                .email("testReader" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(LocalDate.of(1990, 1, 1))
                 .documentDto(createDocumentDto().build());
     }
 
-    public static UserDto.UserDtoBuilder createUserDtoWithInvalidFields() {
-        return UserDto.builder()
+    public static ReaderDto.ReaderDtoBuilder createReaderDtoWithInvalidFields() {
+        return ReaderDto.builder()
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
                 .dateOfBirth(INVALID_DATA_OF_BIRTH)
                 .documentDto(createDocumentDto().build());
     }
 
-    public static UserDto.UserDtoBuilder updateUserDto(final UserDto userToBeUpdated) {
-        return UserDto.builder()
-                .id(userToBeUpdated.getId())
+    public static ReaderDto.ReaderDtoBuilder updateReaderDto(final ReaderDto readerToBeUpdated) {
+        return ReaderDto.builder()
+                .id(readerToBeUpdated.getId())
                 .fullName("Fullname updated")
-                .email("testuser" + getLimitUUID(10) + "@example.com")
+                .email("testReader" + getLimitUUID(10) + "@example.com")
                 .dateOfBirth(getRandomDate(LocalDate.now()))
-                .books(userToBeUpdated.getBooks())
-                .documentDto(userToBeUpdated.getDocumentDto());
+                .books(readerToBeUpdated.getBooks())
+                .documentDto(readerToBeUpdated.getDocumentDto());
     }
 
-    public static UserDto.UserDtoBuilder updateUserDtoWithInvalidFields(final UserDto userToBeUpdated) {
-        return UserDto.builder()
-                .id(userToBeUpdated.getId())
+    public static ReaderDto.ReaderDtoBuilder updateReaderDtoWithInvalidFields(final ReaderDto readerToBeUpdated) {
+        return ReaderDto.builder()
+                .id(readerToBeUpdated.getId())
                 .fullName(LONG_NAME)
                 .email(INVALID_EMAIL)
                 .dateOfBirth(INVALID_DATA_OF_BIRTH)
-                .documentDto(userToBeUpdated.getDocumentDto());
+                .documentDto(readerToBeUpdated.getDocumentDto());
     }
 
-    public static List<User> createListUser(final int size) {
+    public static List<Reader> createListReader(final int size) {
         return IntStream.range(0, size)
-                .mapToObj(i -> createUser())
+                .mapToObj(i -> createReader())
                 .toList();
     }
 

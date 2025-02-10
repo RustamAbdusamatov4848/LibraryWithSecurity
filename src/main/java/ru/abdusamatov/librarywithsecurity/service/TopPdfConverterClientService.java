@@ -34,7 +34,7 @@ public class TopPdfConverterClientService {
                 .map(response -> createDocumentResponse(documentDto, response));
     }
 
-    public Mono<Void> saveUserDocument(final MultipartFile file, final DocumentDto documentDto) {
+    public Mono<Void> saveReaderDocument(final MultipartFile file, final DocumentDto documentDto) {
         return createBucket(documentDto.getBucketName())
                 .then(converterClient.uploadFile(file, documentDto.getBucketName())
                         .flatMap(response -> checkResponseStatus(response,
@@ -42,7 +42,7 @@ public class TopPdfConverterClientService {
                 .then();
     }
 
-    public Mono<Void> deleteUserDocument(final DocumentDto documentDto) {
+    public Mono<Void> deleteReaderDocument(final DocumentDto documentDto) {
         return converterClient.deleteDocument(documentDto.getBucketName())
                 .flatMap(response -> checkResponseStatus(response,
                         String.format("Document %s successfully deleted", documentDto.getFileName())))

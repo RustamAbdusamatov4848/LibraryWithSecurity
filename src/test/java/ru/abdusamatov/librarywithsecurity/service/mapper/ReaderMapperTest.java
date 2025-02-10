@@ -6,9 +6,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
-import ru.abdusamatov.librarywithsecurity.model.User;
+import ru.abdusamatov.librarywithsecurity.model.Reader;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
@@ -17,15 +17,15 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserMapperTest extends TestBase {
+public class ReaderMapperTest extends TestBase {
 
     @Autowired
-    private UserMapper mapper;
+    private ReaderMapper mapper;
 
     @ParameterizedTest
-    @MethodSource("shouldMapUserToDto")
-    void shouldMapUserToDto(final User toBeMapped, final UserDto expected) {
-        final var actual = mapper.userToDto(toBeMapped);
+    @MethodSource("shouldMapReaderToDto")
+    void shouldMapReaderToDto(final Reader toBeMapped, final ReaderDto expected) {
+        final var actual = mapper.readerToDto(toBeMapped);
 
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -33,9 +33,9 @@ public class UserMapperTest extends TestBase {
     }
 
     @ParameterizedTest
-    @MethodSource("shouldMapDtoToUser")
-    void shouldMapDtoToUser(final UserDto dtoToBeMapped, final User expected) {
-        final var actual = mapper.dtoToUser(dtoToBeMapped);
+    @MethodSource("shouldMapDtoToReader")
+    void shouldMapDtoToReader(final ReaderDto dtoToBeMapped, final Reader expected) {
+        final var actual = mapper.dtoToReader(dtoToBeMapped);
 
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -43,13 +43,13 @@ public class UserMapperTest extends TestBase {
     }
 
     @ParameterizedTest
-    @MethodSource("shouldUpdateUserFromDto")
-    void shouldUpdateUserFromDto(
-            final UserDto newUserDto,
-            final User userToBeUpdated,
-            final User expected
+    @MethodSource("shouldUpdateReaderFromDto")
+    void shouldUpdateReaderFromDto(
+            final ReaderDto newReaderDto,
+            final Reader readerToBeUpdated,
+            final Reader expected
     ) {
-        final var actual = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var actual = mapper.updateReaderFromDto(newReaderDto, readerToBeUpdated);
 
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -57,31 +57,31 @@ public class UserMapperTest extends TestBase {
     }
 
     @ParameterizedTest
-    @MethodSource("shouldUpdateUserFromDto")
-    void shouldNotUpdateUser_whenUserDtoIsNull(
-            final UserDto newUserDto,
-            final User userToBeUpdated,
-            final User expected
+    @MethodSource("shouldUpdateReaderFromDto")
+    void shouldNotUpdateReader_whenReaderDtoIsNull(
+            final ReaderDto newReaderDto,
+            final Reader readerToBeUpdated,
+            final Reader expected
     ) {
-        final var actual = mapper.updateUserFromDto(null, userToBeUpdated);
+        final var actual = mapper.updateReaderFromDto(null, readerToBeUpdated);
 
         assertThat(actual)
                 .usingRecursiveComparison()
-                .isEqualTo(userToBeUpdated);
+                .isEqualTo(readerToBeUpdated);
     }
 
     @ParameterizedTest
-    @MethodSource("shouldUpdateUserFromDto")
-    void shouldUpdateUserFromDto_whenUserHasNullBookList(
-            UserDto newUserDto,
-            User userToBeUpdated,
-            final User expected
+    @MethodSource("shouldUpdateReaderFromDto")
+    void shouldUpdateReaderFromDto_whenReaderHasNullBookList(
+            ReaderDto newReaderDto,
+            Reader readerToBeUpdated,
+            final Reader expected
     ) {
         final var listSize = 10;
-        newUserDto.setBooks(TestDataProvider.createListBookDto(listSize));
-        userToBeUpdated.setBooks(null);
+        newReaderDto.setBooks(TestDataProvider.createListBookDto(listSize));
+        readerToBeUpdated.setBooks(null);
 
-        final var actual = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var actual = mapper.updateReaderFromDto(newReaderDto, readerToBeUpdated);
 
         assertThat(actual.getBooks())
                 .isNotNull()
@@ -89,77 +89,77 @@ public class UserMapperTest extends TestBase {
     }
 
     @ParameterizedTest
-    @MethodSource("shouldUpdateUserFromDto")
-    void shouldUpdateUserFromDto_whenDtoHasNullBookList(
-            UserDto newUserDto,
-            User userToBeUpdated,
-            final User expected
+    @MethodSource("shouldUpdateReaderFromDto")
+    void shouldUpdateReaderFromDto_whenDtoHasNullBookList(
+            ReaderDto newReaderDto,
+            Reader readerToBeUpdated,
+            final Reader expected
     ) {
         final var listSize = 10;
-        userToBeUpdated.setBooks(TestDataProvider.createListBook(listSize));
-        newUserDto.setBooks(null);
+        readerToBeUpdated.setBooks(TestDataProvider.createListBook(listSize));
+        newReaderDto.setBooks(null);
 
-        final var actual = mapper.updateUserFromDto(newUserDto, userToBeUpdated);
+        final var actual = mapper.updateReaderFromDto(newReaderDto, readerToBeUpdated);
 
         assertThat(actual.getBooks())
                 .isNull();
     }
 
     @ParameterizedTest
-    @MethodSource("shouldUpdateUserFromDto")
-    void shouldReturnNull_whenUserDtoIsNullInUpdateUserFromDto(
-            UserDto newUserDto,
-            User userToBeUpdated,
-            final User expected
+    @MethodSource("shouldUpdateReaderFromDto")
+    void shouldReturnNull_whenReaderDtoIsNullInUpdateReaderFromDto(
+            ReaderDto newReaderDto,
+            Reader readerToBeUpdated,
+            final Reader expected
     ) {
-        final var updatedUser = mapper.updateUserFromDto(null, userToBeUpdated);
+        final var updatedReader = mapper.updateReaderFromDto(null, readerToBeUpdated);
 
-        assertThat(updatedUser)
-                .isEqualTo(userToBeUpdated);
+        assertThat(updatedReader)
+                .isEqualTo(readerToBeUpdated);
     }
 
     @Test
-    void shouldReturnNull_whenUserIsNullInUserToUserDto() {
-        final var userDto = mapper.userToDto(null);
-        assertThat(userDto).isNull();
+    void shouldReturnNull_whenReaderIsNullInReaderToReaderDto() {
+        final var readerDto = mapper.readerToDto(null);
+        assertThat(readerDto).isNull();
     }
 
     @Test
-    void shouldReturnNull_whenUserDtoIsNullInUserDtoToUser() {
-        final var user = mapper.dtoToUser(null);
-        assertThat(user).isNull();
+    void shouldReturnNull_whenReaderDtoIsNullInReaderDtoToReader() {
+        final var reader = mapper.dtoToReader(null);
+        assertThat(reader).isNull();
     }
 
-    public static Stream<Arguments> shouldMapUserToDto() {
-        final var user = TestDataProvider.createUser();
-        final var document = user.getDocument();
+    public static Stream<Arguments> shouldMapReaderToDto() {
+        final var reader = TestDataProvider.createReader();
+        final var document = reader.getDocument();
 
         final var expected = TestDataProvider
-                .createUserDto()
-                .id(user.getId())
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .dateOfBirth(user.getDateOfBirth())
+                .createReaderDto()
+                .id(reader.getId())
+                .fullName(reader.getFullName())
+                .email(reader.getEmail())
+                .dateOfBirth(reader.getDateOfBirth())
                 .books(Collections.emptyList())
                 .documentDto(TestDataProvider.createDocumentDto()
                         .id(document.getId())
                         .bucketName(document.getBucketName())
                         .fileName(document.getFileName())
-                        .userId(document.getOwner().getId())
+                        .id(document.getOwner().getId())
                         .build())
                 .build();
 
-        return Stream.of(Arguments.arguments(user, expected));
+        return Stream.of(Arguments.arguments(reader, expected));
     }
 
-    public static Stream<Arguments> shouldMapDtoToUser() {
+    public static Stream<Arguments> shouldMapDtoToReader() {
         final var dtoToBeMapped = TestDataProvider
-                .createUserDto()
+                .createReaderDto()
                 .books(Collections.emptyList())
                 .build();
         final var document = dtoToBeMapped.getDocumentDto();
 
-        final var expected = User.builder()
+        final var expected = Reader.builder()
                 .id(dtoToBeMapped.getId())
                 .fullName(dtoToBeMapped.getFullName())
                 .email(dtoToBeMapped.getEmail())
@@ -169,55 +169,55 @@ public class UserMapperTest extends TestBase {
                         .id(document.getId())
                         .bucketName(document.getBucketName())
                         .fileName(document.getFileName())
-                        .owner(User.builder().id(document.getUserId()).build())
+                        .owner(Reader.builder().id(document.getReaderId()).build())
                         .build())
                 .build();
 
         return Stream.of(Arguments.arguments(dtoToBeMapped, expected));
     }
 
-    public static Stream<Arguments> shouldUpdateUserFromDto() {
-        final var existingUser = TestDataProvider.createUser();
-        final var document = existingUser.getDocument();
+    public static Stream<Arguments> shouldUpdateReaderFromDto() {
+        final var existingReader = TestDataProvider.createReader();
+        final var document = existingReader.getDocument();
 
         final var newDto = TestDataProvider
-                .createUserDto()
-                .id(existingUser.getId())
+                .createReaderDto()
+                .id(existingReader.getId())
                 .fullName("Updated FullName")
                 .email("updated@example.com")
-                .dateOfBirth(existingUser.getDateOfBirth())
+                .dateOfBirth(existingReader.getDateOfBirth())
                 .books(Collections.emptyList())
                 .documentDto(TestDataProvider.createDocumentDto()
                         .id(document.getId())
                         .bucketName(document.getBucketName())
                         .fileName(document.getFileName())
-                        .userId(document.getOwner().getId())
+                        .readerId(document.getOwner().getId())
                         .build())
                 .build();
 
-        final var expected = User.builder()
+        final var expected = Reader.builder()
                 .id(newDto.getId())
                 .fullName(newDto.getFullName())
                 .email(newDto.getEmail())
-                .dateOfBirth(existingUser.getDateOfBirth())
+                .dateOfBirth(existingReader.getDateOfBirth())
                 .books(newDto
                         .getBooks()
                         .stream()
-                        .map(UserMapperTest::getBook)
+                        .map(ReaderMapperTest::getBook)
                         .toList())
                 .document(TestDataProvider
                         .createDocument()
                         .id(document.getId())
                         .fileName(document.getFileName())
                         .bucketName(document.getBucketName())
-                        .owner(existingUser)
+                        .owner(existingReader)
                         .build())
                 .build();
 
-        return Stream.of(Arguments.arguments(newDto, existingUser, expected));
+        return Stream.of(Arguments.arguments(newDto, existingReader, expected));
     }
 
-    private static Book getBook(BookDto bookDto) {
+    private static Book getBook(final BookDto bookDto) {
         return TestDataProvider.createBook()
                 .id(bookDto.getId())
                 .title(bookDto.getTitle())
@@ -225,8 +225,8 @@ public class UserMapperTest extends TestBase {
                 .authorSurname(bookDto.getAuthorSurname())
                 .takenAt(bookDto.getTakenAt())
                 .yearOfPublication(bookDto.getYearOfPublication())
-                .owner(User.builder()
-                        .id(bookDto.getUserId())
+                .owner(Reader.builder()
+                        .id(bookDto.getReaderId())
                         .build())
                 .build();
     }

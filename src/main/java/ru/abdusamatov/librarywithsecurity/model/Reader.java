@@ -21,14 +21,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "user", schema = "library")
+@Table(name = "reader", schema = "library")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString(exclude = "books")
 @Builder
-public class User {
+public class Reader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
-import ru.abdusamatov.librarywithsecurity.model.User;
+import ru.abdusamatov.librarywithsecurity.model.Reader;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 
 import java.util.stream.Stream;
@@ -84,7 +84,7 @@ public class BookMapperTest {
     public static Stream<Arguments> shouldMapBookToBookDto() {
         Book book = TestDataProvider
                 .createBook()
-                .owner(TestDataProvider.createUser())
+                .owner(TestDataProvider.createReader())
                 .build();
 
         BookDto expected = TestDataProvider
@@ -95,7 +95,7 @@ public class BookMapperTest {
                 .authorSurname(book.getAuthorSurname())
                 .yearOfPublication(book.getYearOfPublication())
                 .takenAt(book.getTakenAt())
-                .userId(book.getOwner().getId())
+                .readerId(book.getOwner().getId())
                 .build();
 
         return Stream.of(Arguments.arguments(book, expected));
@@ -114,7 +114,7 @@ public class BookMapperTest {
                 .authorSurname(dtoToBeMapped.getAuthorSurname())
                 .yearOfPublication(dtoToBeMapped.getYearOfPublication())
                 .takenAt(dtoToBeMapped.getTakenAt())
-                .owner(User.builder().id(dtoToBeMapped.getUserId()).build())
+                .owner(Reader.builder().id(dtoToBeMapped.getReaderId()).build())
                 .build();
 
         return Stream.of(Arguments.arguments(dtoToBeMapped, expected));
@@ -123,7 +123,7 @@ public class BookMapperTest {
     public static Stream<Arguments> shouldUpdateBookFromDto() {
         Book existingBook = TestDataProvider
                 .createBook()
-                .owner(TestDataProvider.createUser())
+                .owner(TestDataProvider.createReader())
                 .build();
 
         BookDto newDto = TestDataProvider
@@ -133,7 +133,7 @@ public class BookMapperTest {
                 .authorSurname("Updated Surname")
                 .yearOfPublication(existingBook.getYearOfPublication())
                 .takenAt(existingBook.getTakenAt())
-                .userId(existingBook.getOwner() != null ? existingBook.getOwner().getId() : null)
+                .readerId(existingBook.getOwner() != null ? existingBook.getOwner().getId() : null)
                 .build();
 
         Book expected = TestDataProvider

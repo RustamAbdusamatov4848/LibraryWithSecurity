@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.service.handler.BookHandler;
@@ -89,16 +89,16 @@ public class BookController {
                         Result.success(NO_CONTENT, "Successfully deleted"))));
     }
 
-    @Operation(summary = "Method for assigning a book to a user")
+    @Operation(summary = "Method for assigning a book to a reader")
     @PatchMapping(value = "/{id}/assign")
-    public Mono<Response<Void>> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final UserDto newUser) {
+    public Mono<Response<Void>> assignBook(@PathVariable("id") final Long id, @Valid @RequestBody final ReaderDto newReader) {
         return bookHandler
-                .assignBook(id, newUser)
+                .assignBook(id, newReader)
                 .then(Mono.just(Response.buildResponse(
                         Result.success(NO_CONTENT, "Book successfully assigned"))));
     }
 
-    @Operation(summary = "Method for releasing a book from a user")
+    @Operation(summary = "Method for releasing a book from a reader")
     @PatchMapping(value = "/{id}/release")
     public Mono<Response<Void>> releaseBook(@PathVariable("id") final Long id) {
         return bookHandler.releaseBook(id)

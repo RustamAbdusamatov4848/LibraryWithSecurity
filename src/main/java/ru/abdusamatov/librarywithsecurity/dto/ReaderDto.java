@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString(exclude = "books")
 @Builder
-public class UserDto implements Serializable {
+public class ReaderDto implements Serializable {
 
     private Long id;
 

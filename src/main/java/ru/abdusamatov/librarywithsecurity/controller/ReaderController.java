@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.service.handler.ReaderHandler;
@@ -28,10 +28,9 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
-//TODO: изменить везде user -> reader
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/readers")
 @Tag(
         name = "Reader Management",
         description = "APIs for managing library readers"
@@ -41,63 +40,63 @@ public class ReaderController {
 
     @Operation(summary = "Method for getting all registered readers")
     @GetMapping
-    public Mono<Response<List<UserDto>>> getReaderList(
+    public Mono<Response<List<ReaderDto>>> getReaderList(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") final Integer size) {
 
         return readerHandler
-                .getUserList(page, size)
-                .map(users -> Response.buildResponse(
-                        Result.success(OK, "List of users"),
-                        users));
+                .getReaderList(page, size)
+                .map(readers -> Response.buildResponse(
+                        Result.success(OK, "List of readers"),
+                        readers));
     }
 
     @Operation(summary = "Method for retrieving a reader by reader's ID")
     @GetMapping(value = "/{id}")
-    public Mono<Response<UserDto>> getUserById(@PathVariable("id") final Long id) {
+    public Mono<Response<ReaderDto>> getReaderById(@PathVariable("id") final Long id) {
         return readerHandler
-                .getUserById(id)
-                .map(user -> Response.buildResponse(
-                        Result.success(OK, "User successfully found"),
-                        user));
+                .getReaderById(id)
+                .map(reader -> Response.buildResponse(
+                        Result.success(OK, "Reader successfully found"),
+                        reader));
     }
 
     @Operation(summary = "Method for retrieving a reader's document by reader's ID")
     @GetMapping(value = "/{id}/document")
-    public Mono<Response<FileDto>> getUserDocument(@PathVariable("id") final Long id) {
+    public Mono<Response<FileDto>> getReaderDocument(@PathVariable("id") final Long id) {
         return readerHandler
                 .getDocument(id)
                 .map(document -> Response.buildResponse(
-                        Result.success(OK, "User document successfully found"),
+                        Result.success(OK, "Reader document successfully found"),
                         document));
     }
 
     @Operation(summary = "Method for creating a new reader")
     @PostMapping
-    public Mono<Response<UserDto>> createUser(@RequestPart("file") final MultipartFile file,
-                                              @RequestPart("userDto") @Valid final UserDto userDto) {
+    public Mono<Response<ReaderDto>> createReader(@RequestPart("file") final MultipartFile file,
+                                                  @RequestPart("readerDto") @Valid final ReaderDto readerDto) {
         return readerHandler
-                .createUser(file, userDto)
-                .map(user -> Response.buildResponse(
-                        Result.success(CREATED, "User successfully saved"),
-                        user));
+                .createReader(file, readerDto)
+                .map(reader -> Response.buildResponse(
+                        Result.success(CREATED, "Reader successfully saved"),
+                        reader));
     }
 
     @Operation(summary = "Method for updating an existing reader")
     @PutMapping
-    public Mono<Response<UserDto>> updateUser(@Valid @RequestBody final UserDto userDto) {
+    public Mono<Response<ReaderDto>> updateReader(@Valid @RequestBody final ReaderDto readerDto) {
         return readerHandler
-                .updateUser(userDto)
-                .map(updatedUser -> Response.buildResponse(
-                        Result.success(OK, "User successfully updated"),
-                        updatedUser));
+                .updateReader(readerDto)
+                .map(updatedReader -> Response.buildResponse(
+                        Result.success(OK, "Reader successfully updated"),
+                        updatedReader));
     }
 
     @Operation(summary = "Method for deleting a reader by reader's ID")
     @DeleteMapping(value = "/{id}")
-    public Mono<Response<Void>> deleteUserByID(@PathVariable("id") final Long id) {
+    public Mono<Response<Void>> deleteReaderByID(@PathVariable("id") final Long id) {
         return readerHandler
-                .deleteUserById(id)
+                .deleteReaderById(id)
                 .then(Mono.just(Response.buildResponse(
                         Result.success(NO_CONTENT, "Successfully deleted"))));
     }

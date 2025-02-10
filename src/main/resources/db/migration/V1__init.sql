@@ -2,7 +2,7 @@
 CREATE SCHEMA IF NOT EXISTS library;
 
 -- ==========================================
--- Таблица: library.user
+-- Таблица: library.reader
 -- Хранит информацию о читателях библиотеки.
 -- Поля:
 -- - id: Уникальный идентификатор читателя (генерируется автоматически).
@@ -10,7 +10,7 @@ CREATE SCHEMA IF NOT EXISTS library;
 -- - email: Электронная почта читателя (уникальная, обязательное поле).
 -- - date_of_birth: Дата рождения читателя (обязательное поле).
 -- ==========================================
-CREATE TABLE library.user
+CREATE TABLE library.reader
 (
     id            BIGSERIAL PRIMARY KEY,
     full_name     VARCHAR(30)         NOT NULL CHECK (LENGTH(full_name) BETWEEN 2 AND 30),
@@ -30,7 +30,7 @@ CREATE TABLE library.user
 -- - taken_at: Дата и время, когда книга была взята (необязательное поле).
 -- - owner_id: Ссылка на пользователя, взявшего книгу (может быть NULL, если книга не на руках).
 -- Связи:
--- - owner_id является внешним ключом, ссылающимся на id в таблице library.user.
+-- - owner_id является внешним ключом, ссылающимся на id в таблице library.reader.
 --   Если пользователь удаляется, owner_id для книги устанавливается в NULL.
 -- ==========================================
 CREATE TABLE library.book
@@ -42,8 +42,8 @@ CREATE TABLE library.book
     year_of_publication INT CHECK (year_of_publication >= 1500),
     taken_at            TIMESTAMP,
     owner_id            BIGINT,
-    CONSTRAINT fk_user
+    CONSTRAINT fk_reader
         FOREIGN KEY (owner_id)
-            REFERENCES library.user (id)
+            REFERENCES library.reader (id)
             ON DELETE SET NULL
 );

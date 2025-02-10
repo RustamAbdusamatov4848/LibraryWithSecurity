@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
 import ru.abdusamatov.librarywithsecurity.support.TestBase;
@@ -95,7 +95,7 @@ public class BookControllerTest extends TestBase {
         assertThat(response.getData().getId())
                 .isNotNull();
         assertThat(response.getData())
-                .extracting("takenAt", "userId")
+                .extracting("takenAt", "readerId")
                 .containsOnlyNulls();
     }
 
@@ -164,12 +164,12 @@ public class BookControllerTest extends TestBase {
     }
 
     @Test
-    void shouldReturnNotFound_whenBookToUpdateWithUserIdDoesNotExist() {
-        final var notExistingUserId = 10000L;
+    void shouldReturnNotFound_whenBookToUpdateWithReaderIdDoesNotExist() {
+        final var notExistingReaderId = 10000L;
         final var bookToBeUpdated = bookRepository.save(TestDataProvider.createBook().build());
         final var updateBookDto = TestDataProvider
                 .updateBookDto(bookMapper.bookToBookDto(bookToBeUpdated))
-                .userId(notExistingUserId)
+                .readerId(notExistingReaderId)
                 .build();
 
         final var response = executeUpdateBook(NOT_FOUND, updateBookDto, Void.class);
@@ -208,10 +208,10 @@ public class BookControllerTest extends TestBase {
                         .build())
                 .getId();
 
-        final var userDtoToBeAssigned = userMapper
-                .userToDto(userRepository.save(TestDataProvider.createUser()));
+        final var readerDtoToBeAssigned = readerMapper
+                .readerToDto(readerRepository.save(TestDataProvider.createReader()));
 
-        final var response = executeAssignBook(OK, id, userDtoToBeAssigned);
+        final var response = executeAssignBook(OK, id, readerDtoToBeAssigned);
 
         TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Book successfully assigned", response);
@@ -219,12 +219,12 @@ public class BookControllerTest extends TestBase {
 
     @Test
     void shouldReturnNotFound_whenBookToAssignDoesNotExist() {
-        final var userDtoToBeAssigned = userMapper
-                .userToDto(userRepository.save(TestDataProvider.createUser()));
+        final var readerDtoToBeAssigned = readerMapper
+                .readerToDto(readerRepository.save(TestDataProvider.createReader()));
 
         final var notExistingBookId = 1000L;
 
-        final var response = executeAssignBook(NOT_FOUND, notExistingBookId, userDtoToBeAssigned);
+        final var response = executeAssignBook(NOT_FOUND, notExistingBookId, readerDtoToBeAssigned);
 
         TestAssertUtil.assertEntityNotFound(response);
     }
@@ -405,7 +405,7 @@ public class BookControllerTest extends TestBase {
     private Response<Void> executeAssignBook(
             final HttpStatus status,
             final Long bookId,
-            final UserDto userDto
+            final ReaderDto readerDto
     ) {
         final var response = webTestClient
                 .patch()
@@ -414,7 +414,7 @@ public class BookControllerTest extends TestBase {
                         .build()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userDto)
+                .bodyValue(readerDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference())
@@ -471,6 +471,6 @@ public class BookControllerTest extends TestBase {
     @Override
     protected void clearDatabase() {
         bookRepository.deleteAll();
-        userRepository.deleteAll();
+        readerRepository.deleteAll();
     }
 }

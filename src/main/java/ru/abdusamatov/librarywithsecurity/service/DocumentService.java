@@ -17,9 +17,9 @@ public class DocumentService {
     private final DocumentMapper documentMapper;
 
     @Transactional
-    public DocumentDto findDocument(final long userId) {
-        return documentRepository.findByOwnerId(userId)
+    public DocumentDto findDocument(final long readerId) {
+        return documentRepository.findByOwnerId(readerId)
                 .map(documentMapper::documentToDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Document", "user ID", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Document", "reader ID", readerId));
     }
 }

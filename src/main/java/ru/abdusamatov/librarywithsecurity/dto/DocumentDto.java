@@ -25,5 +25,5 @@ public class DocumentDto implements Serializable {
     @Size(min = 5, max = 150, message = "File name must be between 5 and 150 characters long")
     private String fileName;
 
-    private Long userId;
+    private Long readerId;
 }

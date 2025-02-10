@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
-import ru.abdusamatov.librarywithsecurity.service.UserService;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
+import ru.abdusamatov.librarywithsecurity.service.ReaderService;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,42 +17,42 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ReaderHandler {
-    private final UserService userService;
+    private final ReaderService readerService;
     private final DocumentHandler documentHandler;
 
-    public Mono<List<UserDto>> getUserList(final Integer page, final Integer size) {
-        return Mono.fromCallable(() -> userService.getUserList(page, size))
+    public Mono<List<ReaderDto>> getReaderList(final Integer page, final Integer size) {
+        return Mono.fromCallable(() -> readerService.getReaderList(page, size))
                 .subscribeOn(Schedulers.boundedElastic())
-                .map(userDtoList -> userDtoList.isEmpty() ? Collections.emptyList() : userDtoList);
+                .map(readerDtoList -> readerDtoList.isEmpty() ? Collections.emptyList() : readerDtoList);
     }
 
 
-    public Mono<UserDto> getUserById(final Long id) {
-        return Mono.fromCallable(() -> userService.getUserById(id))
+    public Mono<ReaderDto> getReaderById(final Long id) {
+        return Mono.fromCallable(() -> readerService.getReaderById(id))
                 .subscribeOn(Schedulers.boundedElastic())
-                .doOnSuccess((userDto) -> log.info("Find user with ID: {}", userDto.getId()));
+                .doOnSuccess((readerDto) -> log.info("Find reader with ID: {}", readerDto.getId()));
     }
 
-    public Mono<FileDto> getDocument(final long userId) {
-        return documentHandler.getDocument(userId);
+    public Mono<FileDto> getDocument(final long readerId) {
+        return documentHandler.getDocument(readerId);
     }
 
-    public Mono<UserDto> createUser(final MultipartFile file, final UserDto dto) {
-        return Mono.fromCallable(() -> userService.createUser(dto))
+    public Mono<ReaderDto> createReader(final MultipartFile file, final ReaderDto dto) {
+        return Mono.fromCallable(() -> readerService.createReader(dto))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(userDto -> documentHandler
-                        .saveUserDocument(file, userDto.getId())
-                        .thenReturn(userDto));
+                .flatMap(readerDto -> documentHandler
+                        .saveReaderDocument(file, readerDto.getId())
+                        .thenReturn(readerDto));
     }
 
-    public Mono<UserDto> updateUser(final UserDto dtoToBeUpdated) {
-        return Mono.fromCallable(() -> userService.updateUser(dtoToBeUpdated))
+    public Mono<ReaderDto> updateReader(final ReaderDto dtoToBeUpdated) {
+        return Mono.fromCallable(() -> readerService.updateReader(dtoToBeUpdated))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<Void> deleteUserById(final Long userId) {
-        return documentHandler.deleteUserDocument(userId)
-                .then(Mono.fromRunnable(() -> userService.deleteUserById(userId))
+    public Mono<Void> deleteReaderById(final Long readerId) {
+        return documentHandler.deleteReaderDocument(readerId)
+                .then(Mono.fromRunnable(() -> readerService.deleteReaderById(readerId))
                         .subscribeOn(Schedulers.boundedElastic()))
                 .then();
     }

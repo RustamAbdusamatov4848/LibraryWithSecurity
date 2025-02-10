@@ -17,21 +17,21 @@ public class DocumentHandler {
     private final TopPdfConverterClientService clientService;
     private final DocumentService documentService;
 
-    public Mono<Void> saveUserDocument(MultipartFile file, Long id) {
+    public Mono<Void> saveReaderDocument(MultipartFile file, Long id) {
         return Mono.fromCallable(() -> documentService.findDocument(id))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(documentDto -> clientService.saveUserDocument(file, documentDto));
+                .flatMap(documentDto -> clientService.saveReaderDocument(file, documentDto));
     }
 
-    public Mono<FileDto> getDocument(long userId) {
-        return Mono.fromCallable(() -> documentService.findDocument(userId))
+    public Mono<FileDto> getDocument(long readerId) {
+        return Mono.fromCallable(() -> documentService.findDocument(readerId))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(clientService::getDocument);
     }
 
-    public Mono<Void> deleteUserDocument(Long userId) {
-        return Mono.fromCallable(() -> documentService.findDocument(userId))
+    public Mono<Void> deleteReaderDocument(Long readerId) {
+        return Mono.fromCallable(() -> documentService.findDocument(readerId))
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(clientService::deleteUserDocument);
+                .flatMap(clientService::deleteReaderDocument);
     }
 }

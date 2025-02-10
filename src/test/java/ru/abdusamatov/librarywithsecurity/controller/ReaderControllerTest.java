@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
-import ru.abdusamatov.librarywithsecurity.dto.UserDto;
+import ru.abdusamatov.librarywithsecurity.dto.ReaderDto;
 import ru.abdusamatov.librarywithsecurity.dto.response.Response;
 import ru.abdusamatov.librarywithsecurity.dto.response.Result;
 import ru.abdusamatov.librarywithsecurity.support.TestAssertUtil;
@@ -37,98 +37,98 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class ReaderControllerTest extends TestBase {
 
-    public static final String BASE_URL = "users";
+    public static final String BASE_URL = "readers";
 
     @Test
-    void shouldGetAllUsers() {
-        final var userListSize = 10;
-        final var userList = TestDataProvider.createListUser(userListSize);
-        userRepository.saveAll(userList);
+    void shouldGetAllReaders() {
+        final var readerListSize = 10;
+        final var readerList = TestDataProvider.createListReader(readerListSize);
+        readerRepository.saveAll(readerList);
 
-        final var response = executeGetAllUsers();
+        final var response = executeGetAllReaders();
 
         TestAssertUtil
-                .assertSuccess(OK, "List of users", response);
+                .assertSuccess(OK, "List of readers", response);
         assertThat(response.getData())
                 .asList()
                 .isNotNull()
                 .isNotEmpty()
-                .hasSize(userListSize);
+                .hasSize(readerListSize);
     }
 
     @Test
-    void shouldReturnEmptyList_whenUserAreAbsent() {
-        final var response = executeGetAllUsers();
+    void shouldReturnEmptyList_whenReaderAreAbsent() {
+        final var response = executeGetAllReaders();
 
         TestAssertUtil
-                .assertSuccess(OK, "List of users", response);
+                .assertSuccess(OK, "List of readers", response);
         assertThat(response.getData())
                 .isEmpty();
     }
 
     @Test
-    void shouldReturnUser_whenExistingUserIdProvided() {
-        final var id = userRepository
-                .save(TestDataProvider.createUser())
+    void shouldReturnReader_whenExistingReaderIdProvided() {
+        final var id = readerRepository
+                .save(TestDataProvider.createReader())
                 .getId();
 
-        final var response = executeGetUserById(OK, id, UserDto.class);
+        final var response = executeGetReaderById(OK, id, ReaderDto.class);
 
         TestAssertUtil
-                .assertSuccess(OK, "User successfully found", response);
+                .assertSuccess(OK, "Reader successfully found", response);
         assertThat(response.getData().getId())
                 .isEqualTo(id);
     }
 
     @Test
-    void shouldReturnNotFound_whenNonExistingUserIdProvided() {
+    void shouldReturnNotFound_whenNonExistingReaderIdProvided() {
         final var id = 10000L;
 
-        final var response = executeGetUserById(NOT_FOUND, id, Void.class);
+        final var response = executeGetReaderById(NOT_FOUND, id, Void.class);
 
         TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
-    void shouldReturnDocument_whenUserExist() {
-        final var savedUser = userRepository.save(TestDataProvider.createUser());
-        final var userDocument = savedUser.getDocument();
+    void shouldReturnDocument_whenReaderExist() {
+        final var savedReader = readerRepository.save(TestDataProvider.createReader());
+        final var readerDocument = savedReader.getDocument();
 
-        when(topPdfConverterClient.getDocument(userDocument.getBucketName(), userDocument.getFileName()))
-                .thenReturn(getMonoResponseByteArray(userDocument.getFileName()));
+        when(topPdfConverterClient.getDocument(readerDocument.getBucketName(), readerDocument.getFileName()))
+                .thenReturn(getMonoResponseByteArray(readerDocument.getFileName()));
 
-        final var response = executeGetUserDocument(savedUser.getId());
+        final var response = executeGetReaderDocument(savedReader.getId());
 
         TestAssertUtil
-                .assertSuccess(OK, "User document successfully found", response);
+                .assertSuccess(OK, "Reader document successfully found", response);
         verify(topPdfConverterClient, times(1))
-                .getDocument(userDocument.getBucketName(), userDocument.getFileName());
+                .getDocument(readerDocument.getBucketName(), readerDocument.getFileName());
         verifyNoMoreInteractions(topPdfConverterClient);
     }
 
     @Test
-    void shouldCreateUser_whenValidDataProvided() {
-        final var validUserDto = TestDataProvider
-                .createUserDto()
+    void shouldCreateReader_whenValidDataProvided() {
+        final var validReaderDto = TestDataProvider
+                .createReaderDto()
                 .build();
 
-        when(topPdfConverterClient.addBucket(validUserDto.getDocumentDto().getBucketName()))
+        when(topPdfConverterClient.addBucket(validReaderDto.getDocumentDto().getBucketName()))
                 .thenReturn(getMonoResponseVoid(
-                        "Bucket " + validUserDto.getDocumentDto().getBucketName() + " successfully created"));
+                        "Bucket " + validReaderDto.getDocumentDto().getBucketName() + " successfully created"));
         when(topPdfConverterClient.uploadFile(
                 any(MultipartFile.class),
                 anyString()))
                 .thenReturn(getMonoResponseVoid(
-                        "File " + validUserDto.getDocumentDto().getFileName() + " successfully uploaded"));
+                        "File " + validReaderDto.getDocumentDto().getFileName() + " successfully uploaded"));
 
-        final var response = executeCreateUser(
+        final var response = executeCreateReader(
                 OK,
-                validUserDto,
-                UserDto.class,
+                validReaderDto,
+                ReaderDto.class,
                 TestDataProvider.getMultipartFile());
 
         TestAssertUtil
-                .assertSuccess(CREATED, "User successfully saved", response);
+                .assertSuccess(CREATED, "Reader successfully saved", response);
         assertThat(response.getData().getId())
                 .isNotNull();
         assertThat(response.getData().getBooks())
@@ -140,24 +140,24 @@ public class ReaderControllerTest extends TestBase {
                         "id",
                         "books",
                         "documentDto.id",
-                        "documentDto.userId")
-                .isEqualTo(validUserDto);
+                        "documentDto.readerId")
+                .isEqualTo(validReaderDto);
         verify(topPdfConverterClient)
-                .addBucket(validUserDto.getDocumentDto().getBucketName());
+                .addBucket(validReaderDto.getDocumentDto().getBucketName());
         verify(topPdfConverterClient)
                 .uploadFile(any(MultipartFile.class), anyString());
         verifyNoMoreInteractions(topPdfConverterClient);
     }
 
     @Test
-    void shouldReturnBadRequest_whenUserWithInvalidFields() {
-        final var invalidUserDto = TestDataProvider
-                .createUserDtoWithInvalidFields()
+    void shouldReturnBadRequest_whenReaderWithInvalidFields() {
+        final var invalidReaderDto = TestDataProvider
+                .createReaderDtoWithInvalidFields()
                 .build();
 
-        final var response = executeCreateUser(
+        final var response = executeCreateReader(
                 BAD_REQUEST,
-                invalidUserDto,
+                invalidReaderDto,
                 Void.class,
                 TestDataProvider.getMultipartFile());
 
@@ -165,57 +165,57 @@ public class ReaderControllerTest extends TestBase {
     }
 
     @Test
-    void shouldUpdateUser_whenValidUserDtoProvided() {
-        final var userToBeUpdated = userMapper
-                .userToDto(userRepository.save(TestDataProvider.createUser()));
+    void shouldUpdateReader_whenValidReaderDtoProvided() {
+        final var readerToBeUpdated = readerMapper
+                .readerToDto(readerRepository.save(TestDataProvider.createReader()));
 
-        final var updateUserDto = TestDataProvider
-                .updateUserDto(userToBeUpdated)
+        final var updateReaderDto = TestDataProvider
+                .updateReaderDto(readerToBeUpdated)
                 .build();
 
-        final var response = executeUpdateUser(OK, updateUserDto, UserDto.class);
+        final var response = executeUpdateReader(OK, updateReaderDto, ReaderDto.class);
 
         TestAssertUtil
-                .assertSuccess(OK, "User successfully updated", response);
+                .assertSuccess(OK, "Reader successfully updated", response);
         assertThat(response.getData())
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(updateUserDto);
+                .isEqualTo(updateReaderDto);
     }
 
     @Test
-    void shouldReturnNotFound_whenUserToUpdateDoesNotExist() {
+    void shouldReturnNotFound_whenReaderToUpdateDoesNotExist() {
         final var notExistingId = 10000L;
-        final var updateUserDto = TestDataProvider
-                .updateUserDto(TestDataProvider.createUserDto().build())
+        final var updateReaderDto = TestDataProvider
+                .updateReaderDto(TestDataProvider.createReaderDto().build())
                 .id(notExistingId)
                 .build();
 
-        final var response = executeUpdateUser(NOT_FOUND, updateUserDto, Void.class);
+        final var response = executeUpdateReader(NOT_FOUND, updateReaderDto, Void.class);
 
         TestAssertUtil.assertEntityNotFound(response);
     }
 
     @Test
-    void shouldReturnBadRequest_whenUpdateUserWithInvalidFields() {
-        final var updateUserDto = TestDataProvider
-                .updateUserDtoWithInvalidFields(TestDataProvider.createUserDto().build())
+    void shouldReturnBadRequest_whenUpdateReaderWithInvalidFields() {
+        final var updateReaderDto = TestDataProvider
+                .updateReaderDtoWithInvalidFields(TestDataProvider.createReaderDto().build())
                 .build();
 
-        final var response = executeUpdateUser(BAD_REQUEST, updateUserDto, Void.class);
+        final var response = executeUpdateReader(BAD_REQUEST, updateReaderDto, Void.class);
 
         TestAssertUtil.assertFieldErrorForEntity(response);
     }
 
     @Test
-    void shouldReturnNoContent_whenUserDeletedSuccessfully() {
-        final var savedUser = userRepository.save(TestDataProvider.createUser());
-        final var bucketName = savedUser.getDocument().getBucketName();
+    void shouldReturnNoContent_whenReaderDeletedSuccessfully() {
+        final var savedReader = readerRepository.save(TestDataProvider.createReader());
+        final var bucketName = savedReader.getDocument().getBucketName();
 
         when(topPdfConverterClient.deleteDocument(bucketName))
                 .thenReturn(getMonoResponseVoid("Bucket " + bucketName + " deleted"));
 
-        final var response = executeDeleteUserById(OK, savedUser.getId());
+        final var response = executeDeleteReaderById(OK, savedReader.getId());
 
         TestAssertUtil
                 .assertSuccess(NO_CONTENT, "Successfully deleted", response);
@@ -228,12 +228,12 @@ public class ReaderControllerTest extends TestBase {
     void shouldReturnNotFound_whenBookToDeleteDoesNotExist() {
         final var notExistingId = 10000L;
 
-        final var response = executeDeleteUserById(NOT_FOUND, notExistingId);
+        final var response = executeDeleteReaderById(NOT_FOUND, notExistingId);
 
         TestAssertUtil.assertEntityNotFound(response);
     }
 
-    private Response<List<UserDto>> executeGetAllUsers() {
+    private Response<List<ReaderDto>> executeGetAllReaders() {
         final var response = webTestClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -243,7 +243,7 @@ public class ReaderControllerTest extends TestBase {
                         .build())
                 .exchange()
                 .expectStatus().isEqualTo(OK)
-                .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(UserDto.class))
+                .expectBody(ParameterizedTypeReferenceTestUtil.getListResponseReference(ReaderDto.class))
                 .returnResult()
                 .getResponseBody();
 
@@ -253,7 +253,7 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
-    private <T> Response<T> executeGetUserById(
+    private <T> Response<T> executeGetReaderById(
             final HttpStatus status,
             final long id,
             final Class<T> responseType
@@ -276,7 +276,7 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
-    private Response<FileDto> executeGetUserDocument(final long id) {
+    private Response<FileDto> executeGetReaderDocument(final long id) {
         final var response = webTestClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -296,16 +296,16 @@ public class ReaderControllerTest extends TestBase {
     }
 
     @SneakyThrows
-    private <T> Response<T> executeCreateUser(
+    private <T> Response<T> executeCreateReader(
             final HttpStatus status,
-            final UserDto userDto,
+            final ReaderDto readerDto,
             final Class<T> responseType,
             final MultipartFile file
     ) {
         final var multipartBodyBuilder = new MultipartBodyBuilder();
         multipartBodyBuilder.part("file", file.getResource())
                 .contentType(MediaType.IMAGE_JPEG);
-        multipartBodyBuilder.part("userDto", toJson(userDto))
+        multipartBodyBuilder.part("readerDto", toJson(readerDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         final var response = webTestClient
@@ -328,9 +328,9 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
-    private <T> Response<T> executeUpdateUser(
+    private <T> Response<T> executeUpdateReader(
             final HttpStatus status,
-            final UserDto userDto,
+            final ReaderDto readerDto,
             final Class<T> responseType
     ) {
         final var response = webTestClient
@@ -340,7 +340,7 @@ public class ReaderControllerTest extends TestBase {
                         .build()
                 )
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userDto)
+                .bodyValue(readerDto)
                 .exchange()
                 .expectStatus().isEqualTo(status)
                 .expectBody(ParameterizedTypeReferenceTestUtil.getResponseReference(responseType))
@@ -353,7 +353,7 @@ public class ReaderControllerTest extends TestBase {
         return response;
     }
 
-    private Response<Void> executeDeleteUserById(
+    private Response<Void> executeDeleteReaderById(
             final HttpStatus status,
             final long id
     ) {
@@ -398,6 +398,6 @@ public class ReaderControllerTest extends TestBase {
 
     @Override
     protected void clearDatabase() {
-        userRepository.deleteAll();
+        readerRepository.deleteAll();
     }
 }

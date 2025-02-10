@@ -36,6 +36,6 @@ public class BookDto implements Serializable {
 
     private LocalDateTime takenAt;
 
-    private Long userId;
+    private Long readerId;
 
 }

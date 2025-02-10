@@ -49,6 +49,6 @@ public class Book {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    private User owner;
+    private Reader owner;
 
 }

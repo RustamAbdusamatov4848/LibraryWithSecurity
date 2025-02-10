@@ -64,7 +64,7 @@ public class TopPdfConverterClientTest extends WebClientTestBase {
     }
 
     @Test
-    void shouldReturnUserDocument_whenGetDocument() {
+    void shouldReturnReaderDocument_whenGetDocument() {
         final var document = TestDataProvider.getImageBytes(FILE_NAME);
 
         stubFor(
