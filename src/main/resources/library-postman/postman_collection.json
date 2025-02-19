@@ -1,0 +1,544 @@
+{
+	"info": {
+		"_postman_id": "703c86d1-447a-468d-8f11-f6f05b0d74bd",
+		"name": "Library",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30006741"
+	},
+	"item": [
+		{
+			"name": "CRUD",
+			"item": [
+				{
+					"name": "reader",
+					"item": [
+						{
+							"name": "Get readers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/readers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get reader by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/readers/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get reader's document",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/readers/1/document",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers",
+										"1",
+										"document"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create reader",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"contentType": "application/octet-stream",
+											"type": "file",
+											"src": "/C:/Users/Rustam/Desktop/Banki.ru/Library/LibraryWithSecurity/src/test/resources/passport.jpg"
+										},
+										{
+											"key": "userDto",
+											"value": "{\n  \"fullName\": \"testName\",\n  \"email\": \"test@email.com\",\n  \"dateOfBirth\": \"2025-01-06\",\n  \"documentDto\": {\n    \"bucketName\": \"test-bucket\",\n    \"fileName\": \"passport.jpg\"\n  }\n}\n",
+											"contentType": "application/json",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8085/readers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update reader",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"fullName\": \"testName\",\r\n    \"email\": \"test@email.com\",\r\n    \"dateOfBirth\": \"2025-01-06\",\r\n    \"documentDto\": {\r\n        \"id\": 1,\r\n        \"bucketName\": \"test-bucket\",\r\n        \"fileName\": \"passport.jpg\",\r\n        \"userId\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8085/readers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete reader",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/readers/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "book",
+					"item": [
+						{
+							"name": "Get books",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get book by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/books/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search books",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/books/search?query=some title",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books",
+										"search"
+									],
+									"query": [
+										{
+											"key": "query",
+											"value": "some title"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create book",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"test1\",\r\n  \"authorName\": \"test1\",\r\n  \"authorSurname\": \"test1\",\r\n  \"yearOfPublication\": 1500\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8085/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update book",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"title\": \"testTitle\",\r\n    \"authorName\": \"testAN\",\r\n    \"authorSurname\": \"testAS\",\r\n    \"yearOfPublication\": 1500\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8085/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete book",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/books/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Assign book",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"fullName\": \"test1\",\r\n    \"email\": \"string1@email.com\",\r\n    \"dateOfBirth\": \"2025-01-06\",\r\n    \"documentDto\": {\r\n        \"id\": 1,\r\n        \"bucketName\": \"string-buckettttnnn\",\r\n        \"fileName\": \"passpor1\",\r\n        \"userId\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8085/books/1/assign",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books",
+										"1",
+										"assign"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Release book",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/books/1/release",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books",
+										"1",
+										"release"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Load-tests",
+			"item": [
+				{
+					"name": "Load-get-id-testing",
+					"item": [
+						{
+							"name": "get_reader_id's",
+							"item": [
+								{
+									"name": "get_reader_1",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8085/readers/1",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8085",
+											"path": [
+												"readers",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_reader_2",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8085/readers/2",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8085",
+											"path": [
+												"readers",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_reader_3",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8085/readers/3",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8085",
+											"path": [
+												"readers",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "get_book_id's",
+							"item": [
+								{
+									"name": "get_book_1",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8085/books/1",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8085",
+											"path": [
+												"books",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_book_2",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8085/books/2",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8085",
+											"path": [
+												"books",
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_book_3",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8085/books/3",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8085",
+											"path": [
+												"books",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Load-get-lists-testing",
+					"item": [
+						{
+							"name": "GET readers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/readers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"readers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET books",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8085/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8085",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

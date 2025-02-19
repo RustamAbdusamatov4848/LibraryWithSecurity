@@ -92,5 +92,5 @@ The librarian has the ability to:
 To perform load testing follow the steps below:
 
 1. Open Postman
-2. Import json from `src/main/resources/load-test-data/*.json` to Postman
+2. Import json from `src/main/resources/library-postman/postman_collection.json` to Postman
 3. Run imported collection
