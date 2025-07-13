@@ -3,9 +3,9 @@ package ru.abdusamatov.librarywithsecurity.service.notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
+import ru.abdusamatov.commons.event.LibraryEvent;
+import ru.abdusamatov.commons.util.WrapperUtil;
 import ru.abdusamatov.librarywithsecurity.config.RabbitMQProperties;
-import ru.ilyam.event.LibraryEvent;
-import ru.ilyam.util.WrapperUtil;
 
 @Component
 @RequiredArgsConstructor

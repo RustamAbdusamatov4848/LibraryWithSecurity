@@ -5,15 +5,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+import ru.abdusamatov.commons.enums.ApplicationNameEnum;
+import ru.abdusamatov.commons.enums.LibraryEventNameEnum;
+import ru.abdusamatov.commons.event.LibraryEvent;
 import ru.abdusamatov.librarywithsecurity.dto.BookDto;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.UserDto;
 import ru.abdusamatov.librarywithsecurity.model.Book;
 import ru.abdusamatov.librarywithsecurity.model.Document;
 import ru.abdusamatov.librarywithsecurity.model.User;
-import ru.ilyam.enums.ApplicationNameEnum;
-import ru.ilyam.enums.LibraryEventNameEnum;
-import ru.ilyam.event.LibraryEvent;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -166,7 +166,7 @@ public class TestDataProvider {
                 .fileName(FILE_NAME + "-" + getLimitUUID(8));
     }
 
-    public static LibraryEvent.LibraryEventBuilder createLibraryEvent(LibraryEventNameEnum operation) {
+    public static LibraryEvent.LibraryEventBuilder<?, ?> createLibraryEvent(LibraryEventNameEnum operation) {
         return LibraryEvent.builder()
                 .eventName(operation)
                 .applicationName(ApplicationNameEnum.LIBRARY);

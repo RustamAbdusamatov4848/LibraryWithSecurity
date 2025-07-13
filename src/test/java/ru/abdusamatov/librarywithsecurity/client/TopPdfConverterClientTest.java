@@ -10,11 +10,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.reactive.function.client.WebClientResponseException.InternalServerError;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import ru.abdusamatov.commons.http.Response;
+import ru.abdusamatov.commons.http.Result;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.support.TestDataProvider;
 import ru.abdusamatov.librarywithsecurity.support.WebClientTestBase;
-import ru.ilyam.http.Response;
-import ru.ilyam.http.Result;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
