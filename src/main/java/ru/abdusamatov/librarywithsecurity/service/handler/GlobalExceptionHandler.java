@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.abdusamatov.commons.http.Response;
+import ru.abdusamatov.commons.http.Result;
 import ru.abdusamatov.librarywithsecurity.exception.ResourceNotFoundException;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
-import ru.ilyam.http.Response;
-import ru.ilyam.http.Result;
 
 import java.util.HashMap;
 import java.util.Map;

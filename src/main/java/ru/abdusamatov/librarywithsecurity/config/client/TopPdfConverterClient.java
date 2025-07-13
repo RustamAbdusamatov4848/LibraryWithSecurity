@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import ru.abdusamatov.commons.http.Response;
 import ru.abdusamatov.librarywithsecurity.util.ParameterizedTypeReferenceUtil;
-import ru.ilyam.http.Response;
 
 @RequiredArgsConstructor
 public class TopPdfConverterClient {

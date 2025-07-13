@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+import ru.abdusamatov.commons.enums.ResponseStatus;
+import ru.abdusamatov.commons.http.Response;
 import ru.abdusamatov.librarywithsecurity.config.client.TopPdfConverterClient;
 import ru.abdusamatov.librarywithsecurity.dto.DocumentDto;
 import ru.abdusamatov.librarywithsecurity.dto.FileDto;
 import ru.abdusamatov.librarywithsecurity.exception.TopPdfConverterException;
-import ru.ilyam.http.Response;
-import ru.ilyam.enums.ResponseStatus;
 
 import java.util.Base64;
 
